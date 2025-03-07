@@ -25,7 +25,7 @@ import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
 import Swal from "sweetalert2";
 
-const DataDistribusi = () => {
+const PdfUsulanAlkes = () => {
   const user = useSelector((a) => a.auth.user);
   const [search, setSearch] = useState(""); // Initialize search state with an empty string
   const [data, setData] = useState([]);
@@ -593,10 +593,10 @@ const DataDistribusi = () => {
 
   return (
     <div>
-      <Breadcrumb pageName="Data Distribusi" />
+      <Breadcrumb pageName="PDF Usulan Alkes" />
       <div className="flex flex-col items-center justify-center w-full tracking-tight mb-6">
-        <h1 className="font-normal mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
-          DATA DISTRIBUSI
+        <h1 className="font-medium mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
+          PDF Usulan Alkes
           {/* SELAMAT DATANG{" "}
           {user.role == "1"
             ? "ADMIN PUSAT"
@@ -837,4 +837,4 @@ const DataDistribusi = () => {
   );
 };
 
-export default DataDistribusi;
+export default PdfUsulanAlkes;

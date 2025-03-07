@@ -62,6 +62,9 @@ import DokumenDistributor from "./pages/dokumen-distributor/DokumenDistributor";
 import DataPenyedia from "./pages/master-penyedia/DataPenyedia";
 import TambahPenyedia from "./pages/master-penyedia/TambahPenyedia";
 import EditPenyedia from "./pages/master-penyedia/EditPenyedia";
+import UsulanAlkes from "./pages/usulan-alkes/UsulanAlkes";
+import PdfUsulanAlkes from "./pages/usulan-alkes/PdfUsulanAlkes";
+import EditUsulan from "./pages/usulan-alkes/EditUsulan";
 
 function App() {
   const { pathname } = useLocation();
@@ -87,6 +90,9 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="tes-template" element={<TesTemplate />} />
               <Route path="preview-dokumen/:id" element={<TemplateDokumen />} />
+              <Route path="usulan-alkes" element={<UsulanAlkes />} />
+              <Route path="usulan-alkes/edit/:id" element={<EditUsulan />} />
+              <Route path="pdf-usulan-alkes" element={<PdfUsulanAlkes />} />
               <Route path="data-distribusi" element={<DataDistribusi />} />
               <Route
                 path="data-distribusi/detail/:id"

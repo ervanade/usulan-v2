@@ -107,19 +107,16 @@ const Login = () => {
     setFormData((prev) => ({ ...prev, tanggal: event.target.value }));
   };
   return (
-    <div className="w-full !dark:bg-boxdark-2 flex justify-center items-center min-h-[calc(100vh-0px)] bg-transparent object-cover bg-center py-6 !bg-[#8EEBE7]">
-      <div className="w-full max-w-lg bg-white shadow-md rounded-md  pt-8 pb-12 mb-4 mx-6">
+    <div className="w-full !dark:bg-boxdark-2 flex justify-center items-center min-h-[calc(100vh-0px)] bg-transparent object-cover bg-center py-6 !bg-[#027d77]">
+      <div className="w-full max-w-lg bg-[#FDF6ED] shadow-md rounded-md  pt-8 pb-12 mb-4 mx-6">
         <div className="px-5 sm:px-8">
-          <div className="logo w-full flex items-center justify-center mb-6">
+          {/* <div className="logo w-full flex items-center justify-center mb-6">
             <img src="/logo-kemenkes.png" alt="Logo" />
-          </div>
+          </div> */}
           <div className="title mb-6">
             <h1 className="text-[#00B1A9] text-xl sm:text-2xl mb-2 font-normal text-center">
-              Masuk ke Layanan SI-MBAH-BMN
+              Masuk ke Aplikasi Usulan Alkes
             </h1>
-            {/* <p className="text-[#404040] text-sm mb-6 font-semibold text-center">
-              Hanya di Youtube Oriflame Indonesia
-            </p> */}
           </div>
           <form
             className="mt-5"
@@ -134,15 +131,15 @@ const Login = () => {
 
             <div className="mb-3">
               <label
-                className="block text-[#728294] text-sm font-normal mb-2"
+                className="block text-[#475569] text-sm font-normal mb-2"
                 htmlFor="email"
               >
-                Username / Email
+                Username
               </label>
               <input
-                className={`bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                className={`bg-white appearance-none border border-[#cacaca] focus:border-[#027d77]
                     "border-red-500" 
-                 rounded w-full py-3 px-3 text-[#728294] mb-3 leading-tight focus:outline-none focus:shadow-outline`}
+                 rounded w-full py-3 px-3 text-[#475569] mb-3 leading-tight focus:outline-none focus:shadow-outline`}
                 id="email"
                 value={formData.email}
                 onChange={(e) =>
@@ -153,21 +150,21 @@ const Login = () => {
                 }
                 type="text"
                 required
-                placeholder="Username / Email Anda"
+                placeholder="Username Anda"
               />
             </div>
             <div className="mb-3">
               <label
-                className="block text-[#728294] text-sm font-normal mb-2"
+                className="block text-[#475569] text-sm font-normal mb-2"
                 htmlFor="password"
               >
                 Password
               </label>
               <div className="relative">
                 <input
-                  className={`bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  className={`bg-white appearance-none border border-[#cacaca] focus:border-[#027d77]
         "border-red-500" 
-        rounded w-full py-3 px-3 text-[#728294] mb-3 leading-tight focus:outline-none focus:shadow-outline`}
+        rounded w-full py-3 px-3 text-[#475569] mb-3 leading-tight focus:outline-none focus:shadow-outline`}
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
@@ -204,15 +201,15 @@ const Login = () => {
             {/* <div className="mb-3 flex items-center gap-3">
               <div className="col flex-[3_3_0%]">
                 <label
-                  className="block text-[#728294] text-sm font-normal mb-2"
+                  className="block text-[#475569] text-sm font-normal mb-2"
                   htmlFor="nomor"
                 >
                   Captcha
                 </label>
                 <input
-                  className={`bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  className={`bg-white appearance-none border border-[#cacaca] focus:border-[#027d77]
                     "border-red-500" 
-                 rounded w-full py-3 px-3 text-[#728294] mb-3 leading-tight focus:outline-none focus:shadow-outline`}
+                 rounded w-full py-3 px-3 text-[#475569] mb-3 leading-tight focus:outline-none focus:shadow-outline`}
                   id="captcha"
                   type="captcha"
                   value={formData.captcha}
@@ -232,7 +229,7 @@ const Login = () => {
             </div> */}
             <div className="flex items-center justify-center mt-6">
               <button
-                className="w-full bg-[#0ACBC2]  text-white font-bold py-4 px-6 rounded focus:outline-none focus:shadow-outline"
+                className="w-full bg-[#027d77]  text-white font-bold py-4 px-6 rounded focus:outline-none focus:shadow-outline"
                 type="submit"
                 disabled={loading}
               >

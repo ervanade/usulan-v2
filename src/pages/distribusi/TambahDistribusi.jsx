@@ -558,7 +558,7 @@ const TambahDistribusi = () => {
               <div className="w-full">
                 <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                   <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead className="text-xs text-bodydark2 uppercase bg-[#EBFBFA] dark:bg-gray-700 dark:text-gray-400">
+                    <thead className="text-xs text-bodydark2 uppercase bg-[#b1e4e0] dark:bg-gray-700 dark:text-gray-400">
                       <tr>
                         <th scope="col" className="px-4 py-3 text-center">
                           Nama Barang

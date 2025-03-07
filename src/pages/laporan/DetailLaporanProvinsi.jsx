@@ -439,7 +439,7 @@ const DetailLaporanProvinsi = () => {
                 headCells: {
                   style: {
                     padding: 12,
-                    backgroundColor: "#EBFBFA", // Warna header biru
+                    backgroundColor: "#b1e4e0", // Warna header biru
                     color: "#212121", // Teks header putih
                     fontWeight: 700,
                     fontSize: 14,

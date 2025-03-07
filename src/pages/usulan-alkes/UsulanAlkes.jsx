@@ -25,7 +25,7 @@ import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
 import Swal from "sweetalert2";
 
-const DataDistribusi = () => {
+const UsulanAlkes = () => {
   const user = useSelector((a) => a.auth.user);
   const [search, setSearch] = useState(""); // Initialize search state with an empty string
   const [data, setData] = useState([]);
@@ -448,79 +448,17 @@ const DataDistribusi = () => {
         id: "Aksi",
         cell: (row) => (
           <div className="flex items-center space-x-2">
-            {user.role == "2" || user.role == "1" ? (
-              row.konfirmasi_ppk != "1" ? (
-                <button
-                  title="Konfirmasi"
-                  className="text-white font-semibold py-2 w-22 bg-red-500 rounded-md"
-                  onClick={() => {
-                    navigate(`/data-distribusi/edit/${row.id}`, {
-                      replace: true,
-                    });
-                  }}
-                >
-                  <Link to={`/data-distribusi/edit/${row.id}`}>Konfirmasi</Link>
-                </button>
-              ) : (
-                <button
-                  title="Konfirmasi"
-                  className="text-white font-semibold  py-2 w-22 bg-green-500 rounded-md"
-                  onClick={() => {
-                    navigate(`/data-distribusi/edit/${row.id}`, {
-                      replace: true,
-                    });
-                  }}
-                >
-                  {/* <FaEdit size={16} /> */}
-                  <Link to={`/data-distribusi/edit/${row.id}`}>
-                    Sudah Konfirmasi
-                  </Link>
-                </button>
-              )
-            ) : user.role == "3" ? (
-              row.konfirmasi_daerah != "1" ? (
-                <button
-                  title="Konfirmasi"
-                  className="text-white font-semibold py-2 w-22 bg-red-500 rounded-md"
-                  onClick={() => {
-                    navigate(`/data-distribusi/edit/${row.id}`, {
-                      replace: true,
-                    });
-                  }}
-                >
-                  <Link to={`/data-distribusi/edit/${row.id}`}>Konfirmasi</Link>
-                </button>
-              ) : (
-                <button
-                  title="Konfirmasi"
-                  className="text-white font-semibold  py-2 w-22 bg-green-500 rounded-md"
-                  onClick={() => {
-                    navigate(`/data-distribusi/edit/${row.id}`, {
-                      replace: true,
-                    });
-                  }}
-                >
-                  {/* <FaEdit size={16} /> */}
-                  <Link to={`/data-distribusi/edit/${row.id}`}>
-                    Sudah Konfirmasi
-                  </Link>
-                </button>
-              )
-            ) : (
-              ""
-            )}
-
-            {user.role == "1" ? (
-              <button
-                title="Delete"
-                className="text-red-500 hover:text-red-700 pr-4"
-                onClick={() => handleConfirmDeleteDistribusi(row.id)}
-              >
-                <FaTrash size={16} />
-              </button>
-            ) : (
-              ""
-            )}
+            <button
+              title="Edit"
+              className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
+              onClick={() => {
+                navigate(`/usulan-alkes/edit/${row.id}`, {
+                  replace: true,
+                });
+              }}
+            >
+              <Link to={`/usulan-alkes/edit/${row.id}`}>Lihat</Link>
+            </button>
           </div>
         ),
         ignoreRowClick: true,
@@ -593,10 +531,10 @@ const DataDistribusi = () => {
 
   return (
     <div>
-      <Breadcrumb pageName="Data Distribusi" />
+      <Breadcrumb pageName="Usulan Alkes" />
       <div className="flex flex-col items-center justify-center w-full tracking-tight mb-6">
-        <h1 className="font-normal mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
-          DATA DISTRIBUSI
+        <h1 className="font-medium mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
+          USULAN ALKES
           {/* SELAMAT DATANG{" "}
           {user.role == "1"
             ? "ADMIN PUSAT"
@@ -837,4 +775,4 @@ const DataDistribusi = () => {
   );
 };
 
-export default DataDistribusi;
+export default UsulanAlkes;

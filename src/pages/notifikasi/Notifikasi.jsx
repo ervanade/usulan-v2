@@ -182,7 +182,7 @@ const Notifikasi = () => {
                 headCells: {
                   style: {
                     padding: 12,
-                    backgroundColor: "#EBFBFA",
+                    backgroundColor: "#b1e4e0",
                     color: "#212121",
                     fontWeight: 700,
                     fontSize: 14,

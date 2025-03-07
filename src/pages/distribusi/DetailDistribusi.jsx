@@ -323,7 +323,7 @@ const DetailDistribusi = () => {
             customStyles={{
               headCells: {
                 style: {
-                  backgroundColor: "#EBFBFA",
+                  backgroundColor: "#b1e4e0",
                   color: "#728294",
                 },
               },
