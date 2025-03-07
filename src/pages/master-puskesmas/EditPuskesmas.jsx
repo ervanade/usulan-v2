@@ -1,0 +1,589 @@
+import React, { useEffect, useState } from "react";
+import Card from "../../components/Card/Card";
+import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  dataBarang,
+  dataKecamatan,
+  dataPuskesmas,
+  pelayananOptions,
+  roleOptions,
+  wilayahKerjaOptions,
+} from "../../data/data";
+import { decryptId, selectThemeColors } from "../../data/utils";
+import Select from "react-select";
+import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { CgSpinner } from "react-icons/cg";
+import FormInput from "../../components/Form/FormInput";
+import { validateForm } from "../../data/validationUtils";
+
+const EditPuskesmas = () => {
+  const [formData, setFormData] = useState({
+    nama_puskesmas: "",
+    id_provinsi: "",
+    id_kabupaten: "",
+    id_kecamatan: "",
+    alamat: "",
+    nomor_telpon: "",
+    email: "",
+    status_puskesmas: "",
+    wilayah_kerja: "",
+    pelayanan: "",
+    kode_pusdatin_baru: "",
+    keterangan: "",
+  });
+
+  const navigate = useNavigate();
+  const user = useSelector((a) => a.auth.user);
+
+  const [dataProvinsi, setDataProvinsi] = useState([]);
+  const [dataKota, setDataKota] = useState([]);
+  const [dataKecamatan, setDataKecamatan] = useState([]);
+
+  const [selectedProvinsi, setSelectedProvinsi] = useState(null);
+  const [selectedKota, setSelectedKota] = useState(null);
+  const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+  const [selectedWilayahKerja, setSelectedWilayahKerja] = useState(null);
+  const [selectedPelayanan, setSelectedPelayanan] = useState(null);
+
+  const [listKota, setListKota] = useState([]);
+  const [listKecamatan, setListKecamatan] = useState([]);
+
+  const [error, setError] = useState("");
+  const [getLoading, setGetLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { id } = useParams();
+
+  const fetchPuskesmasData = async () => {
+    setGetLoading(true);
+    try {
+      // eslint-disable-next-line
+      const responseUser = await axios({
+        method: "get",
+        url: `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/puskesmas/${encodeURIComponent(decryptId(id))}`,
+        headers: {
+          "Content-Type": "application/json",
+          //eslint-disable-next-line
+          Authorization: `Bearer ${user?.token}`,
+        },
+      }).then(function (response) {
+        // handle success
+        // console.log(response)
+        const data = response.data.data;
+        setFormData({
+          nama_puskesmas: data.nama_puskesmas || "",
+          id_provinsi: data.id_provinsi || "",
+          id_kabupaten: data.id_kabupaten || "",
+          id_kecamatan: data.id_kecamatan || "",
+          alamat: data.alamat || "",
+          nomor_telpon: data.nomor_telpon || "",
+          email: data.email || "",
+          status_puskesmas: data.status_puskesmas || "",
+          wilayah_kerja: data.wilayah_kerja || "",
+          kode_pusdatin_baru: data.kode_pusdatin_baru || "",
+          pelayanan: data.pelayanan || "",
+          keterangan: data.keterangan || "",
+        });
+        setSelectedWilayahKerja(
+          wilayahKerjaOptions.find((a) => a.value == data.wilayah_kerja)
+        );
+        setSelectedPelayanan(
+          pelayananOptions.find((a) => a.value == data.pelayanan)
+        );
+      });
+      setGetLoading(false);
+    } catch (error) {
+      if (error.response.status == 404) {
+        navigate("/not-found");
+      }
+      console.log(error);
+    }
+  };
+
+  const fetchProvinsi = async () => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/provinsi`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setDataProvinsi([
+        ...response.data.data.map((item) => ({
+          label: item.name,
+          value: item.id,
+        })),
+      ]);
+    } catch (error) {
+      setError(true);
+      setDataProvinsi([]);
+    }
+  };
+  const fetchKota = async (idProvinsi) => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/getkabupaten/${idProvinsi}`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setDataKota([
+        ...response.data.data.map((item) => ({
+          label: item.name,
+          value: item.id,
+        })),
+      ]);
+    } catch (error) {
+      setError(true);
+      setDataKota([]);
+    }
+  };
+  const fetchKecamatan = async (idKota) => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/getkecamatan/${idKota}`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setDataKecamatan([
+        ...response.data.data.map((item) => ({
+          label: item.name,
+          value: item.id,
+        })),
+      ]);
+    } catch (error) {
+      setError(true);
+      setDataKecamatan([]);
+    }
+  };
+
+  const handleChange = (event) => {
+    const { id, value, files } = event.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const updatePuskesmas = async () => {
+    await axios({
+      method: "put",
+      url: `${
+        import.meta.env.VITE_APP_API_URL
+      }/api/puskesmas/${encodeURIComponent(decryptId(id))}`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
+      },
+      data: JSON.stringify(formData),
+    })
+      .then(function (response) {
+        Swal.fire("Data Berhasil di Update!", "", "success");
+        navigate("/master-data-puskesmas");
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+      });
+  };
+  const handleSimpan = async (e) => {
+    e.preventDefault();
+    if (
+      !validateForm(formData, [
+        "nama_puskesmas",
+        "id_provinsi",
+        "id_kabupaten",
+        "id_kecamatan",
+        "alamat",
+        "kode_pusdatin_baru",
+        "wilayah_kerja",
+        "pelayanan",
+        "status_puskesmas",
+        "keterangan",
+      ])
+    )
+      return;
+    setLoading(true);
+    updatePuskesmas();
+  };
+  useEffect(() => {
+    fetchPuskesmasData();
+    fetchProvinsi();
+  }, []);
+
+  const handleProvinsiChange = (selectedOption) => {
+    setSelectedProvinsi(selectedOption);
+    setSelectedKota(null);
+    setSelectedKecamatan(null);
+    setDataKota([]);
+    setDataKecamatan([]);
+    setFormData((prev) => ({
+      ...prev,
+      id_provinsi: selectedOption ? selectedOption.value.toString() : "",
+    }));
+    if (selectedOption) {
+      fetchKota(selectedOption.value);
+    }
+  };
+
+  const handleKotaChange = (selectedOption) => {
+    setSelectedKota(selectedOption);
+    setSelectedKecamatan(null);
+    setDataKecamatan([]);
+    setFormData((prev) => ({
+      ...prev,
+      id_kabupaten: selectedOption ? selectedOption.value.toString() : "",
+    }));
+    if (selectedOption) {
+      fetchKecamatan(selectedOption.value);
+    }
+  };
+
+  const handleKecamatanChange = (selectedOption) => {
+    setSelectedKecamatan(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      id_kecamatan: selectedOption ? selectedOption.value.toString() : "",
+    }));
+  };
+
+  const handleWilayahKerjaChange = (selectedOption) => {
+    setSelectedWilayahKerja(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      wilayah_kerja: selectedOption ? selectedOption.value.toString() : "",
+    }));
+  };
+
+  const handlePelayananChange = (selectedOption) => {
+    setSelectedPelayanan(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      pelayanan: selectedOption ? selectedOption.value.toString() : "",
+    }));
+  };
+
+  useEffect(() => {
+    if (formData.id_provinsi && dataProvinsi.length > 0) {
+      const initialOption = dataProvinsi?.find(
+        (prov) => prov.value == formData.id_provinsi
+      );
+      if (initialOption) {
+        setSelectedProvinsi({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
+    if (formData.id_kecamatan && dataKecamatan.length > 0) {
+      const initialOption = dataKecamatan.find(
+        (kec) => kec.value == formData.id_kecamatan
+      );
+      if (initialOption) {
+        setSelectedKecamatan({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
+    if (formData.id_kabupaten && dataKota.length > 0) {
+      const initialOption = dataKota.find(
+        (kec) => kec.value == formData.id_kabupaten
+      );
+
+      if (initialOption) {
+        setSelectedKota({
+          label: initialOption.label,
+          value: initialOption.value,
+          provinsi: initialOption.provinsi,
+        });
+      }
+    }
+  }, [formData, dataProvinsi, dataKecamatan, dataKota]);
+  useEffect(() => {
+    if (formData.id_provinsi) {
+      fetchKota(formData.id_provinsi);
+    }
+    if (formData.id_kabupaten) {
+      fetchKecamatan(formData.id_kabupaten);
+    }
+  }, [formData.id_provinsi, formData.id_kabupaten]);
+  if (getLoading) {
+    return (
+      <div className="flex justify-center items-center">
+        <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
+        <span className="ml-2">Loading...</span>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <Breadcrumb pageName="Form Edit Data Puskesmas" />
+      <Card>
+        <div className="card-header flex justify-between">
+          <h1 className="mb-12 font-medium font-antic text-xl lg:text-[28px] tracking-tight text-left text-bodydark1">
+            {user.role == "1" ? "Form Edit Data Puskesmas" : ""}
+          </h1>
+          <div>
+            <Link
+              to="/master-data-puskesmas"
+              className="flex items-center px-4 py-2 bg-primary text-white rounded-md font-semibold"
+            >
+              Back
+            </Link>
+          </div>
+        </div>
+        <div className="w-full 2xl:w-4/5 ">
+          <form className="mt-5" onSubmit={handleSimpan}>
+            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
+              <div className="sm:flex-[2_2_0%]">
+                <label
+                  className="block text-[#728294] text-base font-normal mb-2"
+                  htmlFor="nama_alkes"
+                >
+                  Nama Puskesmas :
+                </label>
+              </div>
+              <div className="sm:flex-[5_5_0%]">
+                <input
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  "border-red-500" 
+               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                  id="nama_puskesmas"
+                  value={formData.nama_puskesmas}
+                  onChange={handleChange}
+                  type="text"
+                  required
+                  placeholder="Nama Puskesmas"
+                />
+              </div>
+            </div>
+
+            <FormInput
+              select={true}
+              id="provinsi"
+              options={dataProvinsi}
+              value={selectedProvinsi}
+              onChange={handleProvinsiChange}
+              placeholder="Pilih Provinsi"
+              label="Provinsi :"
+              required
+            />
+
+            <FormInput
+              select={true}
+              id="kota"
+              options={dataKota}
+              value={selectedKota}
+              isDisabled={!selectedProvinsi}
+              onChange={handleKotaChange}
+              placeholder={
+                selectedProvinsi ? "Pilih Kab / Kota" : "Pilih Provinsi Dahulu"
+              }
+              label="Kab / Kota :"
+              required
+            />
+
+            <FormInput
+              select={true}
+              id="kecamatan"
+              options={dataKecamatan}
+              value={selectedKecamatan}
+              onChange={handleKecamatanChange}
+              placeholder={
+                selectedKota ? "Pilih Kecamatan" : "Pilih Kab / Kota Dahulu"
+              }
+              isDisabled={!selectedKota}
+              label="Kecamatan :"
+              required
+            />
+
+            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
+              <div className="sm:flex-[2_2_0%]">
+                <label
+                  className="block text-[#728294] text-base font-normal mb-2"
+                  htmlFor="alamat"
+                >
+                  Alamat :
+                </label>
+              </div>
+              <div className="sm:flex-[5_5_0%]">
+                <input
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  "border-red-500" 
+               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                  id="alamat"
+                  value={formData.alamat}
+                  onChange={handleChange}
+                  type="text"
+                  required
+                  placeholder="Alamat"
+                />
+              </div>
+            </div>
+
+            <FormInput
+              id="kode_pusdatin_baru"
+              value={formData.kode_pusdatin_baru}
+              onChange={handleChange}
+              type="text"
+              placeholder={"Kode Pusdatin"}
+              label="Kode Pusdatin :"
+              required
+            />
+            <FormInput
+              select={true}
+              id="wilayah_kerja"
+              options={wilayahKerjaOptions}
+              value={selectedWilayahKerja}
+              onChange={handleWilayahKerjaChange}
+              placeholder={"Pilih Karakteristik Wilayah Kerja"}
+              label="Karakteristik Wilayah Kerja :"
+              required
+            />
+
+            <FormInput
+              select={true}
+              id="pelayanan"
+              options={pelayananOptions}
+              value={selectedPelayanan}
+              onChange={handlePelayananChange}
+              placeholder={"Pilih Pelayanan"}
+              label="Pelayanan :"
+              required
+            />
+
+            {/* <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
+              <div className="sm:flex-[2_2_0%]">
+                <label
+                  className="block text-[#728294] text-base font-normal mb-2"
+                  htmlFor="nomor_telpon"
+                >
+                  Nomor Telpon :
+                </label>
+              </div>
+              <div className="sm:flex-[5_5_0%]">
+                <input
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  "border-red-500" 
+               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                  id="nomor_telpon"
+                  value={formData.nomor_telpon}
+                  onChange={handleChange}
+                  type="text"
+                  required
+                  placeholder="Nomor Telpon"
+                />
+              </div>
+            </div>
+
+            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
+              <div className="sm:flex-[2_2_0%]">
+                <label
+                  className="block text-[#728294] text-base font-normal mb-2"
+                  htmlFor="email"
+                >
+                  Email :
+                </label>
+              </div>
+              <div className="sm:flex-[5_5_0%]">
+                <input
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  "border-red-500" 
+               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                  id="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  type="email"
+                  required
+                  placeholder="Email"
+                />
+              </div>
+            </div> */}
+
+            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
+              <div className="sm:flex-[2_2_0%]">
+                <label
+                  className="block text-[#728294] text-base font-normal mb-2"
+                  htmlFor="status_puskesmas"
+                >
+                  Status Puskesmas :
+                </label>
+              </div>
+              <div className="sm:flex-[5_5_0%]">
+                <input
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  "border-red-500" 
+               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                  id="status_puskesmas"
+                  value={formData.status_puskesmas}
+                  onChange={handleChange}
+                  type="text"
+                  placeholder="Status Puskesmas"
+                />
+              </div>
+            </div>
+
+            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
+              <div className="sm:flex-[2_2_0%]">
+                <label
+                  className="block text-[#728294] text-base font-normal mb-2"
+                  htmlFor="keterangan"
+                >
+                  Keterangan :
+                </label>
+              </div>
+              <div className="sm:flex-[5_5_0%]">
+                <textarea
+                  id="keterangan"
+                  rows="4"
+                  value={formData.keterangan}
+                  onChange={handleChange}
+                  className={` bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                    "border-red-500" 
+                 rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                  placeholder="Keterangan Puskesmas"
+                ></textarea>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center mt-6 sm:mt-12 sm:gap-8">
+              <div className="div sm:flex-[2_2_0%]"></div>
+              <div className="div sm:flex-[5_5_0%] ">
+                <div className="w-4/5 flex items-center gap-4">
+                  <button
+                    className="w-full bg-[#0ACBC2]  text-white font-bold py-4 px-6 rounded-md focus:outline-none focus:shadow-outline dark:bg-transparent"
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? "Loading..." : "Simpan"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate("/");
+                    }}
+                    className="w-full bg-[#fff]  text-[#0ACBC2] border border-[#0ACBC2] font-bold py-4 px-6 rounded-md focus:outline-none focus:shadow-outline dark:bg-transparent"
+                  >
+                    {loading ? "Loading..." : "Batal"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+export default EditPuskesmas;

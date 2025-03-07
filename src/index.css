@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Antic&family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Figtree';
+  background: #F5F9F9;
+}
+
+.webviewer {
+  height: 80vh;
+}
+
+@keyframes moving-border {
+  0% {
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  50% {
+    border-color: rgba(0, 0, 0, 0.5);
+  }
+
+  100% {
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+.moving-border {
+  animation: moving-border 1s infinite;
+}
+
+canvas.react-pdf__Page__canvas {
+  margin-bottom: 16px;
+  margin-left: auto;
+  margin-right: auto;
+  /* margin: 0 auto;
+    width: 80% !important;
+    height: 100% !important; */
+}
+
+.notifikasi li {
+  font-size: 14px !important;
+}
+
+.notifikasi a {
+  padding: 8px 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #16B3AC;
+  color: white;
+}
