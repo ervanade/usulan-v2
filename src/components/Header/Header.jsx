@@ -18,7 +18,9 @@ const Header = (props) => {
               e.stopPropagation();
               props.setSidebarOpen(!props.sidebarOpen);
             }}
-            className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark "
+            className={`z-99999 ${
+              props.sidebarOpen ? "hidden" : ""
+            } block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark `}
           >
             <FaBars size={22} className="text-primary" />
             {/* <span className="relative block h-5.5 w-5.5 cursor-pointer">

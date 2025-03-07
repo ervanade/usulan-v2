@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
-import * as XLSX from "xlsx";
 import {
   dataDistribusiBekasi,
   dataKecamatan,
@@ -11,120 +10,148 @@ import {
 } from "../../data/data";
 import { encryptId, selectThemeColors } from "../../data/utils";
 import {
-  FaCheck,
+  FaDownload,
   FaEdit,
   FaEye,
   FaPlus,
   FaSearch,
   FaTrash,
 } from "react-icons/fa";
+import { saveAs } from "file-saver"; // Pastikan Anda menginstal file-saver
 import { BiExport, BiSolidFileExport } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { CgSpinner } from "react-icons/cg";
 import Swal from "sweetalert2";
+import { CgSpinner } from "react-icons/cg";
+import ModalTTE from "../../components/Modal/ModalTTE";
+import GenerateDokumen from "../../components/Dokumen/GenerateDokumen";
+import ModalUploadDokumen from "../../components/Modal/ModalUploadDokumen";
+import { differenceBy } from "lodash";
+import ModalTTENew from "../../components/Modal/ModalTTENew";
+import * as XLSX from "xlsx";
 
 const PdfUsulanAlkes = () => {
   const user = useSelector((a) => a.auth.user);
-  const [search, setSearch] = useState(""); // Initialize search state with an empty string
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+
+  const navigate = useNavigate();
+  var today = new Date();
+  const defaultDate = today.toISOString().substring(0, 10);
+  const defaultImage =
+    "https://media.istockphoto.com/id/1472819341/photo/background-white-light-grey-total-grunge-abstract-concrete-cement-wall-paper-texture-platinum.webp?b=1&s=170667a&w=0&k=20&c=yoY1jUAKlKVdakeUsRRsNEZdCx2RPIEgaIxSwQ0lS1k=";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [search, setSearch] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+
+  const [data, setData] = useState([]);
   const [getLoading, setGetLoading] = useState(false);
 
   const [dataUser, setDataUser] = useState([]);
   const [dataProvinsi, setDataProvinsi] = useState([]);
   const [dataKota, setDataKota] = useState([]);
   const [dataKecamatan, setDataKecamatan] = useState([]);
-  const [dataDokumen, setDataDokumen] = useState([]);
 
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
   const [selectedKota, setSelectedKota] = useState(null);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
-  const handleSearch = (event) => {
-    const value = event.target.value.toLowerCase();
-    setSearch(value);
+  const [showModal, setShowModal] = useState(false);
+  const [showModalUpload, setShowModalUpload] = useState(false);
+  const [jsonData, setJsonData] = useState({
+    id: "",
+    nama_dokumen: "",
+    dokumen_array: [],
+  });
 
-    const filtered = data.filter((item) => {
-      return (
-        (item?.nomor_bast && item.nomor_bast.toLowerCase().includes(value)) ||
-        (item?.provinsi && item.provinsi.toLowerCase().includes(value)) ||
-        (item?.kabupaten && item.kabupaten.toLowerCase().includes(value)) ||
-        (item?.kecamatan && item.kecamatan.toLowerCase().includes(value)) ||
-        (item?.nama_puskesmas &&
-          item.nama_puskesmas.toLowerCase().includes(value)) ||
-        (item?.listrik && item.listrik.toLowerCase().includes(value)) ||
-        (item?.internet &&
-          item.internet.toString().toLowerCase().includes(value)) ||
-        (item?.kepala_unit_pemberi &&
-          item.kepala_unit_pemberi.toLowerCase().includes(value)) ||
-        (item?.status_tte && item.status_tte.toLowerCase().includes(value)) ||
-        (item?.jumlah_barang_diterima &&
-          item.jumlah_barang_diterima.toLowerCase().includes(value)) ||
-        (item?.jumlah_barang_dikirim &&
-          item.jumlah_barang_dikirim.toLowerCase().includes(value)) ||
-        (item?.nama_dokumen && item.nama_dokumen.toLowerCase().includes(value))
-      );
+  const [selectedRows, setSelectedRows] = React.useState([]);
+  const [toggleCleared, setToggleCleared] = React.useState(false);
+
+  const handleTTE = async (id, nama_dokumen, dokumen_array) => {
+    // e.preventDefault();
+    // setShowModal(true);
+    setShowPopup(true);
+    setJsonData({
+      id: id,
+      nama_dokumen: nama_dokumen,
+      dokumen_array: dokumen_array,
     });
-
-    setFilteredData(filtered);
   };
 
-  const handleExport = () => {
-    // Implementasi untuk mengekspor data (misalnya ke CSV)
-    const exportData = filteredData?.map((item) => ({
-      Provinsi: item?.provinsi,
-      Kabupaten_Kota: item?.kabupaten,
-      Kecamatan: item?.kecamatan,
-      Puskesmas: item?.nama_puskesmas,
-      Dokumen: item?.nama_dokumen,
-      Program: item?.program,
-      Batch: item?.batch,
-      Tahun_Lokus: item?.tahun_lokus,
-      BAST: item?.nomor_bast,
-      Tanggal_Kirim: item?.tanggal_kirim,
-      Tanggal_Terima: item?.tanggal_terima,
-      Jumlah_Kirim: item?.jumlah_barang_dikirim,
-      Jumlah_Terima: item?.jumlah_barang_diterima,
-      Ket_Daerah: item?.keterangan_daerah,
-      Ket_Ppk: item?.keterangan_ppk,
-      Konfirmasi_Daerah:
-        item?.konfirmasi_daerah == "1"
-          ? "Sudah Konfirmasi"
-          : "Belum Konfirmasi",
-      Konfirmasi_Ppk:
-        item?.konfirmasi_ppk == "1" ? "Sudah Konfirmasi" : "Belum Konfirmasi",
-    }));
-    const wb = XLSX.utils.book_new(),
-      ws = XLSX.utils.json_to_sheet(exportData);
+  const handleRowSelected = React.useCallback((state) => {
+    setSelectedRows(state.selectedRows);
+  }, []);
 
-    ws["!cols"] = [
-      { wch: 20 }, // Kolom 1 (Provinsi)
-      { wch: 20 }, // Kolom 2 (Kabupaten_Kota)
-      { wch: 20 }, // Kolom 3 (Kecamatan)
-      { wch: 25 }, // Kolom 4 (Puskesmas)
-      { wch: 20 }, // Kolom 5 (Dokumen)
-      { wch: 15 }, // Kolom 6 (Program)
-      { wch: 10 }, // Kolom 7 (Batch)
-      { wch: 15 }, // Kolom 8 (Tahun_Lokus)
-      { wch: 15 }, // Kolom 9 (BAST)
-      { wch: 15 }, // Kolom 10 (Tanggal_Kirim)
-      { wch: 15 }, // Kolom 11 (Tanggal_Terima)
-      { wch: 10 }, // Kolom 12 (Jumlah_Kirim)
-      { wch: 10 }, // Kolom 13 (Jumlah_Terima)
-      { wch: 20 }, // Kolom 14 (Ket_Daerah)
-      { wch: 20 }, // Kolom 15 (Ket_Ppk)
-      { wch: 20 }, // Kolom 16 (Konfirmasi_Daerah)
-      { wch: 20 }, // Kolom 17 (Konfirmasi_Ppk)
-    ];
+  const contextActions = React.useMemo(() => {
+    const handleDelete = () => {
+      setToggleCleared(!toggleCleared);
+      setData(differenceBy(filteredData, selectedRows, "nama_dokumen"));
+      handleTTE(null, null, selectedRows);
+    };
 
-    XLSX.utils.book_append_sheet(wb, ws, `Data Distribusi`);
-    XLSX.writeFile(wb, "Data Distribusi.xlsx");
+    const handleReset = () => {
+      setToggleCleared(!toggleCleared);
+      setSelectedRows([]);
+    };
+
+    return (
+      <div className="flex items-center gap-2">
+        <button
+          key="delete"
+          onClick={() => handleReset()}
+          className="p-2 bg-red-500 rounded-md text-white text-base"
+          icon
+        >
+          Reset
+        </button>
+        <button
+          key="delete"
+          onClick={handleDelete}
+          className="p-2 bg-teal-500 rounded-md text-white text-base"
+          icon
+        >
+          TTE Dokumen
+        </button>
+      </div>
+    );
+  }, [filteredData, selectedRows, toggleCleared]);
+
+  const handleModalDokumen = async (e, id, nama_dokumen) => {
+    e.preventDefault();
+    setShowModalUpload(true);
+    setJsonData({
+      id: id,
+      nama_dokumen: nama_dokumen,
+    });
   };
-  const navigate = useNavigate();
+
+  const fetchDokumenData = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/dokumen`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setData(response.data.data);
+      setFilteredData(response.data.data);
+    } catch (error) {
+      setError(true);
+      setFilteredData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDokumenData();
+  }, []);
 
   const fetchUserData = useCallback(async () => {
     setGetLoading(true);
@@ -234,79 +261,9 @@ const PdfUsulanAlkes = () => {
     },
     [dataKecamatan.length, selectedKota?.value, user?.token]
   );
-
-  // Fetch distribution data
-  const fetchDistribusiData = useCallback(async () => {
-    setLoading(true);
-    setError(false);
-    try {
-      const response = await axios({
-        method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/distribusi`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-
-      setData(response.data.data);
-      setFilteredData(response.data.data);
-    } catch (error) {
-      setError(true);
-      setFilteredData([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.token]);
-
-  const handleSearchClick = async () => {
-    setLoading(true);
-    setError(false);
-
-    try {
-      const response = await axios({
-        method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/search`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-        data: {
-          id_provinsi: selectedProvinsi?.value.toString() || "",
-          id_kabupaten: selectedKota?.value.toString() || "",
-          id_kecamatan: selectedKecamatan?.value.toString() || "",
-        },
-      });
-
-      setFilteredData(response.data.data);
-    } catch (error) {
-      setError(true);
-      setFilteredData([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchDokumen = async () => {
-    try {
-      const response = await axios({
-        method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/getdokumen/0`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      setDataDokumen(...response.data.data);
-    } catch (error) {
-      setError(true);
-      setDataDokumen([]);
-    }
-  };
-
   useEffect(() => {
-    fetchDistribusiData();
     fetchProvinsi();
+    fetchUserData();
   }, []);
 
   const handleProvinsiChange = (selectedOption) => {
@@ -333,17 +290,17 @@ const PdfUsulanAlkes = () => {
     setSelectedKecamatan(selectedOption);
   };
 
-  const deleteDistribusi = async (id) => {
+  const deleteDokumen = async (id) => {
     await axios({
       method: "delete",
-      url: `${import.meta.env.VITE_APP_API_URL}/api/distribusi/${id}`,
+      url: `${import.meta.env.VITE_APP_API_URL}/api/dokumen/${id}`,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user?.token}`,
       },
     })
       .then(() => {
-        fetchDistribusiData();
+        fetchDokumenData();
         setSearch("");
       })
       .catch((error) => {
@@ -352,188 +309,84 @@ const PdfUsulanAlkes = () => {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleConfirmDeleteDistribusi = async (id) => {
+  const handleConfirmDeleteDokumen = async (id) => {
     return Swal.fire({
       title: "Are you sure?",
-      text: "You will Delete This Distribusi!",
+      text: "You will Delete This Dokumen!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
       confirmButtonColor: "#16B3AC",
     }).then(async (result) => {
       if (result.value) {
-        await deleteDistribusi(id);
+        await deleteDokumen(id);
         Swal.fire({
           icon: "success",
           title: "Deleted!",
-          text: "Your Distribusi has been deleted.",
+          text: "Your Dokumen has been deleted.",
         });
       }
     });
   };
-  const columns = useMemo(
-    () => [
-      // { name: "No", selector: (row) => row.id, sortable: true },
-      // {
-      //   name: "Nomor BAST",
-      //   selector: (row) => row.nomor_bast,
-      //   sortable: true,
-      //   width: "100px",
-      // },
-      {
-        name: <div className="text-wrap">Dokumen</div>,
-        selector: (row) => row.nama_dokumen,
-        sortable: true,
-        cell: (row) => <div className="text-wrap py-2">{row.nama_dokumen}</div>,
-        width: "120px",
-      },
-      {
-        name: <div className="text-wrap">Provinsi</div>,
-        selector: (row) => row.provinsi,
-        sortable: true,
-        cell: (row) => <div className="text-wrap py-2">{row.provinsi}</div>,
-        width: "120px",
-        omit: user.role == "3",
-      },
-      {
-        name: <div className="text-wrap">Kab / Kota</div>,
-        selector: (row) => row.kabupaten,
-        cell: (row) => <div className="text-wrap py-2">{row.kabupaten}</div>,
-        width: "120px",
-        sortable: true,
-      },
-      {
-        name: <div className="text-wrap">Kecamatan</div>,
-        selector: (row) => row.kecamatan,
-        cell: (row) => <div className="text-wrap py-2">{row.kecamatan}</div>,
-        width: "110px",
-        sortable: true,
-      },
-      {
-        name: <div className="text-wrap">Puskesmas</div>,
-        selector: (row) => row.nama_puskesmas,
-        cell: (row) => (
-          <div className="text-wrap py-2">{row.nama_puskesmas}</div>
-        ),
-        minWidth: "110px",
-        sortable: true,
-      },
-      {
-        name: <div className="text-wrap">Tahun Lokus</div>,
-        selector: (row) => row.tahun_lokus,
-        cell: (row) => <div className="text-wrap py-2">{row.tahun_lokus}</div>,
-        sortable: true,
-        width: "80px",
-      },
-      {
-        name: <div className="text-wrap">Jumlah Dikirim</div>,
-        selector: (row) => Number(row.jumlah_barang_dikirim) || 0,
-        cell: (row) => (
-          <div className="text-wrap py-2">{row.jumlah_barang_dikirim}</div>
-        ),
-        sortable: true,
-        width: "100px",
-      },
-      {
-        name: <div className="text-wrap">Jumlah Diterima</div>,
-        selector: (row) => Number(row.jumlah_barang_diterima) || 0,
-        cell: (row) => (
-          <div className="text-wrap py-2">{row.jumlah_barang_diterima}</div>
-        ),
-        sortable: true,
-        width: "100px",
-      },
-      {
-        name: "Aksi",
-        id: "Aksi",
-        cell: (row) => (
-          <div className="flex items-center space-x-2">
-            {user.role == "2" || user.role == "1" ? (
-              row.konfirmasi_ppk != "1" ? (
-                <button
-                  title="Konfirmasi"
-                  className="text-white font-semibold py-2 w-22 bg-red-500 rounded-md"
-                  onClick={() => {
-                    navigate(`/data-distribusi/edit/${row.id}`, {
-                      replace: true,
-                    });
-                  }}
-                >
-                  <Link to={`/data-distribusi/edit/${row.id}`}>Konfirmasi</Link>
-                </button>
-              ) : (
-                <button
-                  title="Konfirmasi"
-                  className="text-white font-semibold  py-2 w-22 bg-green-500 rounded-md"
-                  onClick={() => {
-                    navigate(`/data-distribusi/edit/${row.id}`, {
-                      replace: true,
-                    });
-                  }}
-                >
-                  {/* <FaEdit size={16} /> */}
-                  <Link to={`/data-distribusi/edit/${row.id}`}>
-                    Sudah Konfirmasi
-                  </Link>
-                </button>
-              )
-            ) : user.role == "3" ? (
-              row.konfirmasi_daerah != "1" ? (
-                <button
-                  title="Konfirmasi"
-                  className="text-white font-semibold py-2 w-22 bg-red-500 rounded-md"
-                  onClick={() => {
-                    navigate(`/data-distribusi/edit/${row.id}`, {
-                      replace: true,
-                    });
-                  }}
-                >
-                  <Link to={`/data-distribusi/edit/${row.id}`}>Konfirmasi</Link>
-                </button>
-              ) : (
-                <button
-                  title="Konfirmasi"
-                  className="text-white font-semibold  py-2 w-22 bg-green-500 rounded-md"
-                  onClick={() => {
-                    navigate(`/data-distribusi/edit/${row.id}`, {
-                      replace: true,
-                    });
-                  }}
-                >
-                  {/* <FaEdit size={16} /> */}
-                  <Link to={`/data-distribusi/edit/${row.id}`}>
-                    Sudah Konfirmasi
-                  </Link>
-                </button>
-              )
-            ) : (
-              ""
-            )}
 
-            {user.role == "1" ? (
-              <button
-                title="Delete"
-                className="text-red-500 hover:text-red-700 pr-4"
-                onClick={() => handleConfirmDeleteDistribusi(row.id)}
-              >
-                <FaTrash size={16} />
-              </button>
-            ) : (
-              ""
-            )}
-          </div>
-        ),
-        ignoreRowClick: true,
-        allowOverflow: true,
-        button: true,
-        sortable: true,
-        minWidth: "150px",
-        selector: (row) =>
-          user.role == "3" ? row.konfirmasi_daerah : row.konfirmasi_ppk,
-      },
-    ],
-    []
-  );
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearch(value);
+
+    const filtered = data.filter((item) => {
+      return (
+        (item?.nama_dokumen &&
+          item.nama_dokumen.toLowerCase().includes(value)) ||
+        (item?.nomor_bast && item.nomor_bast.toLowerCase().includes(value)) ||
+        (item?.provinsi && item.provinsi.toLowerCase().includes(value)) ||
+        (item?.kabupaten && item.kabupaten.toLowerCase().includes(value)) ||
+        (item?.tanggal_bast &&
+          item.tanggal_bast.toLowerCase().includes(value)) ||
+        (item?.tahun_lokus && item.tahun_lokus.toLowerCase().includes(value)) ||
+        (item?.penerima_hibah &&
+          item.penerima_hibah.toLowerCase().includes(value))
+      );
+    });
+
+    setFilteredData(filtered);
+  };
+  const handleSearchClick = async () => {
+    setLoading(true);
+    setError(false);
+
+    try {
+      const response = await axios({
+        method: "post",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/searchdoc`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+        data: {
+          id_provinsi: selectedProvinsi?.value.toString() || "",
+          id_kabupaten: selectedKota?.value.toString() || "",
+          id_kecamatan: selectedKecamatan?.value.toString() || "",
+        },
+      });
+      let dataResponse = response.data.data;
+
+      if (selectedStatus) {
+        dataResponse =
+          selectedStatus.value == 0
+            ? dataResponse.filter((a) => a.status_tte == "0")
+            : dataResponse.filter(
+                (a) => a.status_tte == "1" || a.status_tte == "2"
+              );
+      }
+
+      setFilteredData(dataResponse);
+    } catch (error) {
+      setError(true);
+      setFilteredData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (user.role == "3") {
@@ -582,29 +435,607 @@ const PdfUsulanAlkes = () => {
     }
   }, [user.role, user.provinsi, user.kabupaten, dataProvinsi, dataKota]);
 
-  if (getLoading) {
-    return (
-      <div className="flex justify-center items-center">
-        <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
-        <span className="ml-2">Loading...</span>
-      </div>
-    );
-  }
+  const handleDownload = async (id) => {
+    try {
+      Swal.fire({
+        title: "Generate dokumen...",
+        text: "Tunggu Sebentar Dokumen Disiapkan...",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const response = await axios({
+        method: "get",
+        url: `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/dokumen/${encodeURIComponent(id)}`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+
+      const data = response.data.data;
+      // Lakukan proses generate dokumen berdasarkan data JSON yang diterima
+      let dataJson = {
+        nama_dokumen: data.nama_dokumen || "",
+        id: data.id,
+        nomorSurat: data.nomor_bast || "",
+        tanggal: data.tanggal_bast || defaultDate,
+        tanggal_tte_ppk: data.tanggal_tte_ppk || defaultDate,
+        tanggal_tte_daerah: data.tanggal_tte_daerah || defaultDate,
+        kecamatan: data.kecamatan,
+        puskesmas: data.Puskesmas,
+        namaKapus: data.nama_kapus,
+        provinsi: data.provinsi || "",
+        kabupaten: data.kabupaten || "",
+        penerima_hibah: data.penerima_hibah || "",
+        kepala_unit_pemberi: data.kepala_unit_pemberi || "",
+        distribusi: data.distribusi || [],
+        nipKapus: "nip.121212",
+        namaBarang: data.nama_barang,
+        status_tte: data.status_tte || "",
+        jumlahDikirim: "24",
+        jumlahDiterima: "24",
+        tte: "",
+        tteDaerah: {
+          image_url:
+            "https://www.shutterstock.com/image-vector/fake-autograph-samples-handdrawn-signatures-260nw-2332469589.jpg",
+          width: 50,
+          height: 50,
+        },
+        ket_daerah: "",
+        ket_ppk: data.keterangan_ppk,
+        tte_daerah: data.tte_daerah || defaultImage,
+        nama_daerah: data.nama_daerah || "",
+        nip_daerah: data.nip_daerah || "",
+        tte_ppk: data.tte_ppk || defaultImage,
+        nama_ppk: data.nama_ppk || "",
+        nip_ppk: data.nip_ppk || "",
+        total_barang_dikirim: data.total_barang_dikirim || "",
+        total_harga: data.total_harga || "",
+        file_dokumen: data.file_dokumen || null,
+      };
+
+      if (dataJson?.file_dokumen) {
+        try {
+          const response = await fetch(dataJson?.file_dokumen);
+          if (!response.ok) {
+            throw new Error("Network response was not ok.");
+          }
+          const blob = await response.blob();
+          const fileName = dataJson?.nama_dokumen
+            ? `${dataJson.nama_dokumen}.pdf`
+            : "dokumen.pdf";
+          saveAs(blob, fileName);
+        } catch (error) {
+          console.error("Failed to download file:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Gagal Download Dokumen",
+          });
+        }
+      } else {
+        if (user.role == "3") {
+          if (!user.name || !user.nip) {
+            Swal.fire("Error", "Anda Belum Input Nama / NIP", "error");
+            navigate("/profile");
+            setLoading(false);
+            return;
+          }
+          dataJson.nama_daerah = user.name;
+          dataJson.nip_daerah = user.nip;
+        }
+        const pdfBlob = await GenerateDokumen(dataJson); // GenerateDokumen harus mengembalikan Blob PDF
+
+        saveAs(pdfBlob, `${dataJson.nama_dokumen}.pdf`);
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "Download Complete",
+        text: "Dokumen Sukses Di Download",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Gagal Download Dokumen",
+      });
+      console.log(error);
+    }
+  };
+
+  const columns = useMemo(
+    () => [
+      // { name: "No", selector: (row) => row.id, sortable: true },
+      {
+        name: <div className="text-wrap">Nama Dokumen</div>,
+        selector: (row) => row.nama_dokumen,
+        sortable: true,
+        cell: (row) => <div className="text-wrap py-2">{row.nama_dokumen}</div>,
+        minWidth: "120px",
+      },
+      {
+        name: <div className="text-wrap">Provinsi</div>,
+        selector: (row) => row.provinsi,
+        sortable: true,
+        cell: (row) => <div className="text-wrap py-2">{row.provinsi}</div>,
+        width: "120px",
+      },
+      {
+        name: <div className="text-wrap">Kab / Kota</div>,
+        selector: (row) => row.kabupaten,
+        cell: (row) => <div className="text-wrap py-2">{row.kabupaten}</div>,
+        width: "120px",
+        sortable: true,
+      },
+      {
+        name: <div className="text-wrap">Nomor BAST</div>,
+        selector: (row) => row.nomor_bast,
+        cell: (row) => <div className="text-wrap py-4">{row.nomor_bast}</div>,
+        minWidth: "150px",
+        sortable: true,
+
+        // width: "100px",
+      },
+      // {
+      //   name: "Tanggal BAST",
+      //   selector: (row) => row.tanggal_bast,
+      //   sortable: true,
+      //   // width: "100px",
+      // },
+      {
+        name: <div className="text-wrap">Tahun Lokus</div>,
+        selector: (row) => row.tahun_lokus,
+        cell: (row) => <div className="text-wrap py-2">{row.tahun_lokus}</div>,
+        sortable: true,
+        width: "100px",
+      },
+      // {
+      //   name: "Kepala Unit Pemberi",
+      //   selector: (row) => row.kepala_unit_pemberi,
+      //   sortable: true,
+      //   // width: "100px",
+      // },
+      // {
+      //   name: "Penerima Hibah",
+      //   selector: (row) => row.penerima_hibah,
+      //   sortable: true,
+      //   // width: "100px",
+      // },
+      {
+        name: <div className="text-wrap">Status TTE</div>,
+        cell: (row) =>
+          user.role == "2" || user.role == "4" ? (
+            row.status_tte == "1" ? (
+              <div
+                className="p-2 bg-red-500 rounded-md text-white"
+                onClick={() => {
+                  navigate(
+                    `/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`
+                  );
+                }}
+              >
+                Belum TTE
+              </div>
+            ) : row.status_tte == "2" ? (
+              <div
+                className="p-2 bg-green-500 rounded-md text-white"
+                onClick={() => {
+                  navigate(
+                    `/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`
+                  );
+                }}
+              >
+                Sudah TTE
+              </div>
+            ) : (
+              <div
+                className="p-2 bg-yellow-500 rounded-md text-white"
+                onClick={() => {
+                  navigate(
+                    `/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`
+                  );
+                }}
+              >
+                Daerah Belum TTE
+              </div>
+            )
+          ) : user.role == "3" ? (
+            row.status_tte == "0" ? (
+              <div
+                className="p-2 bg-red-500 rounded-md text-white"
+                onClick={() => {
+                  navigate(
+                    `/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`
+                  );
+                }}
+              >
+                Belum TTE
+              </div>
+            ) : (
+              <div
+                className="p-2 bg-green-500 rounded-md text-white"
+                onClick={() => {
+                  navigate(
+                    `/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`
+                  );
+                }}
+              >
+                Sudah TTE
+              </div>
+            )
+          ) : user.role == "1" ? (
+            row.status_tte == "2" ? (
+              <div
+                className="p-2 bg-green-500 rounded-md text-white"
+                onClick={() => {
+                  navigate(
+                    `/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`
+                  );
+                }}
+              >
+                Sudah TTE
+              </div>
+            ) : row.status_tte == "1" ? (
+              <div
+                className="p-2 bg-yellow-500 rounded-md text-white"
+                onClick={() => {
+                  navigate(
+                    `/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`
+                  );
+                }}
+              >
+                Direktur Belum TTE
+              </div>
+            ) : (
+              <div
+                className="p-2 bg-red-500 rounded-md text-white"
+                onClick={() => {
+                  navigate(
+                    `/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`
+                  );
+                }}
+              >
+                Belum TTE
+              </div>
+            )
+          ) : (
+            ""
+          ),
+        sortable: true,
+        selector: (row) => row.status_tte,
+
+        width: "120px",
+      },
+      // {
+      //   name: "Keterangan PPK Kemenkes",
+      //   selector: (row) => row.keterangan_ppk,
+      //   sortable: true,
+      // },
+      {
+        name: <div className="text-wrap">Dokumen BAST</div>,
+        cell: (row) => (
+          <div className="flex items-center space-x-2">
+            {/* <button
+              title="Input"
+              className="text-green-500 hover:text-green-700"
+            >
+              <Link to="/data-verifikasi/form-distribusi">
+                <FaPlus />
+              </Link>
+            </button> */}
+            <button
+              title="Lihat"
+              className="text-[#16B3AC] hover:text-cyan-500"
+            >
+              <Link
+                to={`/dokumen/preview-dokumen/${encodeURIComponent(
+                  encryptId(row.id)
+                )}`}
+              >
+                <FaEye size={20} />
+              </Link>
+            </button>
+            <button
+              title="Download"
+              className="text-green-400 hover:text-green-500"
+              onClick={() => handleDownload(row.id)} // Tambahkan handler download di sini
+            >
+              <FaDownload size={20} />
+            </button>
+            {user.role == "2" || user.role == "3" || user.role == "4" ? (
+              <button
+                title="Upload Dokumen"
+                className="text-white py-2 w-20 bg-teal-500 rounded-md"
+                onClick={(e) => handleModalDokumen(e, row.id, row.nama_dokumen)}
+              >
+                Upload Dokumen
+              </button>
+            ) : (
+              ""
+            )}
+          </div>
+        ),
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
+        minWidth: "150px",
+      },
+      {
+        name: "TTE",
+        cell: (row) => (
+          <div className="flex items-center space-x-2 font-semibold">
+            {user.role == "4" ? (
+              row.status_tte == "1" ? (
+                <button
+                  title="TTE"
+                  className="text-white py-2 w-22 bg-teal-500 rounded-md"
+                  onClick={(e) => {
+                    // navigate(
+                    //   `/dokumen/preview-dokumen/${encodeURIComponent(
+                    //     encryptId(row.id)
+                    //   )}`
+                    // );
+                    handleTTE(row.id, row.nama_dokumen);
+                  }}
+                >
+                  TTE
+                </button>
+              ) : row.status_tte == "2" ? (
+                <button
+                  title="TTE"
+                  className="text-white  py-2 w-22 bg-green-500 rounded-md"
+                  onClick={() => {
+                    navigate(
+                      `/dokumen/preview-dokumen/${encodeURIComponent(
+                        encryptId(row.id)
+                      )}`
+                    );
+                  }}
+                >
+                  <Link
+                    to={`/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`}
+                  >
+                    Sudah TTE
+                  </Link>
+                </button>
+              ) : (
+                <button
+                  title="Pending"
+                  className="text-white py-2 w-22 bg-yellow-500 rounded-md"
+                >
+                  Daerah Belum TTE
+                </button>
+              )
+            ) : user.role == "3" ? (
+              row.status_tte == "0" ? (
+                <button
+                  title="TTE"
+                  className="text-white py-2 w-22 bg-teal-500 rounded-md"
+                  onClick={(e) => {
+                    // navigate(
+                    //   `/dokumen/preview-dokumen/${encodeURIComponent(
+                    //     encryptId(row.id)
+                    //   )}`
+                    // );
+                    handleTTE(row.id, row.nama_dokumen);
+                  }}
+                >
+                  TTE
+                  {/* <Link
+                    to={`/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`}
+                  >
+                    TTE
+                  </Link> */}
+                </button>
+              ) : (
+                // <button
+                //   title="TTE"
+                //   className="text-white py-2 w-22 bg-teal-500 rounded-md"
+                //   onClick={(e) => handleTTE(e, row.id, row.nama_dokumen)}
+                // >
+                //   TTE
+                // </button>
+                <button
+                  title="TTE"
+                  className="text-white  py-2 w-22 bg-green-500 rounded-md"
+                  onClick={() => {
+                    navigate(
+                      `/dokumen/preview-dokumen/${encodeURIComponent(
+                        encryptId(row.id)
+                      )}`
+                    );
+                  }}
+                >
+                  <Link
+                    to={`/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`}
+                  >
+                    Sudah TTE
+                  </Link>
+                </button>
+              )
+            ) : (
+              ""
+            )}
+            {user.role == "1" || user.role == "2" ? (
+              <button
+                title="TTE"
+                className="text-white py-2 w-22 bg-teal-500 rounded-md"
+                onClick={() => {
+                  navigate(
+                    `/dokumen/preview-dokumen/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`
+                  );
+                }}
+              >
+                <Link
+                  to={`/dokumen/preview-dokumen/${encodeURIComponent(
+                    encryptId(row.id)
+                  )}`}
+                >
+                  Detail
+                </Link>
+              </button>
+            ) : (
+              ""
+            )}
+          </div>
+        ),
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
+        omit: true,
+      },
+      {
+        name: "Aksi",
+        omit: user.role != "1",
+        cell: (row) => (
+          <div className="flex items-center space-x-2">
+            {/* <button
+              title="Input"
+              className="text-green-500 hover:text-green-700"
+            >
+              <Link to="/data-verifikasi/form-distribusi">
+                <FaPlus />
+              </Link>
+            </button> */}
+
+            {user.role == "1" ? (
+              <>
+                <button
+                  title="Edit"
+                  className="text-[#16B3AC] hover:text-cyan-500"
+                >
+                  <Link
+                    to={`/dokumen/edit/${encodeURIComponent(
+                      encryptId(row.id)
+                    )}`}
+                  >
+                    <FaEdit size={16} />
+                  </Link>
+                </button>
+                <button
+                  title="Delete"
+                  className="text-red-500 hover:text-red-700"
+                  onClick={() => handleConfirmDeleteDokumen(row.id)}
+                >
+                  <FaTrash size={16} />
+                </button>
+              </>
+            ) : (
+              ""
+            )}
+            {/* <button
+              title="Edit"
+              className="text-white p-2 bg-blue-600 rounded-md"
+            >
+              <Link to={`/dokumen/preview-dokumen/${encodeURIComponent(
+                  encryptId(row.id)
+                )}`}>
+                TTE
+              </Link>
+            </button> */}
+          </div>
+        ),
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
+      },
+    ],
+    []
+  );
+
+  const handleExport = () => {
+    // Implementasi untuk mengekspor data (misalnya ke CSV)
+    const exportData = filteredData?.map((item) => ({
+      Dokumen: item?.nama_dokumen,
+      Provinsi: item?.provinsi,
+      Kabupaten_Kota: item?.kabupaten,
+      Program: item?.program,
+      Batch: item?.batch,
+      Tahun_Lokus: item?.tahun_lokus,
+      BAST: item?.nomor_bast,
+      Tanggal_BAST: item?.tanggal_bast,
+      Status_TTE:
+        item?.status_tte == "0"
+          ? "Belum TTE"
+          : item?.status_tte == "1"
+          ? "Daerah Sudah TTE, Direktur Belum TTE"
+          : item?.status_tte == "2"
+          ? "Sudah TTE"
+          : "Belum TTE",
+    }));
+    const wb = XLSX.utils.book_new(),
+      ws = XLSX.utils.json_to_sheet(exportData);
+
+    ws["!cols"] = [
+      { wch: 20 }, // Kolom 1 (Provinsi)
+      { wch: 20 }, // Kolom 2 (Kabupaten_Kota)
+      { wch: 20 }, // Kolom 3 (Kecamatan)
+      { wch: 25 }, // Kolom 4 (Puskesmas)
+      { wch: 20 }, // Kolom 5 (Dokumen)
+      { wch: 15 }, // Kolom 6 (Program)
+      { wch: 10 }, // Kolom 7 (Batch)
+      { wch: 15 }, // Kolom 8 (Tahun_Lokus)
+      { wch: 15 }, // Kolom 9 (BAST)
+      { wch: 15 }, // Kolom 10 (Tanggal_Kirim)
+      { wch: 15 }, // Kolom 11 (Tanggal_Terima)
+      { wch: 10 }, // Kolom 12 (Jumlah_Kirim)
+      { wch: 10 }, // Kolom 13 (Jumlah_Terima)
+      { wch: 20 }, // Kolom 14 (Ket_Daerah)
+      { wch: 20 }, // Kolom 15 (Ket_Ppk)
+      { wch: 20 }, // Kolom 16 (Konfirmasi_Daerah)
+      { wch: 20 }, // Kolom 17 (Konfirmasi_Ppk)
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, `Data Dokumen`);
+    XLSX.writeFile(wb, "Data Dokumen.xlsx");
+  };
+  // if (getLoading) {
+  //   return (
+  //     <div className="flex justify-center items-center">
+  //       <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
+  //       <span className="ml-2">Loading...</span>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div>
-      <Breadcrumb pageName="PDF Usulan Alkes" />
+      <Breadcrumb pageName="PDF Usulan Alkes" linkBack="/dokumen" />
       <div className="flex flex-col items-center justify-center w-full tracking-tight mb-6">
-        <h1 className="font-medium mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
+        <h1 className="font-normal mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
           PDF Usulan Alkes
-          {/* SELAMAT DATANG{" "}
-          {user.role == "1"
-            ? "ADMIN PUSAT"
-            : user.role == "2"
-            ? "ADMIN PPK"
-            : user.role == "3"
-            ? `ADMIN KAB/KOTA`
-            : ""} */}
         </h1>
         <div className="flex items-center lg:items-end mt-3 gap-3 flex-col lg:flex-row">
           <div className="flex items-center gap-3 flex-col sm:flex-row">
@@ -664,6 +1095,34 @@ const PdfUsulanAlkes = () => {
             <div>
               <label
                 className="block text-[#728294] text-base font-normal mb-2"
+                htmlFor="kota"
+              >
+                Status TTE
+              </label>
+              <Select
+                options={[
+                  { label: "Sudah TTE", value: 1 },
+                  { label: "Belum TTE", value: 0 },
+                ]}
+                value={selectedStatus}
+                onChange={(status) => {
+                  setSelectedStatus(status);
+                }}
+                className="w-64 sm:w-32 xl:w-60"
+                theme={(theme) => ({
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    primary25: "lightgrey",
+                    primary: "grey",
+                  },
+                })}
+                placeholder={"Pilih Status TTE"}
+              />
+            </div>
+            {/* <div>
+              <label
+                className="block text-[#728294] text-base font-normal mb-2"
                 htmlFor="kecamatan"
               >
                 Kecamatan
@@ -681,17 +1140,17 @@ const PdfUsulanAlkes = () => {
                     primary: "grey",
                   },
                 })}
-                isDisabled={!selectedKota}
+                isDisabled={user.role == "3" || !selectedKota}
                 placeholder={
                   selectedKota ? "Pilih Kecamatan" : "Pilih Kab / Kota Dahulu"
                 }
               />
-            </div>
+            </div> */}
           </div>
           <button
             onClick={handleSearchClick}
             disabled={loading}
-            className="mt-2 flex items-center gap-2 cursor-pointer text-base font-semibold text-white px-5 py-2 bg-primary rounded-md tracking-tight"
+            className="mt-2 flex items-center font-semibold gap-2 cursor-pointer text-base text-white px-5 py-2 bg-primary rounded-md tracking-tight"
           >
             <FaSearch />
             <span className="lg:hidden xl:flex">
@@ -701,9 +1160,27 @@ const PdfUsulanAlkes = () => {
           </button>
         </div>
       </div>
-
-      <div className="rounded-md flex flex-col gap-4 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="flex justify-between mb-4 items-center">
+      <ModalTTENew
+        isVisible={showPopup}
+        onClose={() => setShowPopup(false)}
+        setShowPopup={setShowPopup}
+        jsonData={jsonData}
+        user={user}
+      />
+      <ModalTTE
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        jsonData={jsonData}
+        user={user}
+      />
+      <ModalUploadDokumen
+        show={showModalUpload}
+        onClose={() => setShowModalUpload(false)}
+        jsonData={jsonData}
+        user={user}
+      />
+      <div className="rounded-md flex flex-col gap-2 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div className="flex justify-between mb-2 items-center">
           <div className="relative">
             <button className="absolute left-2 top-1/2 -translate-y-1/2">
               <svg
@@ -737,10 +1214,10 @@ const PdfUsulanAlkes = () => {
               className="w-full bg-white pl-9 pr-4 text-black outline outline-1 outline-zinc-200 focus:outline-primary dark:text-white xl:w-125 py-2 rounded-md"
             />
           </div>
-          <div className="div flex gap-2 flex-row">
+          <div className="div flex gap-2 flex-row font-semibold">
             <button
               title="Export Data Distribusi"
-              className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white px-4 py-2 bg-primary rounded-md tracking-tight"
+              className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
               onClick={handleExport}
             >
               <BiExport />
@@ -748,35 +1225,15 @@ const PdfUsulanAlkes = () => {
             </button>
             {user.role == "1" ? (
               <button
-                title="Tambah Data Distribusi"
-                className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white  bg-primary rounded-md tracking-tight"
+                title="Tambah Data Dokumen"
+                className="flex font-semibold items-center gap-2 cursor-pointer text-base text-white  bg-primary rounded-md tracking-tight"
               >
                 <Link
-                  to="/data-distribusi/add"
+                  to="/dokumen/add"
                   className="flex items-center gap-2 px-4 py-2"
                 >
                   <FaPlus size={16} />
-                  <span className="hidden sm:block">
-                    Tambah Data Distribusi
-                  </span>
-                </Link>
-              </button>
-            ) : (
-              ""
-            )}
-            {user.role == "3" && dataDokumen.length > 0 ? (
-              <button
-                title="Tandatangani Dokumen BMN"
-                className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white  bg-teal-600 rounded-md tracking-tight"
-              >
-                <Link
-                  to={`/dokumen`}
-                  className="flex items-center gap-2 px-4 py-2"
-                >
-                  <FaCheck size={16} />
-                  <span className="hidden sm:block">
-                    Tandatangani Dokumen BMN
-                  </span>
+                  <span className="hidden sm:block">Tambah Data Dokumen</span>
                 </Link>
               </button>
             ) : (
@@ -794,14 +1251,29 @@ const PdfUsulanAlkes = () => {
             <div className="text-center">Data Tidak Tersedia.</div>
           ) : (
             <DataTable
+              title={selectedRows.length > 0 ? "Data Dokumen" : ""}
               columns={columns}
               data={filteredData}
-              pagination
-              // defaultSortFieldId="Aksi"
               striped
-              defaultSortAsc={false}
+              pagination
               persistTableHead
               highlightOnHover
+              // selectableRows={user?.role == "3" || user?.role == "4"} // Tampilkan selectableRows jika role 3 atau 4
+              // contextActions={
+              //   user?.role == "3" || user?.role == "4"
+              //     ? contextActions
+              //     : undefined
+              // } // Tambahkan contextActions jika role 3/4
+              // onSelectedRowsChange={
+              //   user?.role == "3" || user?.role == "4"
+              //     ? handleRowSelected
+              //     : undefined
+              // } // Tambahkan handler jika role 3/4
+              // clearSelectedRows={
+              //   user?.role == "3" || user?.role == "4"
+              //     ? toggleCleared
+              //     : undefined
+              // } // Clear selection jika role 3/4
               pointerOnHover
               customStyles={{
                 headCells: {
@@ -816,8 +1288,8 @@ const PdfUsulanAlkes = () => {
                 rows: {
                   style: {
                     fontSize: 14,
-                    paddingTop: 6,
-                    paddingBottom: 6,
+                    paddingTop: 4,
+                    paddingBottom: 4,
                     backgroundColor: "#FFFFFF", // Default warna baris ganjil (putih)
                     "&:nth-of-type(odd)": {
                       backgroundColor: "#F9FAFB", // Warna baris genap (abu terang)

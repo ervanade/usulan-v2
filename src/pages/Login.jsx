@@ -108,13 +108,13 @@ const Login = () => {
   };
   return (
     <div className="w-full !dark:bg-boxdark-2 flex justify-center items-center min-h-[calc(100vh-0px)] bg-transparent object-cover bg-center py-6 !bg-[#027d77]">
-      <div className="w-full max-w-lg bg-[#FDF6ED] shadow-md rounded-md  pt-8 pb-12 mb-4 mx-6">
+      <div className="w-full max-w-lg bg-[#edfdf8] shadow-md rounded-md  pt-8 pb-12 mb-4 mx-6">
         <div className="px-5 sm:px-8">
           {/* <div className="logo w-full flex items-center justify-center mb-6">
             <img src="/logo-kemenkes.png" alt="Logo" />
           </div> */}
           <div className="title mb-6">
-            <h1 className="text-[#00B1A9] text-xl sm:text-2xl mb-2 font-normal text-center">
+            <h1 className="text-primary text-xl sm:text-2xl mb-2 font-medium text-center">
               Masuk ke Aplikasi Usulan Alkes
             </h1>
           </div>

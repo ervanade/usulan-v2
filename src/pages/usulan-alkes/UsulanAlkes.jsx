@@ -449,7 +449,7 @@ const UsulanAlkes = () => {
         cell: (row) => (
           <div className="flex items-center space-x-2">
             <button
-              title="Edit"
+              title="Detail"
               className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
               onClick={() => {
                 navigate(`/usulan-alkes/edit/${row.id}`, {
@@ -457,7 +457,7 @@ const UsulanAlkes = () => {
                 });
               }}
             >
-              <Link to={`/usulan-alkes/edit/${row.id}`}>Lihat</Link>
+              <Link to={`/usulan-alkes/edit/${row.id}`}>Detail</Link>
             </button>
           </div>
         ),
