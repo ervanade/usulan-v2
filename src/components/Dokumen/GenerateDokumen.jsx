@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const GenerateDokumen = async (jsonData, distributor) => {
+const GenerateDokumen = async (jsonData, preview) => {
   const downloadDate = new Date().toLocaleString("id-ID", {
     day: "2-digit",
     month: "long",
@@ -791,7 +791,9 @@ const GenerateDokumen = async (jsonData, distributor) => {
       </Page>
 
       <Page size="FOLIO" style={styles.page}>
-        <Text style={styles.watermark}>FINAL</Text>
+        <Text style={{ ...styles.watermark, left: preview ? "30%" : "45%" }}>
+          {preview ? "PREVIEW" : "FINAL"}
+        </Text>
         <View
           style={{
             paddingHorizontal: 16,
@@ -1070,8 +1072,8 @@ const GenerateDokumen = async (jsonData, distributor) => {
         </View>
       </Page>
 
-      {RenderBarangPages(jsonData)}
-      {RenderHibahPages(jsonData, true)}
+      {RenderBarangPages(jsonData, preview)}
+      {RenderHibahPages(jsonData, preview)}
     </Document>
   );
   const blob = await pdf(<MyDocument />).toBlob();

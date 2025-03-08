@@ -275,7 +275,7 @@ const getAllDetailDistribusi = (distribusi) => {
   );
 };
 
-export const RenderBarangPages = (jsonData) => {
+export const RenderBarangPages = (jsonData, preview) => {
   const dataBarang = getAllDetailDistribusi(jsonData?.distribusi || []);
   const pages = [];
   const totalItems = dataBarang.length;
@@ -312,8 +312,9 @@ export const RenderBarangPages = (jsonData) => {
 
     pages.push(
       <Page key={i} size="FOLIO" style={{ paddingTop: 0, ...styles.page }}>
-        <Text style={styles.watermark}>FINAL</Text>
-
+        <Text style={{ ...styles.watermark, left: preview ? "30%" : "45%" }}>
+          {preview ? "PREVIEW" : "FINAL"}
+        </Text>
         <View
           style={{
             paddingVertical: 0,

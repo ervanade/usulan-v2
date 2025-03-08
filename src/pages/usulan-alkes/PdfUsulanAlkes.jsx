@@ -530,7 +530,7 @@ const PdfUsulanAlkes = () => {
           dataJson.nama_daerah = user.name;
           dataJson.nip_daerah = user.nip;
         }
-        const pdfBlob = await GenerateDokumen(dataJson); // GenerateDokumen harus mengembalikan Blob PDF
+        const pdfBlob = await GenerateDokumen(dataJson, false); // GenerateDokumen harus mengembalikan Blob PDF
 
         saveAs(pdfBlob, `${dataJson.nama_dokumen}.pdf`);
       }
@@ -581,14 +581,6 @@ const PdfUsulanAlkes = () => {
         cell: (row) => (
           <div className="flex items-center space-x-2">
             {/* <button
-              title="Input"
-              className="text-green-500 hover:text-green-700"
-            >
-              <Link to="/data-verifikasi/form-distribusi">
-                <FaPlus />
-              </Link>
-            </button> */}
-            <button
               title="Lihat"
               className="text-[#16B3AC] hover:text-cyan-500"
             >
@@ -599,13 +591,13 @@ const PdfUsulanAlkes = () => {
               >
                 <FaEye size={20} />
               </Link>
-            </button>
+            </button> */}
             <button
               title="Download"
-              className="text-green-400 hover:text-green-500"
+              className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-22 rounded-md font-medium text-sm"
               onClick={() => handleDownload(row.id)} // Tambahkan handler download di sini
             >
-              <FaDownload size={20} />
+              Buka Download
             </button>
             {user.role == "2" || user.role == "3" || user.role == "4" ? (
               <button
@@ -646,7 +638,7 @@ const PdfUsulanAlkes = () => {
                 <FaPlus />
               </Link>
             </button> */}
-            <button
+            {/* <button
               title="Lihat"
               className="text-[#16B3AC] hover:text-cyan-500"
             >
@@ -657,13 +649,13 @@ const PdfUsulanAlkes = () => {
               >
                 <FaEye size={20} />
               </Link>
-            </button>
+            </button> */}
             <button
               title="Download"
-              className="text-green-400 hover:text-green-500"
+              className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-22 rounded-md font-medium text-sm"
               onClick={() => handleDownload(row.id)} // Tambahkan handler download di sini
             >
-              <FaDownload size={20} />
+              Buka Upload
             </button>
             {user.role == "2" || user.role == "3" || user.role == "4" ? (
               <button
@@ -689,50 +681,29 @@ const PdfUsulanAlkes = () => {
         omit: user.role != "1",
         cell: (row) => (
           <div className="flex items-center space-x-2">
-            {/* <button
-              title="Input"
-              className="text-green-500 hover:text-green-700"
+            <button
+              title="Lihat"
+              className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
+              onClick={() => {
+                navigate(
+                  `/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
+                    encryptId(row.id)
+                  )}`,
+                  {
+                    replace: true,
+                  }
+                );
+              }}
             >
-              <Link to="/data-verifikasi/form-distribusi">
-                <FaPlus />
-              </Link>
-            </button> */}
-
-            {user.role == "1" ? (
-              <>
-                <button
-                  title="Edit"
-                  className="text-[#16B3AC] hover:text-cyan-500"
-                >
-                  <Link
-                    to={`/pdf-usulan-alkes/edit/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`}
-                  >
-                    <FaEdit size={16} />
-                  </Link>
-                </button>
-                <button
-                  title="Delete"
-                  className="text-red-500 hover:text-red-700"
-                  onClick={() => handleConfirmDeleteDokumen(row.id)}
-                >
-                  <FaTrash size={16} />
-                </button>
-              </>
-            ) : (
-              ""
-            )}
-            {/* <button
-              title="Edit"
-              className="text-white p-2 bg-blue-600 rounded-md"
-            >
-              <Link to={`/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
+              <Link
+                className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
+                to={`/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
                   encryptId(row.id)
-                )}`}>
-                TTE
+                )}`}
+              >
+                Preview
               </Link>
-            </button> */}
+            </button>
           </div>
         ),
         ignoreRowClick: true,
@@ -947,7 +918,9 @@ const PdfUsulanAlkes = () => {
                   className="flex items-center gap-2 px-4 py-2"
                 >
                   <FaPlus size={16} />
-                  <span className="hidden sm:block">Tambah Data Dokumen</span>
+                  <span className="hidden sm:block">
+                    Tambah PDF Usulan Alkes
+                  </span>
                 </Link>
               </button>
             ) : (

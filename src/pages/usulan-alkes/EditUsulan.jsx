@@ -418,7 +418,7 @@ const EditUsulan = () => {
             onChange={(e) =>
               handleInputChange(row.id, "jumlah_dikirim", e.target.value)
             }
-            className="border border-primary rounded p-2 !text-base py-4 w-full focus:border-graydark focus:outline-none focus:ring-0"
+            className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none focus:ring-0"
           />
         ),
         width: "200px",
@@ -436,7 +436,7 @@ const EditUsulan = () => {
             onChange={(e) =>
               handleInputChange(row.id, "jumlah_diterima", e.target.value)
             }
-            className="border border-primary rounded p-2 !text-base py-4 w-full focus:border-graydark focus:outline-none"
+            className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none"
           />
         ),
         width: "200px",
@@ -477,7 +477,7 @@ const EditUsulan = () => {
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
-                    className="block text-[#728294] text-base font-semibold mb-1"
+                    className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="email"
                   >
                     Provinsi :
@@ -489,7 +489,7 @@ const EditUsulan = () => {
                     value={selectedProvinsi}
                     onChange={handleProvinsiChange}
                     placeholder="Pilih Provinsi"
-                    className="w-full"
+                    className="w-full text-sm"
                     theme={selectThemeColors}
                   />
                 </div>
@@ -498,7 +498,7 @@ const EditUsulan = () => {
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
-                    className="block text-[#728294] text-base font-semibold mb-1"
+                    className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="email"
                   >
                     Kabupaten / Kota :
@@ -515,7 +515,7 @@ const EditUsulan = () => {
                         ? "Pilih Kab / Kota"
                         : "Pilih Provinsi Dahulu"
                     }
-                    className="w-full"
+                    className="w-full text-sm"
                     theme={selectThemeColors}
                   />
                 </div>
@@ -524,7 +524,7 @@ const EditUsulan = () => {
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
-                    className="block text-[#728294] text-base font-semibold mb-1"
+                    className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="email"
                   >
                     Kecamatan :
@@ -541,7 +541,7 @@ const EditUsulan = () => {
                         ? "Pilih Kecamatan"
                         : "Pilih Kab / Kota Dahulu"
                     }
-                    className="w-full"
+                    className="w-full text-sm"
                     theme={selectThemeColors}
                   />
                 </div>
@@ -550,7 +550,7 @@ const EditUsulan = () => {
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
-                    className="block text-[#728294] text-base font-semibold mb-1"
+                    className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="kode_puskesmas"
                   >
                     Kode Puskesmas :
@@ -579,7 +579,7 @@ const EditUsulan = () => {
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
-                    className="block text-[#728294] text-base font-normal mb-1"
+                    className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="email"
                   >
                     Puskesmas :
@@ -596,7 +596,7 @@ const EditUsulan = () => {
                         ? "Pilih Puskesmas"
                         : "Pilih Kecamatan Dahulu"
                     }
-                    className="w-full"
+                    className="w-full text-sm"
                     theme={selectThemeColors}
                   />
                 </div>
@@ -605,7 +605,7 @@ const EditUsulan = () => {
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
-                    className="block text-[#728294] text-base font-normal mb-1"
+                    className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="tahun_lokus"
                   >
                     Tahun:
@@ -627,11 +627,11 @@ const EditUsulan = () => {
                 </div>
               </div>
             </div>
-            <div className="gap-3 gap-y-4 grid grid-cols-2 md:grid-cols-4 mt-10 lg:mt-12">
+            <div className="gap-3 gap-y-4 grid grid-cols-2 lg:grid-cols-4 mt-10 lg:mt-12">
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
-                    className="block text-[#728294] text-base font-semibold mb-1"
+                    className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="email"
                   >
                     Jenis Pelayanan :
@@ -643,7 +643,7 @@ const EditUsulan = () => {
                     value={selectedPelayanan}
                     onChange={handlePelayananChange}
                     placeholder="Jenis Pelayanan"
-                    className="w-full"
+                    className="w-full text-sm"
                     theme={selectThemeColors}
                   />
                 </div>
@@ -652,7 +652,7 @@ const EditUsulan = () => {
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
-                    className="block text-[#728294] text-base font-semibold mb-1"
+                    className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="email"
                   >
                     Ketersediaan Daya Listrik :
@@ -663,8 +663,8 @@ const EditUsulan = () => {
                     options={dayaOptions}
                     value={selectedDaya}
                     onChange={handleDayaChange}
-                    placeholder="Ketersediaan Daya Listrik"
-                    className="w-full"
+                    placeholder="Ketersediaan Daya"
+                    className="w-full text-sm"
                     theme={selectThemeColors}
                   />
                 </div>
@@ -672,7 +672,7 @@ const EditUsulan = () => {
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
-                    className="block text-[#728294] text-base font-semibold mb-1"
+                    className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="email"
                   >
                     Ketersediaan Listrik (24 Jam) :
@@ -684,7 +684,7 @@ const EditUsulan = () => {
                     value={selectedListrik}
                     onChange={handleListrikChange}
                     placeholder="Ketersediaan Listrik"
-                    className="w-full"
+                    className="w-full text-sm"
                     theme={selectThemeColors}
                   />
                 </div>
@@ -692,7 +692,7 @@ const EditUsulan = () => {
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
-                    className="block text-[#728294] text-base font-semibold mb-1"
+                    className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="email"
                   >
                     Ketersediaan Internet :
@@ -704,7 +704,7 @@ const EditUsulan = () => {
                     value={selectedInternet}
                     onChange={handleInternetChange}
                     placeholder="Ketersediaan Internet"
-                    className="w-full"
+                    className="w-full text-sm"
                     theme={selectThemeColors}
                   />
                 </div>

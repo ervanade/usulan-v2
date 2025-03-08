@@ -267,7 +267,7 @@ const PreviewDokumen = () => {
           file_dokumen: data.file_dokumen || null,
         };
 
-        const pdfBlob = await GenerateDokumen(dataJson); // GenerateDokumen harus mengembalikan Blob PDF
+        const pdfBlob = await GenerateDokumen(dataJson, true); // GenerateDokumen harus mengembalikan Blob PDF
         setPdfBlob(pdfBlob);
 
         setGetLoading(false);
@@ -1665,53 +1665,7 @@ const PreviewDokumen = () => {
         jsonData={jsonData}
       />
       <HeaderDokumen jsonData={jsonData} user={user} />
-      {jsonData && jsonData?.file_dokumen ? (
-        <div className="flex justify-end items-center">
-          <a
-            href={pdfUrl}
-            download={`${jsonData.nama_dokumen || "document"}.pdf`}
-            target="_blank"
-            className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition flex items-center"
-          >
-            <FaDownload className="mr-2" />
-            <span>Download Dokumen</span>
-          </a>
-        </div>
-      ) : jsonData && !jsonData?.file_dokumen ? (
-        <div className="flex justify-end items-center">
-          {/* <PDFDownloadLink
-            document={<Dokumen />}
-            fileName={`Dokumen ${jsonData?.nama_dokumen}`}
-            className="flex justify-center items-center bg-teal-500 text-white px-4 py-2 rounded-md"
-          >
-            {({ blob, url, loading, error }) =>
-              loading ? (
-                "Loading dokumen..."
-              ) : (
-                <>
-                  <FaDownload size={16} className="mr-2" />
-                  <span>Download Dokumen</span>
-                </>
-              )
-            }
-          </PDFDownloadLink> */}
-          {pdfBlob ? (
-            <a
-              href={URL.createObjectURL(pdfBlob)}
-              download={`${jsonData.nama_dokumen || "document"}.pdf`}
-              target="_blank"
-              className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition flex items-center"
-            >
-              <FaDownload className="mr-2" />
-              <span>Download Dokumen</span>
-            </a>
-          ) : (
-            <FaSpinner />
-          )}
-        </div>
-      ) : (
-        ""
-      )}
+
       {error && (
         <div className="flex justify-center items-center flex-col h-[20vh] gap-2">
           <MdWarning className=" inline-block w-8 h-8 text-teal-400" />
@@ -1758,7 +1712,7 @@ const PreviewDokumen = () => {
               Total Page : {numPages || <FaSpinner />}
             </span>
             <div className="flex items-center gap-2">
-              {pdfBlob ? (
+              {/* {pdfBlob ? (
                 <a
                   href={URL.createObjectURL(pdfBlob)}
                   download={`${jsonData.nama_dokumen || "document"}.pdf`}
@@ -1769,7 +1723,7 @@ const PreviewDokumen = () => {
                 </a>
               ) : (
                 <FaSpinner />
-              )}
+              )} */}
               <button
                 onClick={zoomOut}
                 className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"

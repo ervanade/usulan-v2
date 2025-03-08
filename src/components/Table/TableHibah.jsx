@@ -278,7 +278,7 @@ const getAllDetailDistribusi = (distribusi) => {
   }));
 };
 
-export const RenderHibahPages = (jsonData, basto) => {
+export const RenderHibahPages = (jsonData, preview) => {
   const distribusiData = getAllDetailDistribusi(jsonData?.distribusi || []);
   const pages = [];
   const downloadDate = new Date().toLocaleString("id-ID", {
@@ -323,8 +323,11 @@ export const RenderHibahPages = (jsonData, basto) => {
             size="FOLIO"
             style={{ paddingTop: 0, ...styles.page }}
           >
-            <Text style={styles.watermark}>FINAL</Text>
-
+            <Text
+              style={{ ...styles.watermark, left: preview ? "30%" : "45%" }}
+            >
+              {preview ? "PREVIEW" : "FINAL"}
+            </Text>
             <View
               style={{
                 paddingVertical: 0,
