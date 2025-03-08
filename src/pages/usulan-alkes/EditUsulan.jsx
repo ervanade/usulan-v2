@@ -12,7 +12,7 @@ import {
   pelayananOptions,
   SelectOptions,
 } from "../../data/data";
-import { encryptId, selectThemeColors } from "../../data/utils";
+import { decryptId, encryptId, selectThemeColors } from "../../data/utils";
 import {
   FaCheck,
   FaEdit,
@@ -22,7 +22,7 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import { BiExport, BiSolidFileExport } from "react-icons/bi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
@@ -32,21 +32,23 @@ import Card from "../../components/Card/Card";
 
 const EditUsulan = () => {
   const user = useSelector((a) => a.auth.user);
+  const { id } = useParams();
   const [formData, setFormData] = useState({
-    tahun_lokus: "",
-    penerima_hibah: "",
-    jenis_bmn: "",
-    kepala_unit_pemberi:
-      "Direktur Fasilitas dan Mutu Pelayanan Kesehatan Primer",
-    nama_kontrak_pengadaan: "",
-    tanggal_kontrak_pengadaan: "",
-    id_user_pemberi: "",
-    id_user_penerima: "",
-    contractFile: null,
-    contractFileName: "",
-    contractFileLink: "",
     id_provinsi: "",
     id_kabupaten: "",
+    id_kecamatan: "",
+    provinsi: "",
+    kabupaten: "",
+    kecamatan: "",
+    nama_puskesmas: "",
+    kode_pusdatin_baru: "",
+    id: "",
+    tahun_lokus: "2025",
+    pelayanan: "",
+    ketersediaan_listrik: "",
+    kapasitas_listrik: "",
+    internet: "",
+    usulan: [],
   });
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -140,24 +142,47 @@ const EditUsulan = () => {
   // Fetch distribution data
   const fetchDistribusiData = useCallback(async () => {
     setLoading(true);
+    setGetLoading(true);
+
     setError(false);
     try {
       const response = await axios({
         method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/distribusi`,
+        url: `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/usulan/detail/${encodeURIComponent(decryptId(id))}`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
         },
       });
+      const data = response.data.data;
 
-      setData(response.data.data);
-      setFilteredData(response.data.data);
+      setFormData({
+        id_provinsi: data.id_provinsi || "",
+        id_kabupaten: data.id_kabupaten || "",
+        id_kecamatan: data.id_kecamatan || "",
+        provinsi: data.provinsi || "",
+        kabupaten: data.kabupaten || "",
+        kecamatan: data.kecamatan || "",
+        nama_puskesmas: data.nama_puskesmas || "",
+        kode_pusdatin_baru: data.kode_pusdatin_baru || "",
+        id: data.id || "",
+        tahun_lokus: "2025",
+        pelayanan: data.pelayanan || "",
+        ketersediaan_listrik: data.ketersediaan_listrik || "",
+        kapasitas_listrik: data.kapasitas_listrik || "",
+        internet: data.internet || "",
+        usulan: data.usulan || [],
+      });
+      setData(data?.usulan || []);
+      setFilteredData(data?.usulan || []);
     } catch (error) {
       setError(true);
       setFilteredData([]);
     } finally {
       setLoading(false);
+      setGetLoading(false);
     }
   }, [user?.token]);
 
@@ -187,7 +212,7 @@ const EditUsulan = () => {
 
   useEffect(() => {
     fetchDistribusiData();
-    fetchProvinsi();
+    // fetchProvinsi();
   }, []);
 
   const handleChange = (event) => {
@@ -263,7 +288,7 @@ const EditUsulan = () => {
     if (selectedOption) {
       setFormData((prev) => ({
         ...prev,
-        id_puskesmas: selectedOption.value.toString(),
+        id: selectedOption.value.toString(),
       }));
     }
   };
@@ -280,7 +305,7 @@ const EditUsulan = () => {
     setSelectedDaya(selectedOption);
     setFormData((prev) => ({
       ...prev,
-      daya: selectedOption ? selectedOption.value.toString() : "",
+      kapasitas_listrik: selectedOption ? selectedOption.value.toString() : "",
     }));
   };
 
@@ -288,7 +313,9 @@ const EditUsulan = () => {
     setSelectedListrik(selectedOption);
     setFormData((prev) => ({
       ...prev,
-      listrik: selectedOption ? selectedOption.value.toString() : "",
+      ketersediaan_listrik: selectedOption
+        ? selectedOption.value.toString()
+        : "",
     }));
   };
 
@@ -336,9 +363,9 @@ const EditUsulan = () => {
         });
       }
     }
-    if (formData.id_puskesmas && dataPuskesmas.length > 0) {
+    if (formData.id && dataPuskesmas.length > 0) {
       const initialOption = dataPuskesmas.find(
-        (kec) => kec.value == formData.id_puskesmas
+        (kec) => kec.value == formData.id
       );
       if (initialOption) {
         setSelectedPuskesmas({
@@ -347,102 +374,312 @@ const EditUsulan = () => {
         });
       }
     }
+
+    if (formData.pelayanan) {
+      const initialOption = pelayananOptions.find(
+        (kec) => kec.value == formData.pelayanan
+      );
+
+      if (initialOption) {
+        setSelectedPelayanan({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
+
+    if (formData.ketersediaan_listrik) {
+      const initialOption = SelectOptions.find(
+        (kec) => kec.value == formData.ketersediaan_listrik
+      );
+
+      if (initialOption) {
+        setSelectedListrik({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
+
+    if (formData.kapasitas_listrik) {
+      const initialOption = dayaOptions.find(
+        (kec) => kec.value == formData.kapasitas_listrik
+      );
+
+      if (initialOption) {
+        setSelectedDaya({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
+
+    if (formData.internet) {
+      const initialOption = SelectOptions.find(
+        (kec) => kec.value == formData.internet
+      );
+
+      if (initialOption) {
+        setSelectedInternet({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
   }, [formData, dataProvinsi, dataKecamatan, dataKota, dataPuskesmas]);
-  useEffect(() => {
-    if (formData.id_provinsi) {
-      fetchKota(formData.id_provinsi);
-    }
-    if (formData.id_kabupaten) {
-      fetchKecamatan(formData.id_kabupaten);
-    }
-    if (formData.id_kecamatan) {
-      fetchPuskesmas(formData.id_kecamatan);
-    }
-  }, [formData.id_provinsi, formData.id_kabupaten, formData.id_kecamatan]);
+  // useEffect(() => {
+  //   if (formData.id_provinsi) {
+  //     fetchKota(formData.id_provinsi);
+  //   }
+  //   if (formData.id_kabupaten) {
+  //     fetchKecamatan(formData.id_kabupaten);
+  //   }
+  //   if (formData.id_kecamatan) {
+  //     fetchPuskesmas(formData.id_kecamatan);
+  //   }
+  // }, [formData.id_provinsi, formData.id_kabupaten, formData.id_kecamatan]);
 
   const [editedData, setEditedData] = useState({});
+  const [errors, setErrors] = useState({}); // State untuk menyimpan pesan error
 
   const handleInputChange = (rowId, columnName, value) => {
-    setEditedData((prevData) => ({
-      ...prevData,
-      [rowId]: {
-        ...prevData[rowId],
-        [columnName]: value,
-      },
-    }));
+    const newValue = parseInt(value, 10); // Konversi ke number, termasuk 0
+
+    // Jika newValue adalah NaN (misalnya, input kosong), set ke 0
+    const finalValue = isNaN(newValue) ? 0 : newValue;
+
+    // Ambil standard berdasarkan selectedPelayanan
+    const standard =
+      selectedPelayanan?.value === "Non Rawat Inap"
+        ? filteredData.find((row) => row.id === rowId)?.standard_non_inap
+        : filteredData.find((row) => row.id === rowId)?.standard_rawat_inap;
+
+    // Ambil nilai masih_berfungsi
+    const masihBerfungsi =
+      editedData[rowId]?.berfungsi !== undefined
+        ? editedData[rowId].berfungsi
+        : filteredData.find((row) => row.id === rowId)?.berfungsi || 0;
+
+    // Jika standard null, bebas mengisi usulan dan masih_berfungsi
+    if (standard === null) {
+      setEditedData((prevData) => ({
+        ...prevData,
+        [rowId]: {
+          ...prevData[rowId],
+          [columnName]: finalValue, // Gunakan finalValue, termasuk 0
+        },
+      }));
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [rowId]: "", // Hapus pesan error jika standard null
+      }));
+      return;
+    }
+
+    // Validasi untuk usulan
+    if (columnName === "usulan") {
+      const maxUsulan = Math.max(0, standard - masihBerfungsi); // Hitung maksimal usulan
+      if (finalValue > maxUsulan) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [rowId]: `Usulan tidak boleh melebihi ${maxUsulan}`,
+        }));
+        return; // Hentikan proses jika usulan melebihi batas
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [rowId]: "", // Hapus pesan error jika valid
+        }));
+      }
+    }
+
+    // Jika masih_berfungsi diubah dan sudah memenuhi atau melebihi standard, set usulan ke 0
+    if (columnName === "berfungsi" && finalValue >= standard) {
+      setEditedData((prevData) => ({
+        ...prevData,
+        [rowId]: {
+          ...prevData[rowId],
+          berfungsi: finalValue, // Gunakan finalValue, termasuk 0
+          usulan: 0, // Set usulan ke 0
+        },
+      }));
+    } else {
+      setEditedData((prevData) => ({
+        ...prevData,
+        [rowId]: {
+          ...prevData[rowId],
+          [columnName]: finalValue, // Gunakan finalValue, termasuk 0
+        },
+      }));
+    }
   };
+
   const getResultData = () => {
     return filteredData.map((row) => ({
       id: row.id,
-      jumlah_dikirim:
-        editedData[row.id]?.jumlah_dikirim || row.jumlah_barang_dikirim || 0,
-      jumlah_diterima:
-        editedData[row.id]?.jumlah_diterima || row.jumlah_barang_diterima || 0,
+      berfungsi: editedData[row.id]?.berfungsi || row.berfungsi || 0,
+      usulan: editedData[row.id]?.usulan || row.usulan || 0,
     }));
   };
 
-  // Contoh penggunaan getResultData (misalnya, saat tombol "Simpan" ditekan)
-  const handleSave = () => {
-    const result = getResultData();
-    console.log(result); // Lakukan sesuatu dengan data hasil akhir
+  const editUsulan = async () => {
+    const resultUsulan = getResultData();
+
+    setLoading(true);
+    Swal.fire({
+      title: "Menyimpan usulan...",
+      text: "Tunggu Sebentar Menyimpan Usulan...",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    await axios({
+      method: "put",
+      url: `${
+        import.meta.env.VITE_APP_API_URL
+      }/api/usulan/update/${encodeURIComponent(decryptId(id))}`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
+      },
+      data: JSON.stringify({ ...formData, usulan: resultUsulan }),
+    })
+      .then(function (response) {
+        Swal.fire("Data Berhasil di Simpan!", "", "success");
+        navigate("/usulan-alkes");
+        setLoading(false);
+        // Swal.close();
+      })
+      .catch((error) => {
+        setLoading(false);
+        // Swal.close();
+        Swal.fire("Error", "Gagal Menyimpan Data", "error");
+        console.log(error);
+      });
   };
+
+  // Contoh penggunaan getResultData (misalnya, saat tombol "Simpan" ditekan)
+  const handleSimpan = async (e) => {
+    e.preventDefault();
+    Swal.fire({
+      title: "Perhatian",
+      text: "Data yang diisi adalah sebenarnya dan dapat dipertanggungjawabkan?",
+      showCancelButton: true,
+      confirmButtonColor: "#027d77",
+      confirmButtonText: "Ya, Simpan Data",
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        editUsulan();
+      }
+    });
+  };
+
   const columns = useMemo(
     () => [
       {
         name: <div className="text-wrap">Nama Alkes</div>,
-        selector: (row) => row.nama_puskesmas,
-        cell: (row) => (
-          <div className="text-wrap py-2">{row.nama_puskesmas}</div>
-        ),
+        selector: (row) => row.nama_alkes,
+        cell: (row) => <div className="text-wrap py-2">{row.nama_alkes}</div>,
         minWidth: "110px",
         sortable: true,
       },
       {
         name: <div className="text-wrap">Standard</div>,
-        selector: (row) => row.kabupaten,
-        cell: (row) => <div className="text-wrap py-2">1</div>,
+        selector: (row) =>
+          selectedPelayanan?.value === "Non Rawat Inap"
+            ? row.standard_non_inap
+            : row.standard_rawat_inap,
+        cell: (row) => (
+          <div className="text-wrap py-2">
+            {selectedPelayanan?.value === "Non Rawat Inap"
+              ? row.standard_non_inap
+              : row.standard_rawat_inap}
+          </div>
+        ),
         width: "120px",
         sortable: true,
       },
-
       {
         name: <div className="text-wrap">Masih Berfungsi</div>,
-        cell: (row) => (
-          <input
-            type="number"
-            value={
-              editedData[row.id]?.jumlah_dikirim ||
-              row.jumlah_barang_dikirim ||
-              ""
-            }
-            onChange={(e) =>
-              handleInputChange(row.id, "jumlah_dikirim", e.target.value)
-            }
-            className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none focus:ring-0"
-          />
-        ),
-        width: "200px",
+        cell: (row) => {
+          const standard =
+            selectedPelayanan?.value === "Non Rawat Inap"
+              ? row.standard_non_inap
+              : row.standard_rawat_inap;
+
+          // Ambil nilai masih_berfungsi dari editedData atau row, default ke 0
+          const masihBerfungsi =
+            editedData[row.id]?.berfungsi !== undefined
+              ? editedData[row.id].berfungsi
+              : row.berfungsi || 0;
+
+          return (
+            <input
+              type="number"
+              value={masihBerfungsi} // Gunakan nilai dari state atau row
+              onChange={(e) =>
+                handleInputChange(row.id, "berfungsi", e.target.value)
+              }
+              className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none focus:ring-0"
+              min={0} // Pastikan tidak bisa minus
+            />
+          );
+        },
+        minWidth: "100px",
+        maxWidth: "200px",
       },
       {
         name: <div className="text-wrap">Usulan</div>,
-        cell: (row) => (
-          <input
-            type="number"
-            value={
-              editedData[row.id]?.jumlah_diterima ||
-              row.jumlah_barang_diterima ||
-              ""
-            }
-            onChange={(e) =>
-              handleInputChange(row.id, "jumlah_diterima", e.target.value)
-            }
-            className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none"
-          />
-        ),
-        width: "200px",
+        cell: (row) => {
+          const standard =
+            selectedPelayanan?.value === "Non Rawat Inap"
+              ? row.standard_non_inap
+              : row.standard_rawat_inap;
+
+          // Ambil nilai masih_berfungsi dari editedData atau row, default ke 0
+          const masihBerfungsi =
+            editedData[row.id]?.berfungsi !== undefined
+              ? editedData[row.id].berfungsi
+              : row.berfungsi || 0;
+
+          const maxUsulan = Math.max(0, standard - masihBerfungsi); // Hitung maksimal usulan
+
+          // Ambil nilai usulan dari editedData atau row, default ke 0
+          const usulan =
+            editedData[row.id]?.usulan !== undefined
+              ? editedData[row.id].usulan
+              : row.usulan || 0;
+
+          return (
+            <div className="w-full">
+              <input
+                type="number"
+                value={usulan} // Gunakan nilai dari state atau row
+                onChange={(e) =>
+                  handleInputChange(row.id, "usulan", e.target.value)
+                }
+                className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none"
+                min={0} // Pastikan tidak bisa minus
+                max={standard === null ? undefined : maxUsulan} // Batasi usulan jika standard tidak null
+                disabled={masihBerfungsi >= standard} // Nonaktifkan input jika masih_berfungsi >= standard
+              />
+              {errors[row.id] && (
+                <div className="text-red-500 text-sm mt-1">
+                  {errors[row.id]}
+                </div>
+              )}
+            </div>
+          );
+        },
+        minWidth: "100px",
+        maxWidth: "200px",
       },
     ],
-    [editedData, handleInputChange, navigate, user] // Tambahkan editedData di sini
+    [editedData, errors, selectedPelayanan, filteredData]
   );
 
   if (getLoading) {
@@ -484,14 +721,32 @@ const EditUsulan = () => {
                   </label>
                 </div>
                 <div className="">
-                  <Select
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="nama_provinsi"
+                    value={formData.provinsi}
+                    // onChange={(e) =>
+                    //   setFormData((prev) => ({
+                    //     ...prev,
+                    //     provinsi: e.target.value,
+                    //   }))
+                    // }
+                    disabled
+                    type="text"
+                    required
+                    placeholder="Provinsi"
+                  />
+                  {/* <Select
                     options={dataProvinsi}
                     value={selectedProvinsi}
                     onChange={handleProvinsiChange}
+                    isDisabled={true}
                     placeholder="Pilih Provinsi"
                     className="w-full text-sm"
                     theme={selectThemeColors}
-                  />
+                  /> */}
                 </div>
               </div>
 
@@ -505,11 +760,28 @@ const EditUsulan = () => {
                   </label>
                 </div>
                 <div className="">
-                  <Select
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="nama_kabupaten"
+                    value={formData.kabupaten}
+                    // onChange={(e) =>
+                    //   setFormData((prev) => ({
+                    //     ...prev,
+                    //     kabupaten: e.target.value,
+                    //   }))
+                    // }
+                    disabled
+                    type="text"
+                    required
+                    placeholder="Kabupaten"
+                  />
+                  {/* <Select
                     options={dataKota}
                     value={selectedKota}
                     onChange={handleKotaChange}
-                    isDisabled={!selectedProvinsi}
+                    isDisabled={!selectedProvinsi || true}
                     placeholder={
                       selectedProvinsi
                         ? "Pilih Kab / Kota"
@@ -517,7 +789,7 @@ const EditUsulan = () => {
                     }
                     className="w-full text-sm"
                     theme={selectThemeColors}
-                  />
+                  /> */}
                 </div>
               </div>
 
@@ -531,10 +803,10 @@ const EditUsulan = () => {
                   </label>
                 </div>
                 <div className="">
-                  <Select
+                  {/* <Select
                     options={dataKecamatan}
                     value={selectedKecamatan}
-                    isDisabled={!selectedKota}
+                    isDisabled={!selectedKota || true}
                     onChange={handleKecamatanChange}
                     placeholder={
                       selectedKota
@@ -543,6 +815,23 @@ const EditUsulan = () => {
                     }
                     className="w-full text-sm"
                     theme={selectThemeColors}
+                  /> */}
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="nama_kecamatan"
+                    value={formData.kecamatan}
+                    // onChange={(e) =>
+                    //   setFormData((prev) => ({
+                    //     ...prev,
+                    //     kecamatan: e.target.value,
+                    //   }))
+                    // }
+                    disabled
+                    type="text"
+                    required
+                    placeholder="Kecamatan"
                   />
                 </div>
               </div>
@@ -558,17 +847,18 @@ const EditUsulan = () => {
                 </div>
                 <div className="">
                   <input
-                    className={` bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
                   "border-red-500" 
                rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
                     id="kode_puskesmas"
-                    value={formData.nip}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        nip: e.target.value,
-                      }))
-                    }
+                    value={formData.kode_pusdatin_baru}
+                    // onChange={(e) =>
+                    //   setFormData((prev) => ({
+                    //     ...prev,
+                    //     kode_pusdatin_baru: e.target.value,
+                    //   }))
+                    // }
+                    disabled
                     type="text"
                     required
                     placeholder="Kode Puskesmas"
@@ -586,11 +876,11 @@ const EditUsulan = () => {
                   </label>
                 </div>
                 <div className="">
-                  <Select
+                  {/* <Select
                     options={dataPuskesmas}
                     value={selectedPuskesmas}
                     onChange={handlePuskesmasChange}
-                    isDisabled={!selectedKecamatan || user.role != "1"}
+                    isDisabled={!selectedKecamatan || user.role != "1" || true}
                     placeholder={
                       selectedKota
                         ? "Pilih Puskesmas"
@@ -598,6 +888,23 @@ const EditUsulan = () => {
                     }
                     className="w-full text-sm"
                     theme={selectThemeColors}
+                  /> */}
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="nama_puskesmas"
+                    value={formData.nama_puskesmas}
+                    // onChange={(e) =>
+                    //   setFormData((prev) => ({
+                    //     ...prev,
+                    //     nama_puskesmas: e.target.value,
+                    //   }))
+                    // }
+                    disabled
+                    type="text"
+                    required
+                    placeholder="Puskesmas"
                   />
                 </div>
               </div>
@@ -613,12 +920,13 @@ const EditUsulan = () => {
                 </div>
                 <div className="">
                   <input
-                    className={` bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                    className={`disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
                   "border-red-500" 
                rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
                     id="tahun_lokus"
                     value={formData.tahun_lokus}
-                    onChange={handleChange}
+                    // onChange={handleChange}
+                    disabled
                     maxLength={4}
                     type="text"
                     required
@@ -765,7 +1073,7 @@ const EditUsulan = () => {
             </div>
           </div>
           <button
-            onClick={handleSave}
+            onClick={handleSimpan}
             className="mt-4 bg-primary hover:bg-graydark text-white font-bold py-3 px-4 rounded w-full"
           >
             Simpan

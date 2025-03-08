@@ -436,6 +436,21 @@ const PdfUsulanAlkes = () => {
   }, [user.role, user.provinsi, user.kabupaten, dataProvinsi, dataKota]);
 
   const handleDownload = async (id) => {
+    const confirmResult = await Swal.fire({
+      title: "Apakah Anda Yakin?",
+      text: "Anda tidak dapat mengubah data setelah mendownload. Lanjutkan?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, Download",
+      cancelButtonText: "Batal",
+    });
+
+    // Jika pengguna memilih "Batal", hentikan proses
+    if (!confirmResult.isConfirmed) {
+      return;
+    }
     try {
       Swal.fire({
         title: "Generate dokumen...",
@@ -564,14 +579,14 @@ const PdfUsulanAlkes = () => {
         name: <div className="text-wrap">Kab / Kota</div>,
         selector: (row) => row.kabupaten,
         cell: (row) => <div className="text-wrap py-2">{row.kabupaten}</div>,
-        // width: "120px",
+        minWidth: "120px",
         sortable: true,
       },
       {
         name: <div className="text-wrap">Tanggal Download</div>,
         selector: (row) => row.tanggal_bast,
         cell: (row) => <div className="text-wrap py-4">{row.tanggal_bast}</div>,
-        width: "180px",
+        width: "165px",
         sortable: true,
 
         // width: "100px",
@@ -594,34 +609,23 @@ const PdfUsulanAlkes = () => {
             </button> */}
             <button
               title="Download"
-              className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-22 rounded-md font-medium text-sm"
+              className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-22 rounded-md font-medium text-xs"
               onClick={() => handleDownload(row.id)} // Tambahkan handler download di sini
             >
-              Buka Download
+              Buka <br /> Download
             </button>
-            {user.role == "2" || user.role == "3" || user.role == "4" ? (
-              <button
-                title="Upload Dokumen"
-                className="text-white py-2 w-20 bg-teal-500 rounded-md"
-                onClick={(e) => handleModalDokumen(e, row.id, row.nama_dokumen)}
-              >
-                Upload Dokumen
-              </button>
-            ) : (
-              ""
-            )}
           </div>
         ),
         ignoreRowClick: true,
         allowOverflow: true,
         button: true,
-        minWidth: "150px",
+        minWidth: "100px",
       },
       {
         name: <div className="text-wrap">Tanggal Upload</div>,
         selector: (row) => row.tanggal_bast,
         cell: (row) => <div className="text-wrap py-4">{row.tanggal_bast}</div>,
-        width: "180px",
+        width: "150px",
         sortable: true,
 
         // width: "100px",
@@ -652,18 +656,21 @@ const PdfUsulanAlkes = () => {
             </button> */}
             <button
               title="Download"
-              className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-22 rounded-md font-medium text-sm"
+              className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-22 rounded-md font-medium text-xs"
               onClick={() => handleDownload(row.id)} // Tambahkan handler download di sini
             >
-              Buka Upload
+              Buka
+              <br /> Upload
             </button>
-            {user.role == "2" || user.role == "3" || user.role == "4" ? (
+            {(user.role == "2" || user.role == "3" || user.role == "4") &&
+            row.tanggal_upload ? (
               <button
                 title="Upload Dokumen"
                 className="text-white py-2 w-20 bg-teal-500 rounded-md"
                 onClick={(e) => handleModalDokumen(e, row.id, row.nama_dokumen)}
               >
-                Upload Dokumen
+                Upload <br />
+                Dokumen
               </button>
             ) : (
               ""
@@ -671,14 +678,12 @@ const PdfUsulanAlkes = () => {
           </div>
         ),
         ignoreRowClick: true,
-        allowOverflow: true,
         button: true,
-        minWidth: "150px",
+        minWidth: "100px",
       },
 
       {
         name: "Aksi",
-        omit: user.role != "1",
         cell: (row) => (
           <div className="flex items-center space-x-2">
             <button

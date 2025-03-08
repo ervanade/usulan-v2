@@ -65,6 +65,9 @@ import EditPenyedia from "./pages/master-penyedia/EditPenyedia";
 import UsulanAlkes from "./pages/usulan-alkes/UsulanAlkes";
 import PdfUsulanAlkes from "./pages/usulan-alkes/PdfUsulanAlkes";
 import EditUsulan from "./pages/usulan-alkes/EditUsulan";
+import DataPeriode from "./pages/master-periode/DataPeriode";
+import TambahPeriode from "./pages/master-periode/TambahPeriode";
+import EditPeriode from "./pages/master-periode/EditPeriode";
 
 function App() {
   const { pathname } = useLocation();
@@ -155,9 +158,18 @@ function App() {
                 element={<TambahDistribusi />}
               /> */}
               <Route path="/not-found" element={<NotFound />} />
-              {/* <Route path="notifikasi" element={<Notifikasi />} />
+              {/* <Route path="notifikasi" element={<Notifikasi />} /> */}
               <Route path="/" element={<ProtectedRoutesAdmin />}>
-                <Route path="/logactivity" element={<LogActivity />} />
+                <Route path="master-data-periode" element={<DataPeriode />} />
+                <Route
+                  path="master-data-periode/add"
+                  element={<TambahPeriode />}
+                />
+                <Route
+                  path="master-data-periode/edit/:id"
+                  element={<EditPeriode />}
+                />
+                {/* <Route path="/logactivity" element={<LogActivity />} />
                 <Route
                   path="/logactivity/detail/:id"
                   element={<DetailLogActivity />}
@@ -246,8 +258,8 @@ function App() {
                 <Route
                   path="master-data-kecamatan/edit/:id"
                   element={<EditKecamatan />}
-                />
-              </Route> */}
+                /> */}
+              </Route>
             </Route>
           </Route>
           <Route

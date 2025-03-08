@@ -242,7 +242,7 @@ const UsulanAlkes = () => {
     try {
       const response = await axios({
         method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/distribusi`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/puskesmas`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -266,7 +266,7 @@ const UsulanAlkes = () => {
     try {
       const response = await axios({
         method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/search`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/puskesmas/filter`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -432,12 +432,21 @@ const UsulanAlkes = () => {
               title="Detail"
               className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
               onClick={() => {
-                navigate(`/usulan-alkes/edit/${row.id}`, {
-                  replace: true,
-                });
+                navigate(
+                  `/usulan-alkes/edit/${encodeURIComponent(encryptId(row.id))}`,
+                  {
+                    replace: true,
+                  }
+                );
               }}
             >
-              <Link to={`/usulan-alkes/edit/${row.id}`}>Detail</Link>
+              <Link
+                to={`/usulan-alkes/edit/${encodeURIComponent(
+                  encryptId(row.id)
+                )}`}
+              >
+                Detail
+              </Link>
             </button>
           </div>
         ),

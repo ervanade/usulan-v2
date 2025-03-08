@@ -28,7 +28,7 @@ export default {
         black: '#1C2434',
         'black-2': '#010101',
         body: '#64748B',
-        bodydark: '#AEB7C0',
+        bodydark: '#D3D3D3',
         bodydark1: '#728294',
         bodydark2: '#8A99AF',
         primary: '#027d77',

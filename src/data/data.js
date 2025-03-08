@@ -283,23 +283,23 @@ export const konfirmasiJumlahOptions = [
 ]
 export const SelectOptions = [
     {
-        "label": "Ya",
-        "value": "1"
+        "label": "YA",
+        "value": "YA"
     },
     {
-        "label": "Tidak",
-        "value": "0"
+        "label": "TIDAK",
+        "value": "TIDAK"
     }
 ]
 
 export const dayaOptions = [
     {
         "label": "< 10.000 VA",
-        "value": "0"
+        "value": "< 10.000 VA"
     },
     {
         "label": ">= 10.000 VA",
-        "value": "1"
+        "value": ">= 10.000 VA"
     }
 ]
 

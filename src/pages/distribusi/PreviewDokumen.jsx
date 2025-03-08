@@ -208,12 +208,12 @@ const PreviewDokumen = () => {
           total_barang_dikirim: data.total_barang_dikirim || "",
           total_harga: data.total_harga || "",
         });
-        if (data?.file_dokumen) {
-          setPdfUrl(data?.file_dokumen);
-          Swal.close();
-          setGetLoading(false);
-          return;
-        }
+        // if (data?.file_dokumen) {
+        //   setPdfUrl(data?.file_dokumen);
+        //   Swal.close();
+        //   setGetLoading(false);
+        //   return;
+        // }
         const dataJson = {
           nama_dokumen: data.nama_dokumen || "",
           id: data.id,
