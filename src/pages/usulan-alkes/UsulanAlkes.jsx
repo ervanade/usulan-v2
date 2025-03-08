@@ -373,44 +373,8 @@ const UsulanAlkes = () => {
   };
   const columns = useMemo(
     () => [
-      // { name: "No", selector: (row) => row.id, sortable: true },
-      // {
-      //   name: "Nomor BAST",
-      //   selector: (row) => row.nomor_bast,
-      //   sortable: true,
-      //   width: "100px",
-      // },
       {
-        name: <div className="text-wrap">Dokumen</div>,
-        selector: (row) => row.nama_dokumen,
-        sortable: true,
-        cell: (row) => <div className="text-wrap py-2">{row.nama_dokumen}</div>,
-        width: "120px",
-      },
-      {
-        name: <div className="text-wrap">Provinsi</div>,
-        selector: (row) => row.provinsi,
-        sortable: true,
-        cell: (row) => <div className="text-wrap py-2">{row.provinsi}</div>,
-        width: "120px",
-        omit: user.role == "3",
-      },
-      {
-        name: <div className="text-wrap">Kab / Kota</div>,
-        selector: (row) => row.kabupaten,
-        cell: (row) => <div className="text-wrap py-2">{row.kabupaten}</div>,
-        width: "120px",
-        sortable: true,
-      },
-      {
-        name: <div className="text-wrap">Kecamatan</div>,
-        selector: (row) => row.kecamatan,
-        cell: (row) => <div className="text-wrap py-2">{row.kecamatan}</div>,
-        width: "110px",
-        sortable: true,
-      },
-      {
-        name: <div className="text-wrap">Puskesmas</div>,
+        name: <div className="text-wrap">Nama Puskesmas</div>,
         selector: (row) => row.nama_puskesmas,
         cell: (row) => (
           <div className="text-wrap py-2">{row.nama_puskesmas}</div>
@@ -419,30 +383,46 @@ const UsulanAlkes = () => {
         sortable: true,
       },
       {
-        name: <div className="text-wrap">Tahun Lokus</div>,
-        selector: (row) => row.tahun_lokus,
-        cell: (row) => <div className="text-wrap py-2">{row.tahun_lokus}</div>,
+        name: <div className="text-wrap">Kecamatan</div>,
+        selector: (row) => row.kecamatan,
+        cell: (row) => <div className="text-wrap py-2">{row.kecamatan}</div>,
+        width: "120px",
         sortable: true,
-        width: "80px",
       },
       {
-        name: <div className="text-wrap">Jumlah Dikirim</div>,
-        selector: (row) => Number(row.jumlah_barang_dikirim) || 0,
-        cell: (row) => (
-          <div className="text-wrap py-2">{row.jumlah_barang_dikirim}</div>
-        ),
+        name: <div className="text-wrap">Kab / Kota</div>,
+        selector: (row) => row.kabupaten,
+        cell: (row) => <div className="text-wrap py-2">{row.kabupaten}</div>,
+        width: "150px",
         sortable: true,
-        width: "100px",
       },
       {
-        name: <div className="text-wrap">Jumlah Diterima</div>,
-        selector: (row) => Number(row.jumlah_barang_diterima) || 0,
-        cell: (row) => (
-          <div className="text-wrap py-2">{row.jumlah_barang_diterima}</div>
-        ),
+        name: <div className="text-wrap">Provinsi</div>,
+        selector: (row) => row.provinsi,
         sortable: true,
-        width: "100px",
+        cell: (row) => <div className="text-wrap py-2">{row.provinsi}</div>,
+        width: "150px",
+        omit: user.role == "3",
       },
+
+      // {
+      //   name: <div className="text-wrap">Jumlah Dikirim</div>,
+      //   selector: (row) => Number(row.jumlah_barang_dikirim) || 0,
+      //   cell: (row) => (
+      //     <div className="text-wrap py-2">{row.jumlah_barang_dikirim}</div>
+      //   ),
+      //   sortable: true,
+      //   width: "100px",
+      // },
+      // {
+      //   name: <div className="text-wrap">Jumlah Diterima</div>,
+      //   selector: (row) => Number(row.jumlah_barang_diterima) || 0,
+      //   cell: (row) => (
+      //     <div className="text-wrap py-2">{row.jumlah_barang_diterima}</div>
+      //   ),
+      //   sortable: true,
+      //   width: "100px",
+      // },
       {
         name: "Aksi",
         id: "Aksi",
@@ -764,6 +744,11 @@ const UsulanAlkes = () => {
                     },
                   },
                 },
+              }}
+              onRowClicked={(row) => {
+                navigate(`/usulan-alkes/edit/${row.id}`, {
+                  replace: true,
+                });
               }}
             />
           )}

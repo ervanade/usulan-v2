@@ -35,7 +35,7 @@ const DropdownUser = () => {
     fetchLogout();
   };
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const userAvatar = user?.profile || UserDefault;
+  const userAvatar = UserDefault;
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
