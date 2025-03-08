@@ -121,8 +121,8 @@ const UsulanAlkes = () => {
       { wch: 20 }, // Kolom 17 (Konfirmasi_Ppk)
     ];
 
-    XLSX.utils.book_append_sheet(wb, ws, `Data Distribusi`);
-    XLSX.writeFile(wb, "Data Distribusi.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, `Data Usulan Alkes`);
+    XLSX.writeFile(wb, "Data Usulan Alkes.xlsx");
   };
   const navigate = useNavigate();
 
@@ -677,7 +677,7 @@ const UsulanAlkes = () => {
           </div>
           <div className="div flex gap-2 flex-row">
             <button
-              title="Export Data Distribusi"
+              title="Export Data Usulan Alkes"
               className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white px-4 py-2 bg-primary rounded-md tracking-tight"
               onClick={handleExport}
             >
@@ -686,7 +686,7 @@ const UsulanAlkes = () => {
             </button>
             {user.role == "1" ? (
               <button
-                title="Tambah Data Distribusi"
+                title="Tambah Usulan Alkes"
                 className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white  bg-primary rounded-md tracking-tight"
               >
                 <Link
@@ -694,9 +694,7 @@ const UsulanAlkes = () => {
                   className="flex items-center gap-2 px-4 py-2"
                 >
                   <FaPlus size={16} />
-                  <span className="hidden sm:block">
-                    Tambah Data Distribusi
-                  </span>
+                  <span className="hidden sm:block">Tambah Usulan Alkes</span>
                 </Link>
               </button>
             ) : (

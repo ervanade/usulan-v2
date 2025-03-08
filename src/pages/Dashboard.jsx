@@ -51,7 +51,9 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    navigate("/usulan-alkes");
+    return;
+    // fetchDashboardData();
   }, []);
   if (getLoading) {
     return (
@@ -129,18 +131,18 @@ const Dashboard = () => {
       <div className="mt-4 md:mt-8 rounded-md border border-stroke bg-white py-6 md:py-12 px-4 md:px-8 shadow-default dark:border-strokedark dark:bg-boxdark text-bodydark2">
         <div className="welcome-text">
           <h1 className="font-semibold mb-3 text-xl lg:text-[28px] tracking-tight text-center">
-            TUTORIAL PENGGUNAAN SIMBAH-BMN
+            TUTORIAL PENGGUNAAN USULAN ALKES
           </h1>
         </div>
         <div className="article-wrapper mt-12 flex flex-col lg:flex-row gap-8 w-full">
           {[
             {
-              title: "Tutorial SIMBAH-BMN Admin Pusat",
+              title: "Tutorial USULAN ALKES Admin Pusat",
               img: Admin,
               link: "https://drive.google.com/file/d/11NaTKiULMGazHSsjDCS5W_TUoSDzyerl/view?usp=sharing",
             },
             {
-              title: "Tutorial SIMBAH-BMN User Daerah",
+              title: "Tutorial USULAN ALKES User Daerah",
               img: Daerah,
               link: "https://drive.google.com/file/d/1bjpysZp4-tDog7ENr9r3LKmdiwowFjmJ/view?usp=sharing",
             },

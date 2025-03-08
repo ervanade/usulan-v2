@@ -42,26 +42,8 @@ const Login = () => {
         dispatch(loginUser(data));
         localStorage.setItem("user", JSON.stringify(data));
         setLoading(false);
-        if (
-          (data.role == "2" || data.role == "3" || data.role == "4") &&
-          (!data.ttd || !data.name || !data.nip || !data.profile)
-        ) {
-          setLoading(false);
-          Swal.fire(
-            "Warning",
-            "Anda Belum Input Nama / NIP / TTE / Logo",
-            "warning"
-          );
-          navigate("/profile");
-          return;
-        } else if (data.role == "1") {
-          navigate("/");
-          return;
-        } else {
-          // handle other roles or default behavior
-          navigate("/");
-          return;
-        }
+        navigate("/usulan-alkes");
+        return;
       })
       .catch((error) => {
         setLoading(false);
@@ -114,7 +96,7 @@ const Login = () => {
             <img src="/logo-kemenkes.png" alt="Logo" />
           </div> */}
           <div className="title mb-6">
-            <h1 className="text-primary text-xl sm:text-2xl mb-2 font-medium text-center">
+            <h1 className="text-primary text-xl sm:text-2xl mb-2 font-semibold text-center">
               Masuk ke Aplikasi Usulan Alkes
             </h1>
           </div>

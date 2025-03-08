@@ -45,7 +45,7 @@ const Layout = () => {
 
           {/* <!-- ===== Main Content Start ===== --> */}
           <main>
-            <div className="mx-auto px-4 md:px-0  py-4 md:py-6 2xl:py-10">
+            <div className="mx-auto px-4 md:px-0  py-4 md:py-6 2xl:py-8">
               <Outlet />
             </div>
           </main>

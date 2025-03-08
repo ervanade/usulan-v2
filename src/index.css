@@ -8,6 +8,11 @@ body {
   background: #F5F9F9;
 }
 
+.css-8x196h-control {
+  background: #FAFAFA !important;
+}
+
+
 .webviewer {
   height: 80vh;
 }

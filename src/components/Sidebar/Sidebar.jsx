@@ -152,7 +152,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   PDF Usulan Alkes
                 </NavLink>
               </li>
-              <li>
+              {/* <li>
                 <NavLink
                   to="/"
                   className={`group relative flex items-center gap-2.5 rounded-md px-4 py-3 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
@@ -163,7 +163,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <HiOutlineHome size={22} />
                   Dashboard
                 </NavLink>
-              </li>
+              </li> */}
 
               {/* <!-- Menu Item Calendar --> */}
               {/* {user.role == "2" || user.role == "3" ? (

@@ -1092,60 +1092,6 @@ const PdfUsulanAlkes = () => {
                 }
               />
             </div>
-            <div>
-              <label
-                className="block text-[#728294] text-base font-normal mb-2"
-                htmlFor="kota"
-              >
-                Status TTE
-              </label>
-              <Select
-                options={[
-                  { label: "Sudah TTE", value: 1 },
-                  { label: "Belum TTE", value: 0 },
-                ]}
-                value={selectedStatus}
-                onChange={(status) => {
-                  setSelectedStatus(status);
-                }}
-                className="w-64 sm:w-32 xl:w-60"
-                theme={(theme) => ({
-                  ...theme,
-                  colors: {
-                    ...theme.colors,
-                    primary25: "lightgrey",
-                    primary: "grey",
-                  },
-                })}
-                placeholder={"Pilih Status TTE"}
-              />
-            </div>
-            {/* <div>
-              <label
-                className="block text-[#728294] text-base font-normal mb-2"
-                htmlFor="kecamatan"
-              >
-                Kecamatan
-              </label>
-              <Select
-                options={dataKecamatan}
-                value={selectedKecamatan}
-                onChange={handleKecamatanChange}
-                className="w-64 sm:w-32 xl:w-60"
-                theme={(theme) => ({
-                  ...theme,
-                  colors: {
-                    ...theme.colors,
-                    primary25: "lightgrey",
-                    primary: "grey",
-                  },
-                })}
-                isDisabled={user.role == "3" || !selectedKota}
-                placeholder={
-                  selectedKota ? "Pilih Kecamatan" : "Pilih Kab / Kota Dahulu"
-                }
-              />
-            </div> */}
           </div>
           <button
             onClick={handleSearchClick}

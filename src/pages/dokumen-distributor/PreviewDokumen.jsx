@@ -46,7 +46,7 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 // Import the main component
 import { Viewer, TextLayer, Worker, LoadError } from "@react-pdf-viewer/core";
-import { pdfjs as PdfJs } from "pdfjs-dist";
+// import { pdfjs as PdfJs } from "pdfjs-dist";
 // Import the styles
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
@@ -56,7 +56,7 @@ import Swal from "sweetalert2";
 import GenerateDokumen from "../../components/Dokumen/GenerateDokumen";
 import { MdWarning } from "react-icons/md";
 
-// pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
 // pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
 
 const resizeObserverOptions = {};
