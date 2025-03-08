@@ -118,6 +118,10 @@ function App() {
                 path="dokumen/preview-dokumen/:id"
                 element={<PreviewDokumen />}
               />
+              <Route
+                path="pdf-usulan-alkes/preview-dokumen/:id"
+                element={<PreviewDokumen />}
+              />
               <Route path="laporanbarang" element={<LaporanBarang />} />
               <Route
                 path="laporanbarang/detail/:idBarang/:idProvinsi/:idKabupaten"

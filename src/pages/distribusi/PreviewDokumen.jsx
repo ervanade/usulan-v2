@@ -46,7 +46,7 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 // Import the main component
 import { Viewer, TextLayer, Worker, LoadError } from "@react-pdf-viewer/core";
-import { pdfjs as PdfJs } from "pdfjs-dist";
+// import { pdfjs as PdfJs } from "pdfjs-dist";
 // Import the styles
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
@@ -58,6 +58,9 @@ import { MdWarning } from "react-icons/md";
 
 // pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
 // pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
+const worker = `/fonts/pdf.worker.min.mjs`;
+// const worker = `//unpkg.com/pdfjs-dist@${`4.8.69`}/build/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = worker;
 
 const resizeObserverOptions = {};
 
@@ -97,7 +100,7 @@ const PreviewDokumen = () => {
     setNumPages(numPages);
   };
   const onLoadError = () => {
-    setError(true);
+    // setError(true);
   };
   useEffect(() => {
     const updateScale = () => {
@@ -106,10 +109,12 @@ const PreviewDokumen = () => {
         setScale(0.5);
       } else if (width < 768) {
         setScale(0.7);
-      } else if (width < 1366) {
+      } else if (width < 1200) {
         setScale(1);
-      } else {
+      } else if (width < 1366) {
         setScale(1.2);
+      } else {
+        setScale(1.4);
       }
     };
 
@@ -283,7 +288,7 @@ const PreviewDokumen = () => {
   }, []);
   const renderError = (error) => {
     let message = "";
-    setError(true);
+    // setError(true);
     switch (error.name) {
       case "InvalidPDFException":
         message = "The document is invalid or corrupted";
@@ -1743,144 +1748,76 @@ const PreviewDokumen = () => {
           </div>
         </div>
       ) : null}
-      {jsonData && jsonData.file_dokumen ? (
-        <Worker workerUrl={"/pdf.worker.min.js"}>
-          {" "}
-          <div className="w-full h-[80vh] mt-4">
-            <Viewer
-              fileUrl={pdfUrl || "/contoh_laporan.pdf"}
-              plugins={[newPlugin]}
-              defaultScale={1.2}
-              renderError={renderError}
-            >
-              {(viewer) => {
-                try {
-                  return <TextLayer />;
-                } catch (error) {
-                  console.error(error);
-                  return null;
-                }
-              }}
-            </Viewer>
-          </div>
-        </Worker>
-      ) : // <div className="flex flex-col items-center min-h-screen bg-gray-100 p-4">
-      //   <div className="bg-gray-300 p-4 rounded-lg shadow-lg w-full max-w-4xl">
-      //     <div className="mb-4 flex justify-between items-center">
-      //       <button
-      //         onClick={zoomOut}
-      //         className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
-      //       >
-      //         - <span className="hidden sm:inline-block">Zoom Out</span>
-      //       </button>
-      //       <span className="text-gray-700">{Math.round(scale * 100)}%</span>
-      //       <button
-      //         onClick={zoomIn}
-      //         className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
-      //       >
-      //         + <span className="hidden sm:inline-block">Zoom In</span>
-      //       </button>
-      //     </div>
-      //     <div
-      //       ref={containerRef}
-      //       className="relative bg-gray-200 p-4 rounded-lg overflow-auto"
-      //       style={{ height: "1200px", width: "100%" }}
-      //     >
-      //       <DocumentPreview
-      //         file={pdfUrl}
-      //         onLoadSuccess={onLoadSuccess}
-      //         onLoadError={onLoadError}
-      //         className="pdf-document"
-      //       >
-      //         {[...Array(numPages).keys()].map((_, index) => (
-      //           <PagePreview
-      //             key={index}
-      //             pageNumber={index + 1}
-      //             scale={scale}
-      //             renderTextLayer={false}
-      //             renderAnnotationLayer={false}
-      //           />
-      //         ))}
-      //       </DocumentPreview>
-      //     </div>
-      //   </div>
-      // </div>
-      jsonData && !jsonData.file_dokumen ? (
-        <>
-          <div className="flex flex-col items-center h-[80vh] w-full bg-gray-100 p-4">
-            <div className="bg-gray-300 rounded-lg shadow-lg w-full ">
-              <div className="mb-4 flex justify-between items-center bg-teal-500 py-2 md:py-3 rounded-lg md:px-2 px-3 text-xs md:flex-row flex-col gap-1 md:gap-2 md:text-sm">
-                <span className="text-white font-semibold">
-                  {jsonData?.nomorSurat}
-                </span>
-                <span className="text-white flex items-center gap-1">
-                  Total Page : {numPages || <FaSpinner />}
-                </span>
-                <div className="flex items-center gap-2">
-                  {pdfBlob ? (
-                    <a
-                      href={URL.createObjectURL(pdfBlob)}
-                      download={`${jsonData.nama_dokumen || "document"}.pdf`}
-                      target="_blank"
-                      className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
-                    >
-                      <FaDownload />
-                    </a>
-                  ) : (
-                    <FaSpinner />
-                  )}
-                  <button
-                    onClick={zoomOut}
-                    className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
-                  >
-                    -
-                  </button>
-                  <span className="text-white">{Math.round(scale * 100)}%</span>
-                  <button
-                    onClick={zoomIn}
-                    className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-              <div
-                ref={containerRef}
-                className="relative bg-gray-200 p-4 rounded-lg overflow-auto"
-                style={{ height: "80vh", width: "100%" }}
-              >
-                <DocumentPreview
-                  file={pdfBlob}
-                  onLoadSuccess={onLoadSuccess}
-                  onLoadError={onLoadError}
-                  className="pdf-document"
-                  loading={
-                    <div className="flex justify-center items-center flex-col h-[20vh] gap-2">
-                      <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
-                      <span className="ml-2 font-semibold text-lg text-body">
-                        Loading Generate Dokumen...
-                      </span>
-                    </div>
-                  }
+      <div className="flex flex-col items-center h-[80vh] w-full bg-gray-100 p-4">
+        <div className="bg-gray-300 rounded-lg shadow-lg w-full ">
+          <div className="mb-4 flex justify-between items-center bg-teal-500 py-2 md:py-3 rounded-lg md:px-2 px-3 text-xs md:flex-row flex-col gap-1 md:gap-2 md:text-sm">
+            <span className="text-white font-semibold">
+              {jsonData?.nomorSurat}
+            </span>
+            <span className="text-white flex items-center gap-1">
+              Total Page : {numPages || <FaSpinner />}
+            </span>
+            <div className="flex items-center gap-2">
+              {pdfBlob ? (
+                <a
+                  href={URL.createObjectURL(pdfBlob)}
+                  download={`${jsonData.nama_dokumen || "document"}.pdf`}
+                  target="_blank"
+                  className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
                 >
-                  {[...Array(numPages).keys()].map((_, index) => (
-                    <PagePreview
-                      key={index}
-                      pageNumber={index + 1}
-                      scale={scale}
-                      className={`!bg-[#F5F9F9]`}
-                      renderTextLayer={false}
-                      renderAnnotationLayer={false}
-                    />
-                  ))}
-                </DocumentPreview>
-              </div>
+                  <FaDownload />
+                </a>
+              ) : (
+                <FaSpinner />
+              )}
+              <button
+                onClick={zoomOut}
+                className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
+              >
+                -
+              </button>
+              <span className="text-white">{Math.round(scale * 100)}%</span>
+              <button
+                onClick={zoomIn}
+                className="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
+              >
+                +
+              </button>
             </div>
           </div>
-        </>
-      ) : (
-        ""
-      )}
+          <div
+            ref={containerRef}
+            className="relative bg-gray-200 p-4 rounded-lg overflow-auto"
+            style={{ height: "80vh", width: "100%" }}
+          >
+            <DocumentPreview
+              file={pdfBlob}
+              onLoadSuccess={onLoadSuccess}
+              onLoadError={onLoadError}
+              className="pdf-document"
+              loading={
+                <div className="flex justify-center items-center flex-col h-[20vh] gap-2">
+                  <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
+                  <span className="ml-2 font-semibold text-lg text-body">
+                    Loading Generate Dokumen...
+                  </span>
+                </div>
+              }
+            >
+              {[...Array(numPages).keys()].map((_, index) => (
+                <PagePreview
+                  key={index}
+                  pageNumber={index + 1}
+                  scale={scale}
+                  className={`!bg-[#F5F9F9]`}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                />
+              ))}
+            </DocumentPreview>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

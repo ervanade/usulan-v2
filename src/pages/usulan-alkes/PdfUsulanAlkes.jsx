@@ -553,14 +553,6 @@ const PdfUsulanAlkes = () => {
 
   const columns = useMemo(
     () => [
-      // { name: "No", selector: (row) => row.id, sortable: true },
-      {
-        name: <div className="text-wrap">Nama Dokumen</div>,
-        selector: (row) => row.nama_dokumen,
-        sortable: true,
-        cell: (row) => <div className="text-wrap py-2">{row.nama_dokumen}</div>,
-        minWidth: "120px",
-      },
       {
         name: <div className="text-wrap">Provinsi</div>,
         selector: (row) => row.provinsi,
@@ -572,171 +564,20 @@ const PdfUsulanAlkes = () => {
         name: <div className="text-wrap">Kab / Kota</div>,
         selector: (row) => row.kabupaten,
         cell: (row) => <div className="text-wrap py-2">{row.kabupaten}</div>,
-        width: "120px",
+        // width: "120px",
         sortable: true,
       },
       {
-        name: <div className="text-wrap">Nomor BAST</div>,
-        selector: (row) => row.nomor_bast,
-        cell: (row) => <div className="text-wrap py-4">{row.nomor_bast}</div>,
-        minWidth: "150px",
+        name: <div className="text-wrap">Tanggal Download</div>,
+        selector: (row) => row.tanggal_bast,
+        cell: (row) => <div className="text-wrap py-4">{row.tanggal_bast}</div>,
+        width: "180px",
         sortable: true,
 
         // width: "100px",
       },
-      // {
-      //   name: "Tanggal BAST",
-      //   selector: (row) => row.tanggal_bast,
-      //   sortable: true,
-      //   // width: "100px",
-      // },
       {
-        name: <div className="text-wrap">Tahun Lokus</div>,
-        selector: (row) => row.tahun_lokus,
-        cell: (row) => <div className="text-wrap py-2">{row.tahun_lokus}</div>,
-        sortable: true,
-        width: "100px",
-      },
-      // {
-      //   name: "Kepala Unit Pemberi",
-      //   selector: (row) => row.kepala_unit_pemberi,
-      //   sortable: true,
-      //   // width: "100px",
-      // },
-      // {
-      //   name: "Penerima Hibah",
-      //   selector: (row) => row.penerima_hibah,
-      //   sortable: true,
-      //   // width: "100px",
-      // },
-      {
-        name: <div className="text-wrap">Status TTE</div>,
-        cell: (row) =>
-          user.role == "2" || user.role == "4" ? (
-            row.status_tte == "1" ? (
-              <div
-                className="p-2 bg-red-500 rounded-md text-white"
-                onClick={() => {
-                  navigate(
-                    `/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`
-                  );
-                }}
-              >
-                Belum TTE
-              </div>
-            ) : row.status_tte == "2" ? (
-              <div
-                className="p-2 bg-green-500 rounded-md text-white"
-                onClick={() => {
-                  navigate(
-                    `/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`
-                  );
-                }}
-              >
-                Sudah TTE
-              </div>
-            ) : (
-              <div
-                className="p-2 bg-yellow-500 rounded-md text-white"
-                onClick={() => {
-                  navigate(
-                    `/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`
-                  );
-                }}
-              >
-                Daerah Belum TTE
-              </div>
-            )
-          ) : user.role == "3" ? (
-            row.status_tte == "0" ? (
-              <div
-                className="p-2 bg-red-500 rounded-md text-white"
-                onClick={() => {
-                  navigate(
-                    `/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`
-                  );
-                }}
-              >
-                Belum TTE
-              </div>
-            ) : (
-              <div
-                className="p-2 bg-green-500 rounded-md text-white"
-                onClick={() => {
-                  navigate(
-                    `/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`
-                  );
-                }}
-              >
-                Sudah TTE
-              </div>
-            )
-          ) : user.role == "1" ? (
-            row.status_tte == "2" ? (
-              <div
-                className="p-2 bg-green-500 rounded-md text-white"
-                onClick={() => {
-                  navigate(
-                    `/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`
-                  );
-                }}
-              >
-                Sudah TTE
-              </div>
-            ) : row.status_tte == "1" ? (
-              <div
-                className="p-2 bg-yellow-500 rounded-md text-white"
-                onClick={() => {
-                  navigate(
-                    `/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`
-                  );
-                }}
-              >
-                Direktur Belum TTE
-              </div>
-            ) : (
-              <div
-                className="p-2 bg-red-500 rounded-md text-white"
-                onClick={() => {
-                  navigate(
-                    `/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`
-                  );
-                }}
-              >
-                Belum TTE
-              </div>
-            )
-          ) : (
-            ""
-          ),
-        sortable: true,
-        selector: (row) => row.status_tte,
-
-        width: "120px",
-      },
-      // {
-      //   name: "Keterangan PPK Kemenkes",
-      //   selector: (row) => row.keterangan_ppk,
-      //   sortable: true,
-      // },
-      {
-        name: <div className="text-wrap">Dokumen BAST</div>,
+        name: <div className="text-wrap">Download</div>,
         cell: (row) => (
           <div className="flex items-center space-x-2">
             {/* <button
@@ -752,7 +593,7 @@ const PdfUsulanAlkes = () => {
               className="text-[#16B3AC] hover:text-cyan-500"
             >
               <Link
-                to={`/dokumen/preview-dokumen/${encodeURIComponent(
+                to={`/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
                   encryptId(row.id)
                 )}`}
               >
@@ -785,126 +626,52 @@ const PdfUsulanAlkes = () => {
         minWidth: "150px",
       },
       {
-        name: "TTE",
+        name: <div className="text-wrap">Tanggal Upload</div>,
+        selector: (row) => row.tanggal_bast,
+        cell: (row) => <div className="text-wrap py-4">{row.tanggal_bast}</div>,
+        width: "180px",
+        sortable: true,
+
+        // width: "100px",
+      },
+      {
+        name: <div className="text-wrap">Upload</div>,
         cell: (row) => (
-          <div className="flex items-center space-x-2 font-semibold">
-            {user.role == "4" ? (
-              row.status_tte == "1" ? (
-                <button
-                  title="TTE"
-                  className="text-white py-2 w-22 bg-teal-500 rounded-md"
-                  onClick={(e) => {
-                    // navigate(
-                    //   `/dokumen/preview-dokumen/${encodeURIComponent(
-                    //     encryptId(row.id)
-                    //   )}`
-                    // );
-                    handleTTE(row.id, row.nama_dokumen);
-                  }}
-                >
-                  TTE
-                </button>
-              ) : row.status_tte == "2" ? (
-                <button
-                  title="TTE"
-                  className="text-white  py-2 w-22 bg-green-500 rounded-md"
-                  onClick={() => {
-                    navigate(
-                      `/dokumen/preview-dokumen/${encodeURIComponent(
-                        encryptId(row.id)
-                      )}`
-                    );
-                  }}
-                >
-                  <Link
-                    to={`/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`}
-                  >
-                    Sudah TTE
-                  </Link>
-                </button>
-              ) : (
-                <button
-                  title="Pending"
-                  className="text-white py-2 w-22 bg-yellow-500 rounded-md"
-                >
-                  Daerah Belum TTE
-                </button>
-              )
-            ) : user.role == "3" ? (
-              row.status_tte == "0" ? (
-                <button
-                  title="TTE"
-                  className="text-white py-2 w-22 bg-teal-500 rounded-md"
-                  onClick={(e) => {
-                    // navigate(
-                    //   `/dokumen/preview-dokumen/${encodeURIComponent(
-                    //     encryptId(row.id)
-                    //   )}`
-                    // );
-                    handleTTE(row.id, row.nama_dokumen);
-                  }}
-                >
-                  TTE
-                  {/* <Link
-                    to={`/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`}
-                  >
-                    TTE
-                  </Link> */}
-                </button>
-              ) : (
-                // <button
-                //   title="TTE"
-                //   className="text-white py-2 w-22 bg-teal-500 rounded-md"
-                //   onClick={(e) => handleTTE(e, row.id, row.nama_dokumen)}
-                // >
-                //   TTE
-                // </button>
-                <button
-                  title="TTE"
-                  className="text-white  py-2 w-22 bg-green-500 rounded-md"
-                  onClick={() => {
-                    navigate(
-                      `/dokumen/preview-dokumen/${encodeURIComponent(
-                        encryptId(row.id)
-                      )}`
-                    );
-                  }}
-                >
-                  <Link
-                    to={`/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`}
-                  >
-                    Sudah TTE
-                  </Link>
-                </button>
-              )
-            ) : (
-              ""
-            )}
-            {user.role == "1" || user.role == "2" ? (
-              <button
-                title="TTE"
-                className="text-white py-2 w-22 bg-teal-500 rounded-md"
-                onClick={() => {
-                  navigate(
-                    `/dokumen/preview-dokumen/${encodeURIComponent(
-                      encryptId(row.id)
-                    )}`
-                  );
-                }}
+          <div className="flex items-center space-x-2">
+            {/* <button
+              title="Input"
+              className="text-green-500 hover:text-green-700"
+            >
+              <Link to="/data-verifikasi/form-distribusi">
+                <FaPlus />
+              </Link>
+            </button> */}
+            <button
+              title="Lihat"
+              className="text-[#16B3AC] hover:text-cyan-500"
+            >
+              <Link
+                to={`/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
+                  encryptId(row.id)
+                )}`}
               >
-                <Link
-                  to={`/dokumen/preview-dokumen/${encodeURIComponent(
-                    encryptId(row.id)
-                  )}`}
-                >
-                  Detail
-                </Link>
+                <FaEye size={20} />
+              </Link>
+            </button>
+            <button
+              title="Download"
+              className="text-green-400 hover:text-green-500"
+              onClick={() => handleDownload(row.id)} // Tambahkan handler download di sini
+            >
+              <FaDownload size={20} />
+            </button>
+            {user.role == "2" || user.role == "3" || user.role == "4" ? (
+              <button
+                title="Upload Dokumen"
+                className="text-white py-2 w-20 bg-teal-500 rounded-md"
+                onClick={(e) => handleModalDokumen(e, row.id, row.nama_dokumen)}
+              >
+                Upload Dokumen
               </button>
             ) : (
               ""
@@ -914,8 +681,9 @@ const PdfUsulanAlkes = () => {
         ignoreRowClick: true,
         allowOverflow: true,
         button: true,
-        omit: true,
+        minWidth: "150px",
       },
+
       {
         name: "Aksi",
         omit: user.role != "1",
@@ -937,7 +705,7 @@ const PdfUsulanAlkes = () => {
                   className="text-[#16B3AC] hover:text-cyan-500"
                 >
                   <Link
-                    to={`/dokumen/edit/${encodeURIComponent(
+                    to={`/pdf-usulan-alkes/edit/${encodeURIComponent(
                       encryptId(row.id)
                     )}`}
                   >
@@ -959,7 +727,7 @@ const PdfUsulanAlkes = () => {
               title="Edit"
               className="text-white p-2 bg-blue-600 rounded-md"
             >
-              <Link to={`/dokumen/preview-dokumen/${encodeURIComponent(
+              <Link to={`/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
                   encryptId(row.id)
                 )}`}>
                 TTE
@@ -1032,7 +800,7 @@ const PdfUsulanAlkes = () => {
 
   return (
     <div>
-      <Breadcrumb pageName="PDF Usulan Alkes" linkBack="/dokumen" />
+      <Breadcrumb pageName="PDF Usulan Alkes" linkBack="/pdf-usulan-alkes" />
       <div className="flex flex-col items-center justify-center w-full tracking-tight mb-6">
         <h1 className="font-normal mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
           PDF Usulan Alkes
@@ -1175,7 +943,7 @@ const PdfUsulanAlkes = () => {
                 className="flex font-semibold items-center gap-2 cursor-pointer text-base text-white  bg-primary rounded-md tracking-tight"
               >
                 <Link
-                  to="/dokumen/add"
+                  to="/pdf-usulan-alkes/add"
                   className="flex items-center gap-2 px-4 py-2"
                 >
                   <FaPlus size={16} />

@@ -25,24 +25,46 @@ Font.register({
     },
   ],
 });
+Font.register({
+  family: "Calibri",
+  fonts: [
+    {
+      src: "/fonts/calibri-regular.ttf",
+      fontWeight: 400,
+    },
+    {
+      src: "/fonts/calibri-bold.ttf",
+      fontWeight: 700,
+    },
+  ],
+});
 
 const BORDER_COLOR = "#000";
 const BORDER_STYLE = "solid";
 const COL1_WIDTH = 5;
-const COLN_WIDTH = (100 - COL1_WIDTH) / 8;
+const COLN_WIDTH = (100 - COL1_WIDTH) / 4;
 
 const styles = StyleSheet.create({
   viewer: {
     width: "100%", //the pdf viewer will take up all of the width and height
-    height: (window.innerHeight * 4) / 5,
+    height: "100%",
   },
   page: {
-    fontSize: 11,
+    fontSize: 8,
     paddingTop: 30,
-    paddingLeft: 60,
-    paddingRight: 60,
+    paddingLeft: 30,
+    paddingRight: 30,
     lineHeight: 1.5,
     flexDirection: "column",
+  },
+  helvetica: {
+    color: "#000",
+    fontSize: 8,
+    lineHeight: 1.5,
+    fontWeight: "normal",
+    textAlign: "left",
+    fontFamily: "Helvetica-Bold",
+    textOverflow: "clip",
   },
   logo: {
     width: 74,
@@ -55,13 +77,13 @@ const styles = StyleSheet.create({
     marginTop: 24,
     display: "flex",
     width: "100%",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     justifyContent: "space-between",
   },
   reportTitle: {
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     color: "#000",
-    fontSize: 11,
+    fontSize: 8,
     fontWeight: "normal",
     width: "50%",
     letterSpacing: 0.3,
@@ -94,28 +116,28 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#000",
-    fontSize: 10,
+    fontSize: 8,
     lineHeight: 1.5,
     fontWeight: "normal",
     textAlign: "left",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     textOverflow: "clip",
   },
   textBold: {
     color: "#000",
-    fontSize: 10,
+    fontSize: 8,
     lineHeight: 1.5,
     fontWeight: "bold",
     textAlign: "left",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
   },
   textBoldTitle: {
     color: "#000",
-    fontSize: 10,
+    fontSize: 8,
     lineHeight: 1.5,
     fontWeight: "bold",
     textAlign: "center",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     marginBottom: 24,
   },
   imageTtd: {
@@ -125,21 +147,21 @@ const styles = StyleSheet.create({
   },
   TableHeader: {
     color: "#000",
-    fontSize: 10,
+    fontSize: 8,
     lineHeight: 1.5,
     textAlign: "center",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     verticalAlign: "middle",
     paddingVertical: 5,
   },
   TableRow: {
     color: "#000",
-    fontSize: 10,
+    fontSize: 8,
     lineHeight: 1,
     textAlign: "center",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     verticalAlign: "middle",
-    paddingVertical: 5,
+    paddingVertical: 2,
   },
   table: {
     display: "table",
@@ -200,7 +222,7 @@ const styles = StyleSheet.create({
   },
   tableCellHeader: {
     margin: 5,
-    fontSize: 10,
+    fontSize: 8,
     lineHeight: 1.2,
     fontWeight: 500,
     textAlign: "center",
@@ -208,16 +230,33 @@ const styles = StyleSheet.create({
   },
   tableCell: {
     margin: 5,
-    fontSize: 10,
+    fontSize: 8,
     lineHeight: 1,
     textAlign: "center",
     verticalAlign: "middle",
+  },
+  footer: {
+    position: "absolute",
+    bottom: 20,
+    left: 24,
+    fontSize: 7,
+    color: "#666666",
+  },
+  watermark: {
+    position: "absolute",
+    top: "50%", // Posisi tengah vertikal
+    left: "45%", // Posisi tengah horizontal
+    transform: "translate(-50%, -50%)", // Pusatkan teks
+    fontSize: 80, // Ukuran font besar
+    color: "red", // Warna merah
+    opacity: 0.2, // Opacity rendah untuk efek watermark
+    zIndex: -1, // Letakkan di belakang konten lain
   },
 });
 const formatRupiah = (price) => {
   return `${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 };
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 32;
 
 const getAllDetailDistribusi = (distribusi) => {
   return distribusi.flatMap((d) =>
@@ -241,7 +280,14 @@ export const RenderBarangPages = (jsonData) => {
   const pages = [];
   const totalItems = dataBarang.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-
+  const downloadDate = new Date().toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
   const totalJumlahDikirim = dataBarang.reduce(
     (acc, item) => acc + (parseFloat(item.jumlah_dikirim) || 0),
     0
@@ -265,103 +311,63 @@ export const RenderBarangPages = (jsonData) => {
     const isLastPage = i === totalPages - 1;
 
     pages.push(
-      <Page
-        key={i}
-        size="FOLIO"
-        style={{ paddingTop: 0, ...styles.page }}
-        orientation="landscape"
-      >
+      <Page key={i} size="FOLIO" style={{ paddingTop: 0, ...styles.page }}>
+        <Text style={styles.watermark}>FINAL</Text>
+
         <View
           style={{
             paddingVertical: 0,
             marginTop: 0,
-            ...styles.docContainerBorder,
-            height: 520,
+            height: 800,
           }}
         >
           <View
             style={{
               ...styles.titleContainer,
-              marginBottom: 0,
+              marginBottom: 16,
               marginTop: 0,
             }}
           >
             <Text
               style={{
                 ...styles.reportTitle,
-                width: "40%",
-                letterSpacing: 1,
-              }}
-            ></Text>
-            <Text
-              style={{
-                ...styles.reportTitle,
                 letterSpacing: 0.7,
-                width: "60%",
+                width: "100%",
                 lineHeight: 1.5,
               }}
             >
-              LAMPIRAN {i + 1}
-              {"\n"}BERITA ACARA SERAH TERIMA OPERASIONAL BARANG MILIK NEGARA
-              {"\n"}NOMOR: {jsonData?.nomorSurat}
-              {"\n"}TANGGAL: {jsonData?.tanggal}
+              <Text
+                style={{
+                  ...styles.helvetica,
+                  letterSpacing: 0.7,
+                  width: "100%",
+                  lineHeight: 1.5,
+                }}
+              >
+                Lampiran {i + 1}. Data usulan alat, jumlah dan peralatan pada
+                puskesmas.
+              </Text>
+              {"\n"}Kabupaten: {jsonData?.kabupaten}
             </Text>
           </View>
 
-          <View
-            style={{
-              ...styles.titleContainer,
-              width: "100%",
-              marginBottom: 8,
-              marginTop: 8,
-            }}
-          >
-            <Text
-              style={{
-                ...styles.reportTitle,
-                width: "100%",
-                textAlign: "center",
-                letterSpacing: 1,
-                marginTop: 8,
-              }}
-            >
-              DAFTAR BARANG MILIK NEGARA YANG DARI SEJAK AWAL DISERAHKAN KEPADA
-              MASYARAKAT/PEMERINTAH DAERAH DINAS KESEHATAN KOTA / KABUPATEN{" "}
-              {jsonData?.kabupaten}
-            </Text>
-          </View>
           <View style={styles.table}>
-            <View style={styles.tableRow}>
+            <View style={{ ...styles.tableRow, backgroundColor: "#F0F0F0" }}>
               <View style={styles.tableCol1Header}>
                 <Text style={styles.tableCellHeader}>No</Text>
               </View>
               <View style={styles.tableColHeader}>
-                <Text style={styles.tableCellHeader}>Nama Barang</Text>
+                <Text style={styles.tableCellHeader}>Nama Alkes</Text>
+              </View>
+
+              <View style={styles.tableColHeader}>
+                <Text style={styles.tableCellHeader}>Standard</Text>
               </View>
               <View style={styles.tableColHeader}>
-                <Text style={styles.tableCellHeader}>Merk/Tipe</Text>
+                <Text style={styles.tableCellHeader}>Eksisting</Text>
               </View>
               <View style={styles.tableColHeader}>
-                <Text style={styles.tableCellHeader}>
-                  Nomor Bukti Kepemilikan
-                </Text>
-              </View>
-              <View style={styles.tableColHeader}>
-                <Text style={styles.tableCellHeader}>Satuan</Text>
-              </View>
-              <View style={styles.tableColHeader}>
-                <Text style={styles.tableCellHeader}>Jumlah</Text>
-              </View>
-              <View style={styles.tableColHeader}>
-                <Text style={styles.tableCellHeader}>Harga Satuan</Text>
-              </View>
-              <View style={styles.tableColHeader}>
-                <Text style={styles.tableCellHeader}>
-                  Jumlah Total Nilai Perolehan (Rp)
-                </Text>
-              </View>
-              <View style={styles.tableColHeader}>
-                <Text style={styles.tableCellHeader}>Keterangan</Text>
+                <Text style={styles.tableCellHeader}>Usulan</Text>
               </View>
             </View>
             {currentData.map((items, index) => (
@@ -372,15 +378,7 @@ export const RenderBarangPages = (jsonData) => {
                 <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>{items.namaBarang || ""}</Text>
                 </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{items.merk || ""}</Text>
-                </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{items.nomorBukti || ""}</Text>
-                </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{items.satuan || ""}</Text>
-                </View>
+
                 <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>
                     {items.jumlah_dikirim || ""}
@@ -396,207 +394,15 @@ export const RenderBarangPages = (jsonData) => {
                     {formatRupiah(items.jumlahNilai) || ""}
                   </Text>
                 </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{items.keterangan || ""}</Text>
-                </View>
               </View>
             ))}
-
-            {isLastPage && (
-              <View style={styles.tableRow}>
-                <View style={{ ...styles.tableCol1, width: `52.5%` }}>
-                  <Text style={styles.tableCell}>Total</Text>
-                </View>
-                <View style={{ ...styles.tableCol, width: "11.875%" }}>
-                  <Text style={styles.tableCell}>
-                    {jsonData?.total_barang_dikirim}
-                  </Text>
-                </View>
-                <View style={{ ...styles.tableCol, width: "11.875%" }}>
-                  <Text style={styles.tableCell}>
-                    Rp. {formatRupiah(totalHargaSatuan.toFixed(0))}
-                  </Text>
-                </View>
-                <View style={{ ...styles.tableCol, width: "11.875%" }}>
-                  <Text style={styles.tableCell}>
-                    Rp. {formatRupiah(totalJumlahNilai.toFixed(0))}
-                  </Text>
-                </View>
-                <View style={{ ...styles.tableCol, width: "11.875%" }}>
-                  <Text style={styles.tableCell}></Text>
-                </View>
-              </View>
-            )}
           </View>
-
-          <View style={{ marginTop: 16 }}>
-            <View style={styles.ttdContainer}>
-              <View style={{ flex: 1 }}>
-                <Text style={{ ...styles.textBold, textAlign: "center" }}>
-                  PIHAK KESATU
-                </Text>
-                <Text style={{ ...styles.text, textAlign: "center" }}>
-                  Kementerian Kesehatan {"\n"}
-                  {jsonData?.kepala_unit_pemberi ||
-                    "Direktur Fasilitas dan Mutu Pelayanan Kesehatan Primer"}
-                </Text>
-                <Image
-                  style={{ ...styles.imageTtd, marginVertical: 4 }}
-                  src={`${jsonData?.tte_ppk}?not-from-cache-please`}
-                  onError={(error) => {
-                    error.target.src = defaultImage;
-                  }}
-                />
-                <Text
-                  style={{
-                    ...styles.text,
-                    fontFamily: "Arial",
-                    marginTop: 4,
-                    fontSize: 11,
-                    lineHeight: 1.2,
-                    textAlign: "center",
-                    letterSpacing: 0.2,
-                  }}
-                >
-                  Nama :{" "}
-                  {jsonData?.nama_ppk || "drg. R Vensya Sitohang, M.Epid, Ph.D"}{" "}
-                  {"\n"}
-                  NIP : {jsonData?.nip_ppk || "196512131991012001"}
-                </Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ ...styles.textBold, textAlign: "center" }}>
-                  PIHAK KEDUA
-                </Text>
-                <Text style={{ ...styles.text, textAlign: "center" }}>
-                  Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
-                </Text>
-                <Image
-                  style={{ ...styles.imageTtd, marginVertical: 4 }}
-                  src={`${jsonData?.tte_daerah}?not-from-cache-please`}
-                  onError={(error) => {
-                    error.target.src = defaultImage;
-                  }}
-                />
-                <Text
-                  style={{
-                    ...styles.text,
-                    fontFamily: "Arial",
-                    marginTop: 4,
-                    fontSize: 11,
-                    lineHeight: 1.2,
-                    textAlign: "center",
-                    letterSpacing: 0.2,
-                  }}
-                >
-                  Nama : {jsonData?.nama_daerah || ""} {"\n"}
-                  NIP : {jsonData?.nip_daerah || ""}
-                </Text>
-              </View>
-            </View>
-            {/* <View style={styles.table}>
-              <View style={styles.tableRow}>
-                <View
-                  style={{
-                    ...styles.tableCol1Header,
-                    width: "70%",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <Text
-                    style={{
-                      ...styles.tableCellHeader,
-                      color: "#000",
-                      fontSize: 11,
-                      lineHeight: 1.5,
-                      fontWeight: "bold",
-                      textAlign: "left",
-                      fontFamily: "Arial",
-                    }}
-                  >
-                    PIHAK KESATU
-                  </Text>
-                </View>
-                <View style={{ ...styles.tableColHeader, width: "30%" }}>
-                  <Text
-                    style={{
-                      ...styles.tableCellHeader,
-                      color: "#000",
-                      fontSize: 11,
-                      lineHeight: 1.5,
-                      fontWeight: "bold",
-                      textAlign: "left",
-                      fontFamily: "Arial",
-                    }}
-                  >
-                    PIHAK KEDUA
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.tableRow}>
-                <View style={{ ...styles.tableCol, width: "70%" }}>
-                  <Text style={{ ...styles.tableCell, ...styles.text }}>
-                    Kementerian Kesehatan{" "}
-                    {jsonData?.kepala_unit_pemberi ||
-                      "Direktur Fasilitas dan Mutu Pelayanan Kesehatan Primer"}
-                  </Text>
-                </View>
-                <View style={{ ...styles.tableCol, width: "30%" }}>
-                  <Text style={{ ...styles.tableCell, ...styles.text }}>
-                    Kepala Dinas Kesehatan Kota/ Kabupaten{" "}
-                    {jsonData?.penerima_hibah || ""}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.tableRow}>
-                <View style={{ ...styles.tableCol, width: "70%" }}>
-                  <Text
-                    style={{
-                      ...styles.tableCell,
-                      ...styles.text,
-                      marginBottom: 0,
-                    }}
-                  >
-                    Nama{" "}
-                    {jsonData?.nama_ppk ||
-                      "drg. R Vensya Sitohang, M.Epid, Ph.D"}
-                  </Text>
-                  <Text
-                    style={{
-                      ...styles.tableCell,
-                      ...styles.text,
-                      marginBottom: 0,
-                    }}
-                  >
-                    NIP {jsonData?.nip_ppk || "196512131991012001"}
-                  </Text>
-                </View>
-                <View style={{ ...styles.tableCol, width: "30%" }}>
-                  <Text
-                    style={{
-                      ...styles.tableCell,
-                      ...styles.text,
-                      marginBottom: 0,
-                    }}
-                  >
-                    Nama {jsonData?.nama_daerah || ""}
-                  </Text>
-                  <Text
-                    style={{
-                      ...styles.tableCell,
-                      ...styles.text,
-                      marginBottom: 0,
-                    }}
-                  >
-                    NIP {jsonData?.nip_daerah || ""}
-                  </Text>
-                </View>
-              </View>
-              
-            </View> */}
-          </View>
+        </View>
+        <View style={styles.footer}>
+          <Text>
+            Downloaded on {downloadDate}. [Backend use only: location_group_id =
+            117, username = jawa_barat]
+          </Text>
         </View>
       </Page>
     );

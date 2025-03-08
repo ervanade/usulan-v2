@@ -56,7 +56,7 @@ import Swal from "sweetalert2";
 import GenerateDokumen from "../../components/Dokumen/GenerateDokumen";
 import { MdWarning } from "react-icons/md";
 
-pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
+// pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
 // pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
 
 const resizeObserverOptions = {};
@@ -1970,7 +1970,7 @@ const PreviewDokumen = () => {
       <Breadcrumb
         pageName={`Dokumen ${jsonData?.nama_dokumen}`}
         back={true}
-        linkBack="/dokumen"
+        linkBack="/pdf-usulan-alkes"
         jsonData={jsonData}
       />
       <HeaderDokumen jsonData={jsonData} user={user} />

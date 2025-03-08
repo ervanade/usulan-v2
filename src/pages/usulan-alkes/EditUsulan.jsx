@@ -8,6 +8,7 @@ import {
   dataKecamatan,
   dataKota,
   dataProvinsi,
+  dayaOptions,
   pelayananOptions,
   SelectOptions,
 } from "../../data/data";
@@ -64,6 +65,9 @@ const EditUsulan = () => {
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
   const [selectedPuskesmas, setSelectedPuskesmas] = useState(null);
   const [selectedPelayanan, setSelectedPelayanan] = useState(null);
+  const [selectedDaya, setSelectedDaya] = useState(null);
+  const [selectedListrik, setSelectedListrik] = useState(null);
+  const [selectedInternet, setSelectedInternet] = useState(null);
 
   const navigate = useNavigate();
 
@@ -272,6 +276,30 @@ const EditUsulan = () => {
     }));
   };
 
+  const handleDayaChange = (selectedOption) => {
+    setSelectedDaya(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      daya: selectedOption ? selectedOption.value.toString() : "",
+    }));
+  };
+
+  const handleListrikChange = (selectedOption) => {
+    setSelectedListrik(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      listrik: selectedOption ? selectedOption.value.toString() : "",
+    }));
+  };
+
+  const handleInternetChange = (selectedOption) => {
+    setSelectedInternet(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      internet: selectedOption ? selectedOption.value.toString() : "",
+    }));
+  };
+
   useEffect(() => {
     if (formData.id_provinsi && dataProvinsi.length > 0) {
       const initialOption = dataProvinsi?.find(
@@ -361,29 +389,7 @@ const EditUsulan = () => {
   const columns = useMemo(
     () => [
       {
-        name: <div className="text-wrap">Provinsi</div>,
-        selector: (row) => row.provinsi,
-        sortable: true,
-        cell: (row) => <div className="text-wrap py-2">{row.provinsi}</div>,
-        width: "120px",
-        omit: user.role == "3",
-      },
-      {
-        name: <div className="text-wrap">Kab / Kota</div>,
-        selector: (row) => row.kabupaten,
-        cell: (row) => <div className="text-wrap py-2">{row.kabupaten}</div>,
-        width: "120px",
-        sortable: true,
-      },
-      {
-        name: <div className="text-wrap">Kecamatan</div>,
-        selector: (row) => row.kecamatan,
-        cell: (row) => <div className="text-wrap py-2">{row.kecamatan}</div>,
-        width: "110px",
-        sortable: true,
-      },
-      {
-        name: <div className="text-wrap">Puskesmas</div>,
+        name: <div className="text-wrap">Nama Alkes</div>,
         selector: (row) => row.nama_puskesmas,
         cell: (row) => (
           <div className="text-wrap py-2">{row.nama_puskesmas}</div>
@@ -391,9 +397,16 @@ const EditUsulan = () => {
         minWidth: "110px",
         sortable: true,
       },
+      {
+        name: <div className="text-wrap">Standard</div>,
+        selector: (row) => row.kabupaten,
+        cell: (row) => <div className="text-wrap py-2">1</div>,
+        width: "120px",
+        sortable: true,
+      },
 
       {
-        name: <div className="text-wrap">Jumlah Dikirim</div>,
+        name: <div className="text-wrap">Masih Berfungsi</div>,
         cell: (row) => (
           <input
             type="number"
@@ -411,7 +424,7 @@ const EditUsulan = () => {
         width: "200px",
       },
       {
-        name: <div className="text-wrap">Jumlah Diterima</div>,
+        name: <div className="text-wrap">Usulan</div>,
         cell: (row) => (
           <input
             type="number"
@@ -647,9 +660,9 @@ const EditUsulan = () => {
                 </div>
                 <div className="">
                   <Select
-                    options={SelectOptions}
-                    value={selectedPelayanan}
-                    onChange={handlePelayananChange}
+                    options={dayaOptions}
+                    value={selectedDaya}
+                    onChange={handleDayaChange}
                     placeholder="Ketersediaan Daya Listrik"
                     className="w-full"
                     theme={selectThemeColors}
@@ -662,14 +675,14 @@ const EditUsulan = () => {
                     className="block text-[#728294] text-base font-semibold mb-1"
                     htmlFor="email"
                   >
-                    Ketersediaan Listrik (24 Jam):
+                    Ketersediaan Listrik (24 Jam) :
                   </label>
                 </div>
                 <div className="">
                   <Select
                     options={SelectOptions}
-                    value={selectedPelayanan}
-                    onChange={handlePelayananChange}
+                    value={selectedListrik}
+                    onChange={handleListrikChange}
                     placeholder="Ketersediaan Listrik"
                     className="w-full"
                     theme={selectThemeColors}
@@ -688,8 +701,8 @@ const EditUsulan = () => {
                 <div className="">
                   <Select
                     options={SelectOptions}
-                    value={selectedPelayanan}
-                    onChange={handlePelayananChange}
+                    value={selectedInternet}
+                    onChange={handleInternetChange}
                     placeholder="Ketersediaan Internet"
                     className="w-full"
                     theme={selectThemeColors}

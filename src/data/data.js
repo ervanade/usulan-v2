@@ -292,6 +292,17 @@ export const SelectOptions = [
     }
 ]
 
+export const dayaOptions = [
+    {
+        "label": "< 10.000 VA",
+        "value": "0"
+    },
+    {
+        "label": ">= 10.000 VA",
+        "value": "1"
+    }
+]
+
 export const ProgramOptions = [
     {
         "label": "SOPHI",

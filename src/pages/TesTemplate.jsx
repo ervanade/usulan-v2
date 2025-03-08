@@ -2,7 +2,6 @@ import React, { useRef, useEffect } from "react";
 import WebViewer from "@pdftron/webviewer";
 import { Viewer, TextLayer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-import { pdfjs } from 'pdfjs-dist';
 
 // Import the styles
 import { Worker } from '@react-pdf-viewer/core';

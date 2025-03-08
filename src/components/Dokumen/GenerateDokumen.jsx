@@ -55,6 +55,19 @@ Font.register({
     },
   ],
 });
+Font.register({
+  family: "Calibri",
+  fonts: [
+    {
+      src: "/fonts/calibri-regular.ttf",
+      fontWeight: 400,
+    },
+    {
+      src: "/fonts/calibri-bold.ttf",
+      fontWeight: 700,
+    },
+  ],
+});
 
 const BORDER_COLOR = "#000";
 const BORDER_STYLE = "solid";
@@ -67,10 +80,10 @@ const styles = StyleSheet.create({
     height: (window.innerHeight * 4) / 5,
   },
   page: {
-    fontSize: 11,
+    fontSize: 8,
     paddingTop: 30,
-    paddingLeft: 60,
-    paddingRight: 60,
+    paddingLeft: 30,
+    paddingRight: 30,
     lineHeight: 1.5,
     flexDirection: "column",
   },
@@ -85,13 +98,13 @@ const styles = StyleSheet.create({
     marginTop: 24,
     display: "flex",
     width: "100%",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     justifyContent: "space-between",
   },
   reportTitle: {
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     color: "#000",
-    fontSize: 11,
+    fontSize: 8,
     fontWeight: "normal",
     width: "50%",
     letterSpacing: 0.3,
@@ -124,7 +137,7 @@ const styles = StyleSheet.create({
   },
   helvetica: {
     color: "#000",
-    fontSize: 11,
+    fontSize: 8,
     lineHeight: 1.5,
     fontWeight: "normal",
     textAlign: "left",
@@ -133,28 +146,28 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#000",
-    fontSize: 11,
+    fontSize: 8,
     lineHeight: 1.5,
     fontWeight: "normal",
     textAlign: "left",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     textOverflow: "clip",
   },
   textBold: {
     color: "#000",
-    fontSize: 11,
+    fontSize: 8,
     lineHeight: 1.5,
     fontWeight: "bold",
     textAlign: "left",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
   },
   textBoldTitle: {
     color: "#000",
-    fontSize: 11,
+    fontSize: 8,
     lineHeight: 1.5,
     fontWeight: "bold",
     textAlign: "center",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     marginBottom: 24,
   },
   imageTtd: {
@@ -164,19 +177,19 @@ const styles = StyleSheet.create({
   },
   TableHeader: {
     color: "#000",
-    fontSize: 11,
+    fontSize: 8,
     lineHeight: 1.5,
     textAlign: "center",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     verticalAlign: "middle",
     paddingVertical: 5,
   },
   TableRow: {
     color: "#000",
-    fontSize: 11,
+    fontSize: 8,
     lineHeight: 1,
     textAlign: "center",
-    fontFamily: "Arial",
+    fontFamily: "Calibri",
     verticalAlign: "middle",
     paddingVertical: 5,
   },
@@ -239,7 +252,7 @@ const styles = StyleSheet.create({
   },
   tableCellHeader: {
     margin: 5,
-    fontSize: 11,
+    fontSize: 8,
     lineHeight: 1.2,
     fontWeight: 500,
     textAlign: "center",
@@ -247,123 +260,107 @@ const styles = StyleSheet.create({
   },
   tableCell: {
     margin: 5,
-    fontSize: 11,
+    fontSize: 8,
     lineHeight: 1,
     textAlign: "center",
     verticalAlign: "middle",
   },
+  footer: {
+    position: "absolute",
+    bottom: 20,
+    left: 24,
+    fontSize: 7,
+    color: "#666666",
+  },
+  watermark: {
+    position: "absolute",
+    top: "50%", // Posisi tengah vertikal
+    left: "45%", // Posisi tengah horizontal
+    transform: "translate(-50%, -50%)", // Pusatkan teks
+    fontSize: 80, // Ukuran font besar
+    color: "red", // Warna merah
+    opacity: 0.2, // Opacity rendah untuk efek watermark
+    zIndex: -1, // Letakkan di belakang konten lain
+  },
 });
 
 const GenerateDokumen = async (jsonData, distributor) => {
+  const downloadDate = new Date().toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
   const MyDocument = () => (
     <Document title={`Dokumen ${jsonData?.nomorSurat}`}>
       <Page size="FOLIO" style={styles.page}>
         <View
           style={{
-            ...styles.docContainerBorder,
             paddingHorizontal: 24,
             paddingVertical: 16,
+            width: "100%",
+            height: "100%",
+            textAlign: "center",
+            display: "flex",
           }}
         >
-          <View
-            style={{
-              textAlign: "center",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: 16,
-            }}
-          >
-            {/* <Image
-              style={{
-                width: "490px",
-                height: "96px",
-                // marginVertical: 16,
-              }}
-              src="/kop_surat1.png"
-            /> */}
-          </View>
-          <View
-            style={{
-              textAlign: "center",
-              display: "flex",
-              justifyContent: "space-between",
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: 32,
-            }}
-          >
-            <Image
-              style={{
-                width: "48px",
-                height: "48px",
-                // marginVertical: 16,
-              }}
-              src="/favicon.png"
-            />
-            <Image
-              style={{
-                width: "48px",
-                height: "48px",
-                objectFit: "contain",
-              }}
-              src={`${
-                jsonData?.logo_daerah
-                  ? jsonData?.logo_daerah + "?not-from-cache-please"
-                  : "/favicon.png"
-              }`}
-              onError={(error) => {
-                error.target.src = "/favicon.png";
-              }}
-            />
-          </View>
           <Text
             style={{
-              ...styles.textBoldTitle,
-              marginBottom: 16,
+              ...styles.helvetica,
               lineHeight: 1.7,
+              letterSpacing: 0.1,
+              marginTop: 340,
+              width: "100%",
+              fontSize: 10,
+              textAlign: "center",
             }}
           >
-            BERITA ACARA SERAH TERIMA OPERASIONAL {"\n"} BARANG MILIK NEGARA{" "}
-            {"\n"} ANTARA {"\n"}
-            KEMENTERIAN KESEHATAN {"\n"} DENGAN {"\n"} DINAS KESEHATAN DAERAH{" "}
-            {jsonData?.kabupaten} {"\n"} NOMOR {jsonData?.nomorSurat} {"\n"}
-            TENTANG {"\n"} HIBAH BARANG MILIK NEGARA YANG DARI SEJAK AWAL
-            DISERAHKAN KEPADA {"\n"}
-            MASYARAKAT/PEMERINTAH {"\n"} DAERAH DINAS KESEHATAN DAERAH{" "}
-            {jsonData?.kabupaten} PADA {"\n"}{" "}
-            {formatTanggal(jsonData?.tanggal) || ""}
+            dibuat oleh kab/kota {"\n\n"}PROPOSAL {"\n\n"}PEMENUHAN ALAT
+            KESEHATAN DI PUSKESMAS,{"\n\n"}
+            PUSKESMAS PEMBANTU DAN POSYANDU di {"\n\n"}KABUPATEN/KOTA KAB.
+            BANDUNG
           </Text>
-          <Text style={styles.text}>
-            Pada hari ini{" "}
-            {moment(jsonData?.tanggal_tte_ppk || defaultDate)
-              .locale("id")
-              .format("dddd")}
-            , tanggal{" "}
-            {moment(jsonData?.tanggal_tte_ppk || defaultDate).format("D", "id")}{" "}
-            bulan{" "}
-            {moment(jsonData?.tanggal_tte_ppk || defaultDate).format("M", "id")}{" "}
-            tahun{" "}
-            {moment(jsonData?.tanggal_tte_ppk || defaultDate).format(
-              "yyyy",
-              "id"
-            )}
-            {" ("}
-            {moment(jsonData?.tanggal_tte_ppk || defaultDate).format(
-              "D-MM-YYYY",
-              "id"
-            )}
-            {") "} bertempat di Jakarta, yang bertanda tangan di bawah ini:
+          <Text
+            style={{
+              ...styles.helvetica,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              marginTop: 240,
+              width: "100%",
+              fontSize: 10,
+              textAlign: "center",
+            }}
+          >
+            DINAS KESEHATAN KABUPATEN/KOTA KAB. BANDUNG {"\n\n"}PROVINSI JAWA
+            BARAT {"\n\n"}TAHUN 2024
           </Text>
+        </View>
+        <View style={styles.footer}>
+          <Text>
+            Downloaded on {downloadDate}. [Backend use only: location_group_id =
+            117, username = jawa_barat]
+          </Text>
+        </View>
+      </Page>
 
+      <Page size="FOLIO" style={styles.page}>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            height: 800,
+          }}
+        >
           <View
             style={{
               ...styles.text,
               lineHeight: 1.7,
               letterSpacing: 0.1,
               display: "flex",
-              flexDirection: "row",
-              marginTop: 8,
+              flexDirection: "column",
+              marginTop: 16,
               width: "100%",
             }}
           >
@@ -375,26 +372,20 @@ const GenerateDokumen = async (jsonData, distributor) => {
                 display: "flex",
                 flexDirection: "row",
                 marginTop: 8,
-                width: "70%",
+                width: "100%",
               }}
             >
-              <Text style={{ marginRight: 24 }}>1.</Text>
-              {/* <Text style={{ marginRight: 16, ...styles.textBold }}>
-                (Nama lengkap{"             "}:{"\n"}Kepala Unit Kerja {"\n"}
-                tanpa gelar)
-              </Text> */}
-              <Text
-                style={{ marginRight: 16, maxWidth: 120, ...styles.textBold }}
-              >
-                R Vensya Sitohang
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>A.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                LATAR BELAKANG
               </Text>
-              <Text style={{ ...styles.textBold }}>:</Text>
             </View>
             <View
               style={{
                 ...styles.text,
                 lineHeight: 1.7,
                 letterSpacing: 0.1,
+                paddingLeft: 24,
                 display: "flex",
                 flexDirection: "row",
                 marginTop: 8,
@@ -402,56 +393,25 @@ const GenerateDokumen = async (jsonData, distributor) => {
               }}
             >
               <Text>
-                selaku pimpinan unit kerja pemberi barang milik negara, dalam
-                hal ini bertindak untuk dan atas nama {jsonData?.nama_ppk} dan
-                berkantor di Jakarta, selanjutnya disebut{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KESATU
-                </Text>
+                Kementerian Kesehatan telah melakukan transformasi sistem
+                kesehatan melalui 6 pilar, dengan pilar pertama yaitu
+                transformasi layanan primer. Transformasi layanan primer
+                difokuskan untuk meningkatkan layanan promotif dan preventif,
+                termasuk upaya pencegahan, deteksi dini, promosi kesehatan,
+                membangun infrastruktur, melengkapi sarana, prasarana, SDM,
+                serta memperkuat manajemen di seluruh layanan primer.
+                Transformasi layanan kesehatan primer yang akan dijalankan
+                menerapkan konsep kewilayahan difokuskan pada pendekatan siklus
+                hidup serta mendekatkan layanan kesehatan melalui jejaring
+                hingga ke tingkat dusun.
               </Text>
-            </View>
-          </View>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 8,
-              width: "100%",
-            }}
-          >
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                display: "flex",
-                flexDirection: "row",
-                marginTop: 8,
-                width: "70%",
-              }}
-            >
-              <Text style={{ marginRight: 24 }}>2.</Text>
-              <Text
-                style={{ marginRight: 16, ...styles.textBold, maxWidth: 120 }}
-              >
-                {jsonData?.nama_daerah ||
-                  `(Nama lengkap{"             "}: {"\n"}Kepala Dinas{"\n"}
-                Kesehatan Daerah {"\n"}Provinsi, Kepala Dinas{"\n"}Kesehatan
-                Daerah{"\n"}Kabupaten/Kota,{"\n"}Direktur Rumah Sakit {"\n"}
-                milik pemerintah{"\n"}
-                Daerah/rumah sakit {"\n"}milik swasta tanpa gelar)`}
-              </Text>
-              <Text style={{ ...styles.textBold }}>:</Text>
             </View>
             <View
               style={{
                 ...styles.text,
                 lineHeight: 1.7,
                 letterSpacing: 0.1,
+                paddingLeft: 24,
                 display: "flex",
                 flexDirection: "row",
                 marginTop: 8,
@@ -459,518 +419,35 @@ const GenerateDokumen = async (jsonData, distributor) => {
               }}
             >
               <Text>
-                selaku Kepala Dinas Kesehatan Daerah Provinsi/Kepala Dinas
-                Kesehatan Daerah {jsonData?.kabupaten}/Direktur Rumah Sakit
-                penerima hibah barang milik negara{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  OBJEK HIBAH
-                </Text>
-                , dalam hal ini bertindak untuk dan atas nama{" "}
-                {jsonData?.nama_daerah} yang berkedudukan dan berkantor di{" "}
-                {jsonData?.kabupaten}, selanjutnya disebut sebagai{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KEDUA
-                </Text>
+                Menindaklanjuti usulan kami sebelumnya di tahun 2023 dan untuk
+                pelaksanaan Penyelenggaraan pelayanan kesehatan primer
+                dilaksanakan di Posyandu tingkat dusun/RT/RW, dan Puskesmas di
+                tingkat kecamatan. Kami melakukan perbaikan usulan terhadap
+                alat-alat kesehatan di Puskesmas, dan Posyandu yang sebelumnya
+                sudah diusulkan dan perlu penyesuain terhadap kondisi di tahun
+                2024 ini.
               </Text>
             </View>
-          </View>
-        </View>
-      </Page>
-
-      <Page size="FOLIO" style={styles.page}>
-        <View
-          style={{
-            ...styles.docContainerBorder,
-            paddingHorizontal: 24,
-            paddingVertical: 16,
-            height: 800,
-          }}
-        >
-          <Text
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              marginTop: 16,
-              width: "100%",
-            }}
-          >
-            <Text style={{ marginRight: 16, ...styles.helvetica }}>
-              PIHAK KESATU
-            </Text>{" "}
-            dan{" "}
-            <Text style={{ marginRight: 16, ...styles.helvetica }}>
-              PIHAK KEDUA
-            </Text>{" "}
-            selanjutnya secara sendiri-sendiri disebut{" "}
-            <Text style={{ marginRight: 16, ...styles.helvetica }}>PIHAK</Text>{" "}
-            dan secara bersama-sama disebut{" "}
-            <Text style={{ marginRight: 16, ...styles.helvetica }}>
-              PARA PIHAK
-            </Text>
-            {", "}
-            terlebih dahulu menerangkan hal-hal sebagai berikut:
-          </Text>
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 4,
-              width: "100%",
-            }}
-          >
-            <Text style={{ marginRight: 16 }}>a.</Text>
-            <Text style={{ marginRight: 16 }}>
-              bahwa{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PIHAK KESATU
-              </Text>{" "}
-              adalah Direktur Kementerian Kesehatan selaku{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PEMBERI HIBAH
-              </Text>
-              ;{" "}
-            </Text>
-          </View>
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 4,
-              width: "100%",
-            }}
-          >
-            <Text style={{ marginRight: 16 }}>b.</Text>
-            <Text style={{ marginRight: 16 }}>
-              bahwa{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PIHAK KEDUA
-              </Text>{" "}
-              adalah Kepala Dinas Kesehatan Daerah {jsonData?.kabupaten} selaku{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PENERIMA HIBAH
-              </Text>
-              ;{" "}
-            </Text>
-          </View>
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 4,
-              width: "100%",
-            }}
-          >
-            <Text style={{ marginRight: 16 }}>c.</Text>
-            <Text style={{ marginRight: 16 }}>
-              bahwa{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PARA PIHAK
-              </Text>{" "}
-              sepakat melakukan serah terima operasional dalam rangka
-              pengelolaan barang milik negara yang dari sejak awal diserahkan
-              kepada masyarakat/pemerintah daerah di lingkungan Kementerian
-              Kesehatan.
-            </Text>
-          </View>
-          <Text
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              marginTop: 16,
-              width: "100%",
-            }}
-          >
-            Dengan memperhatikan ketentuan:
-          </Text>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 8,
-              width: "100%",
-            }}
-          >
-            <Text style={{ marginRight: 16 }}>1.</Text>
-            <Text style={{ marginRight: 16 }}>
-              Undang-Undang Nomor 1 Tahun 2004 tentang Perbendaharaan Negara
-              (Lembaran Negara Republik Indonesia Tahun 2004 Nomor 5, Tambahan
-              Lembaran Negara Republik Indonesia Nomor 4355);
-            </Text>
-          </View>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 8,
-              width: "100%",
-            }}
-          >
-            <Text style={{ marginRight: 16 }}>2.</Text>
-            <Text style={{ marginRight: 16 }}>
-              Peraturan Pemerintah Nomor 27 Tahun 2014 tentang Pengelolaan
-              Barang Milik Negara/Daerah (Lembaran Negara Republik Indonesia
-              Tahun 2014 Nomor 92, Tambahan Lembaran Negara Republik Indonesia
-              Nomor 5533) sebagaimana telah diubah dengan Peraturan Pemerintah
-              Nomor 28 Tahun 2020 tentang Perubahan atas Peraturan Pemerintah
-              Nomor 27 Tahun 2014 tentang Pengelolaan Barang Milik Negara/Daerah
-              (Lembaran Negara Republik Indonesia Tahun 2020 Nomor 142, Tambahan
-              Lembaran Negara Republik Indonesia Nomor 6523);
-            </Text>
-          </View>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 8,
-              width: "100%",
-            }}
-          >
-            <Text style={{ marginRight: 16 }}>3.</Text>
-            <Text style={{ marginRight: 16 }}>
-              Peraturan Menteri Keuangan Nomor 111/PMK.06/2016 tentang Tata Cara
-              Pelaksanaan Pemindahtanganan Barang Milik Negara (Berita Negara
-              Republik Indonesia Tahun 2016 Nomor 1018) sebagaimana telah diubah
-              dengan Peraturan Menteri Keuangan Nomor 165/PMK.06/2021 tentang
-              Perubahan atas Peraturan Menteri Keuangan Nomor 111/PMK.06/2016
-              tentang Tata Cara Pelaksanaan Pemindahtanganan Barang Milik Negara
-              (Berita Negara Republik Indonesia Tahun 2021 Nomor 1292);
-            </Text>
-          </View>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 8,
-              width: "100%",
-            }}
-          >
-            <Text style={{ marginRight: 16 }}>3.</Text>
-            <Text style={{ marginRight: 16 }}>
-              Peraturan Menteri Keuangan Nomor 181/PMK.06/2016 tentang
-              Penatausahaan Barang Milik Negara (Berita Negara Republik
-              Indonesia Tahun 2016 Nomor 1817);
-            </Text>
-          </View>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 8,
-              width: "100%",
-            }}
-          >
-            <Text style={{ marginRight: 16 }}>5.</Text>
-            <Text style={{ marginRight: 16 }}>
-              Keputusan Menteri Kesehatan Nomor HK.01.07/MENKES/155/2023 tentang
-              Pendelegasian Sebagian Wewenang Menteri Kesehatan selaku Pengguna
-              Barang kepada Pimpinan Tinggi Madya dan Kuasa Pengguna Barang
-              dalam Pengelolaan Barang Milik Negara di Lingkungan Kementerian
-              Kesehatan.
-            </Text>
-          </View>
-        </View>
-      </Page>
-
-      <Page size="FOLIO" style={styles.page}>
-        <View
-          style={{
-            ...styles.docContainerBorder,
-            paddingHorizontal: 24,
-            paddingVertical: 16,
-            height: 800,
-          }}
-        >
-          <Text
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              marginTop: 16,
-              width: "100%",
-            }}
-          >
-            Berdasarkan hal-hal yang telah diuraikan di atas,{" "}
-            <Text style={{ marginRight: 16, ...styles.helvetica }}>
-              PARA PIHAK
-            </Text>{" "}
-            sepakat untuk melakukan serah terima operasional hibah Barang Milik
-            Negara yang selanjutnya disebut{" "}
-            <Text style={{ marginRight: 16, ...styles.helvetica }}>
-              OBJEK HIBAH
-            </Text>
-            , dari{" "}
-            <Text style={{ marginRight: 16, ...styles.helvetica }}>
-              PIHAK KESATU
-            </Text>{" "}
-            kepada{" "}
-            <Text style={{ marginRight: 16, ...styles.helvetica }}>
-              PIHAK KEDUA
-            </Text>
-            , dan dituangkan dalam Berita Acara Serah Terima Operasional yang
-            selanjutnya disebut{" "}
-            <Text style={{ marginRight: 16, ...styles.helvetica }}>BASTO</Text>,
-            dengan ketentuan sebagai berikut:
-          </Text>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "column",
-              marginTop: 16,
-              width: "100%",
-            }}
-          >
-            <Text
-              style={{
-                ...styles.textBold,
-                textAlign: "center",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              PASAL 1
-            </Text>
-            <Text
-              style={{
-                ...styles.text,
-                textAlign: "left",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              Hibah Barang Milik Negara ini bertujuan untuk mendukung dan
-              menunjang penyelenggaraan Tugas Pokok dan Fungsi Dinas Kesehatan
-              Daerah
-              {jsonData?.kabupaten || ""} dalam rangka meningkatkan pelayanan
-              kesehatan kepada masyarakat.
-            </Text>
-          </View>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "column",
-              marginTop: 16,
-              width: "100%",
-            }}
-          >
-            <Text
-              style={{
-                ...styles.textBold,
-                textAlign: "center",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              PASAL 2
-            </Text>
-            <Text
-              style={{
-                ...styles.text,
-                textAlign: "left",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              Jumlah barang yang dihibahkan adalah{" "}
-              {jsonData?.total_barang_dikirim || ""} unit dan jumlah nilai
-              perolehan sebesar Rp {jsonData?.total_harga || ""} dengan rincian
-              sebagaimana tercantum dalam lampiran, yang merupakan bagian tidak
-              terpisahkan dari{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                BASTO
-              </Text>{" "}
-              ini.
-            </Text>
-          </View>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "column",
-              marginTop: 16,
-              width: "100%",
-            }}
-          >
-            <Text
-              style={{
-                ...styles.textBold,
-                textAlign: "center",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              PASAL 3
-            </Text>
-
-            <Text
-              style={{
-                ...styles.text,
-                textAlign: "left",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-              }}
-            >
-              Dinas Kesehatan Daerah {jsonData?.kabupaten || ""} adalah sebagai
-              penerima hibah atas{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                OBJEK HIBAH
-              </Text>
-            </Text>
-          </View>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "column",
-              marginTop: 16,
-              width: "100%",
-            }}
-          >
-            <Text
-              style={{
-                ...styles.textBold,
-                textAlign: "center",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              PASAL 4
-            </Text>
-            <Text
-              style={{
-                ...styles.text,
-                textAlign: "left",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PIHAK KESATU
-              </Text>{" "}
-              dan{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PIHAK KEDUA
-              </Text>{" "}
-              menerangkan bahwa hibah barang milik negara ini dilakukan dengan
-              syarat-syarat sebagai berikut:
-            </Text>
             <View
               style={{
                 ...styles.text,
                 lineHeight: 1.7,
                 letterSpacing: 0.1,
+                paddingLeft: 24,
                 display: "flex",
                 flexDirection: "row",
                 marginTop: 8,
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 16 }}>a.</Text>
-              <Text style={{ marginRight: 16 }}>
-                status kepemilikan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  OBJEK HIBAH
-                </Text>{" "}
-                berpindah dari semula barang milik negara pada Pemerintah Pusat
-                menjadi barang milik daerah pada Dinas Kesehatan Daerah{" "}
-                {jsonData?.kabupaten || ""}{" "}
-              </Text>
-            </View>
-
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                display: "flex",
-                flexDirection: "row",
-                marginTop: 8,
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16 }}>b.</Text>
-              <Text style={{ marginRight: 16 }}>
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KEDUA
-                </Text>{" "}
-                mempergunakan OBJEK HIBAH sesuai dengan peruntukan sebagaimana
-                dimaksud dalam Pasal 1.
-              </Text>
-            </View>
-
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                display: "flex",
-                flexDirection: "row",
-                marginTop: 8,
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16 }}>c.</Text>
-              <Text style={{ marginRight: 16 }}>
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KESATU
-                </Text>{" "}
-                dan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KEDUA
-                </Text>{" "}
-                sepakat untuk melaksanakan hibah barang milik negara tersebut
-                sesuai dengan ketentuan peraturan perundang-undangan.
+              <Text>
+                Keterbatasan sumber daya dan pembiayaan terutama di sisi
+                pemerintah daerah mengakibatkan pemenuhan alat kesehatan belum
+                dapat dilakukan dalam kurun waktu cepat untuk mendukung
+                transformasi layanan primer. Atas dasar pertimbangan tersebut,
+                tahun 2024 ini kami mengajukan perbaikan usulan pemenuhan alat
+                kesehatan di puskesmas, pustu, dan posyandu kepada Kementerian
+                Kesehatan.
               </Text>
             </View>
           </View>
@@ -986,31 +463,6 @@ const GenerateDokumen = async (jsonData, distributor) => {
               width: "100%",
             }}
           >
-            <Text
-              style={{
-                ...styles.textBold,
-                textAlign: "center",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              PASAL 5
-            </Text>
-            <Text
-              style={{
-                ...styles.text,
-                textAlign: "left",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PIHAK KESATU
-              </Text>{" "}
-              berkewajiban untuk:
-            </Text>
             <View
               style={{
                 ...styles.text,
@@ -1019,20 +471,13 @@ const GenerateDokumen = async (jsonData, distributor) => {
                 display: "flex",
                 flexDirection: "row",
                 marginTop: 8,
+                marginBottom: 8,
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 16 }}>a.</Text>
-              <Text style={{ marginRight: 16 }}>
-                menyerahkan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  OBJEK HIBAH
-                </Text>{" "}
-                kepada{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KEDUA
-                </Text>{" "}
-                ; dan
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>B.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                TUJUAN
               </Text>
             </View>
 
@@ -1041,23 +486,52 @@ const GenerateDokumen = async (jsonData, distributor) => {
                 ...styles.text,
                 lineHeight: 1.7,
                 letterSpacing: 0.1,
+                paddingHorizontal: 24,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 16 }}>b.</Text>
-              <Text style={{ marginRight: 16 }}>
-                melakukan koordinasi dengan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KEDUA
-                </Text>{" "}
-                dalam pelaksanaan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  BASTO
-                </Text>{" "}
-                ini.
+              <Text style={{ marginRight: 8 }}>1.</Text>
+              <Text>
+                Terpenuhinya jumlah dan jenis alat kesehatan di puskesmas sesuai
+                standar.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>2.</Text>
+              <Text>
+                Terpenuhinya jumlah dan jenis alat kesehatan di puskesmas
+                pembantu sesuai standar.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>3.</Text>
+              <Text>
+                Terpenuhinya jumlah dan jenis alat kesehatan di posyandu sesuai
+                standar.
               </Text>
             </View>
           </View>
@@ -1073,17 +547,6 @@ const GenerateDokumen = async (jsonData, distributor) => {
               width: "100%",
             }}
           >
-            <Text
-              style={{
-                ...styles.textBold,
-                textAlign: "center",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              PASAL 6
-            </Text>
             <View
               style={{
                 ...styles.text,
@@ -1092,38 +555,127 @@ const GenerateDokumen = async (jsonData, distributor) => {
                 display: "flex",
                 flexDirection: "row",
                 marginTop: 8,
+                marginBottom: 8,
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 16 }}>(1)</Text>
-              <Text style={{ marginRight: 16 }}>
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KEDUA
-                </Text>{" "}
-                berhak untuk menggunakan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  OBJEK HIBAH
-                </Text>{" "}
-                ketentuan dan persyaratan dalam{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  BASTO
-                </Text>{" "}
-                ini
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>C.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                Usulan Peralatan dan Ketersediaan SDM
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.helvetica,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>1.</Text>
+              <Text>
+                Data usulan alat, jumlah dan peralatan pada puskesmas.
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 40,
+                display: "flex",
+                marginTop: 4,
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text>
+                Usulan peralatan puskesmas dalam lampiran ini diusulkan dengan
+                memasukkan kriteria SDM di puskesmas lengkap yang terdiri dari
+                minimal 5 jenis tenaga kesehatan yaitu terdiri dari: Dokter,
+                Dokter Gigi, Bidan, Perawat dan ATLM (Ahli Teknisi Laboratorium
+                Medik). {"\n"}
+                <Text style={{ ...styles.helvetica }}>Nama alat terlampir</Text>
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.helvetica,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                marginTop: 8,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>2.</Text>
+              <Text>
+                Data usulan alat, jumlah dan peralatan pada puskesmas pembantu.
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 40,
+                display: "flex",
+                marginTop: 4,
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text>
+                Usulan peralatan puskesmas pembantu dalam lampiran ini diusulkan
+                dengan memasukkan kriteria SDM di puskesmas pembantu lengkap
+                sesuai data SISDMK per Juni 2024 yang terdiri dari minimal 2
+                jenis tenaga kesehatan yaitu terdiri dari Bidan, dan Perawat.{" "}
+                {"\n"}
+                <Text style={{ ...styles.helvetica }}>Nama alat terlampir</Text>
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.helvetica,
+                lineHeight: 1.7,
+                marginTop: 8,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>3.</Text>
+              <Text>Data usulan alat, jumlah dan peralatan pada posyandu.</Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 40,
+                display: "flex",
+                marginTop: 4,
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text>
+                Usulan peralatan posyandu dalam lampiran ini diusulkan dengan
+                memasukkan kriteria posyandu aktif (memiliki 5 orang kader).{" "}
+                {"\n"}
+                <Text style={{ ...styles.helvetica }}>Nama alat terlampir</Text>
               </Text>
             </View>
           </View>
-        </View>
-      </Page>
 
-      <Page size="FOLIO" style={styles.page}>
-        <View
-          style={{
-            ...styles.docContainerBorder,
-            paddingHorizontal: 24,
-            paddingVertical: 16,
-            height: 800,
-          }}
-        >
           <View
             style={{
               ...styles.text,
@@ -1146,12 +698,9 @@ const GenerateDokumen = async (jsonData, distributor) => {
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 16 }}>(2)</Text>
-              <Text style={{ marginRight: 16 }}>
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KEDUA
-                </Text>{" "}
-                berkewajiban untuk:
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>D.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                PENUTUP
               </Text>
             </View>
             <View
@@ -1159,24 +708,18 @@ const GenerateDokumen = async (jsonData, distributor) => {
                 ...styles.text,
                 lineHeight: 1.7,
                 letterSpacing: 0.1,
-                paddingHorizontal: 24,
+                paddingLeft: 24,
                 display: "flex",
                 flexDirection: "row",
                 marginTop: 8,
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 16 }}>a.</Text>
-              <Text style={{ marginRight: 16 }}>
-                menerima penyerahan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  OBJEK HIBAH
-                </Text>{" "}
-                dari{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KESATU
-                </Text>
-                ;
+              <Text>
+                Demikian proposal yang dapat kami usulkan dengan kondisi
+                sebenarnya. Besar harapan kami usulan alat kesehatan di
+                puskesmas, puskesmas pembantu dan posyandu ini dapat dipenuhi
+                oleh Kementerian Kesehatan. Terima kasih.
               </Text>
             </View>
             <View
@@ -1184,562 +727,351 @@ const GenerateDokumen = async (jsonData, distributor) => {
                 ...styles.text,
                 lineHeight: 1.7,
                 letterSpacing: 0.1,
-                paddingHorizontal: 24,
+                paddingLeft: 24,
                 display: "flex",
                 flexDirection: "row",
+                marginTop: 16,
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 16 }}>b.</Text>
-              <Text style={{ marginRight: 16 }}>
-                mencatat{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  OBJEK HIBAH
-                </Text>
-                ;
-              </Text>
-            </View>
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                paddingHorizontal: 24,
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16 }}>c.</Text>
-              <Text style={{ marginRight: 16 }}>
-                mempergunakan dan memelihara{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  OBJEK HIBAH
-                </Text>{" "}
-                sesuai ketentuan yang berlaku;
-              </Text>
-            </View>
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                paddingHorizontal: 24,
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16 }}>d.</Text>
-              <Text style={{ marginRight: 16 }}>
-                melakukan pengamanan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  OBJEK HIBAH
-                </Text>{" "}
-                yang meliputi pengamanan administrasi, pengamanan fisik,
-                pengamanan hukum;
-              </Text>
-            </View>
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                paddingHorizontal: 24,
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16 }}>e.</Text>
-              <Text style={{ marginRight: 16 }}>
-                bertanggung jawab atas segala biaya yang dikeluarkan dalam
-                kaitan dengan penggunaan, pemeliharaan, dan pengamanan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  OBJEK HIBAH
-                </Text>{" "}
-                berikut bagian-bagiannya;
-              </Text>
-            </View>
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                paddingHorizontal: 24,
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16 }}>f.</Text>
-              <Text style={{ marginRight: 16 }}>
-                bertanggung jawab sepenuhnya atas segala risiko yang berkaitan
-                dengan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  OBJEK HIBAH
-                </Text>{" "}
-                ,dan
-              </Text>
-            </View>
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                paddingHorizontal: 24,
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16 }}>g.</Text>
-              <Text style={{ marginRight: 16 }}>
-                mengelola dan melaksanakan penerimaan hibah secara transparan
-                dan akuntabel sesuai dengan peraturan perundang-undangan.
+              <Text>
+                Narahubung dari kegiatan ini adalah: {"\n"}
+                Nama:{"\n"}
+                Jabatan:{"\n"}
+                No.HP :{"\n"}
               </Text>
             </View>
           </View>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "column",
-              marginTop: 16,
-              width: "100%",
-            }}
-          >
-            <Text
-              style={{
-                ...styles.textBold,
-                textAlign: "center",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              PASAL 7
-            </Text>
-            <Text
-              style={{
-                ...styles.text,
-                textAlign: "left",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PIHAK KESATU
-              </Text>{" "}
-              menyatakan dan menjamin kepada{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PIHAK KEDUA
-              </Text>{" "}
-              dan{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PIHAK KEDUA
-              </Text>{" "}
-              menyatakan dan menjamin{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PIHAK KESATU
+          <View style={styles.ttdContainer}>
+            <View style={{ flex: 1 }}></View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ ...styles.text, textAlign: "center" }}>
+                Tempat, ............................
               </Text>
-              , sebagai berikut:
-            </Text>
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                paddingHorizontal: 24,
-                display: "flex",
-                flexDirection: "row",
-                marginTop: 8,
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16 }}>a.</Text>
-              <Text style={{ marginRight: 16 }}>
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KESATU
-                </Text>{" "}
-                dan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KEDUA
-                </Text>{" "}
-                mempunyai wewenang penuh untuk menandatangani dan melaksanakan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  BASTO
-                </Text>{" "}
-                ini;
+              <Text style={{ ...styles.text, textAlign: "center" }}>
+                Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
               </Text>
-            </View>
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                paddingHorizontal: 24,
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16 }}>b.</Text>
-              <Text style={{ marginRight: 16 }}>
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KESATU
-                </Text>{" "}
-                dan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KEDUA
-                </Text>{" "}
-                telah melakukan seluruh tindakan yang dibutuhkan dalam
-                pengikatan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  BASTO
-                </Text>{" "}
-                dan
-              </Text>
-            </View>
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                paddingHorizontal: 24,
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16 }}>c.</Text>
-              <Text style={{ marginRight: 16 }}>
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  BASTO
-                </Text>{" "}
-                ini setelah ditandatangani menjadi sah dan mengikat{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KESATU
-                </Text>{" "}
-                dan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KEDUA
-                </Text>{" "}
-                untuk melaksanakan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  BASTO
-                </Text>{" "}
-                ini.
-              </Text>
-            </View>
-          </View>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "column",
-              marginTop: 16,
-              width: "100%",
-            }}
-          >
-            <Text
-              style={{
-                ...styles.textBold,
-                textAlign: "center",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              PASAL 8
-            </Text>
-            <Text
-              style={{
-                ...styles.text,
-                textAlign: "left",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              Segala ketentuan dan persyaratan dalam{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                BASTO
-              </Text>{" "}
-              ini berlaku dan mengikat{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PARA PIHAK
-              </Text>
-              .
-            </Text>
-          </View>
-
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "column",
-              marginTop: 16,
-              width: "100%",
-            }}
-          >
-            <Text
-              style={{
-                ...styles.textBold,
-                textAlign: "center",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              PASAL 9
-            </Text>
-            <Text
-              style={{
-                ...styles.text,
-                textAlign: "left",
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-              }}
-            >
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                BASTO
-              </Text>{" "}
-              ini dibuat sebanyak 2 (dua) rangkap asli, masing-masing dibubuhi
-              meterai yang cukup serta mempunyai kekuatan hukum yang sama
-              setelah ditandatangani oleh{" "}
-              <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                PARA PIHAK
-              </Text>{" "}
-              dan dibubuhi cap instansi masing-masing. ini berlaku dan mengikat
-              .
-            </Text>
-          </View>
-          <Text
-            style={{
-              ...styles.text,
-              textAlign: "left",
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              marginTop: 24,
-              width: "100%",
-            }}
-          >
-            Demikian{" "}
-            <Text style={{ marginRight: 16, ...styles.helvetica }}>BASTO</Text>{" "}
-            ini dibuat dengan itikad baik untuk dipatuhi dan dilaksanakan oleh{" "}
-            <Text style={{ marginRight: 16, ...styles.helvetica }}>
-              PARA PIHAK
-            </Text>
-            .
-          </Text>
-        </View>
-      </Page>
-
-      <Page size="FOLIO" style={styles.page}>
-        <View style={styles.docContainer}>
-          <View style={{ ...styles.docContainerBorder, height: 800 }}>
-            <View style={styles.ttdContainer}>
-              <View style={{ flex: 1 }}>
-                <Text style={{ ...styles.textBold, textAlign: "center" }}>
-                  PIHAK KESATU
-                </Text>
-                <Text style={{ ...styles.text, textAlign: "center" }}>
-                  Kementerian Kesehatan {"\n"}
-                  {jsonData?.kepala_unit_pemberi ||
-                    "Direktur Fasilitas dan Mutu Pelayanan Kesehatan Primer"}
-                </Text>
-                <Image
-                  style={{ ...styles.imageTtd, marginVertical: 8 }}
-                  src={`${jsonData?.tte_ppk}?not-from-cache-please`}
-                  onError={(error) => {
-                    error.target.src = defaultImage;
-                  }}
-                />
-                <Text
-                  style={{
-                    ...styles.text,
-                    fontFamily: "Arial",
-                    marginTop: 8,
-                    fontSize: 11,
-                    lineHeight: 1.2,
-                    textAlign: "center",
-                    letterSpacing: 0.2,
-                  }}
-                >
-                  Nama :{" "}
-                  {jsonData?.nama_ppk || "drg. R Vensya Sitohang, M.Epid, Ph.D"}{" "}
-                  {"\n"}
-                  NIP : {jsonData?.nip_ppk || "196512131991012001"}
-                </Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ ...styles.textBold, textAlign: "center" }}>
-                  PIHAK KEDUA
-                </Text>
-                <Text style={{ ...styles.text, textAlign: "center" }}>
-                  Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
-                </Text>
-                <Image
-                  style={{ ...styles.imageTtd, marginVertical: 8 }}
-                  src={`${jsonData?.tte_daerah}?not-from-cache-please`}
-                  onError={(error) => {
-                    error.target.src = defaultImage;
-                  }}
-                />
-                <Text
-                  style={{
-                    ...styles.text,
-                    fontFamily: "Arial",
-                    marginTop: 12,
-                    fontSize: 11,
-                    lineHeight: 1.2,
-                    textAlign: "center",
-                    letterSpacing: 0.2,
-                  }}
-                >
-                  Nama : {jsonData?.nama_daerah || ""} {"\n"}
-                  NIP : {jsonData?.nip_daerah || ""}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      </Page>
-      {RenderHibahPages(jsonData, true)}
-      {/* {RenderBarangPages(jsonData)} */}
-      {!distributor && jsonData?.status_tte == "2" && (
-        <>
-          <Page size="FOLIO" style={styles.page}>
-            {/* <View style={styles.docContainer}>
-              <Text style={styles.text}>
-                B. Format II, Naskah Hibah dan Berita Acara Serah Terima BMN
-              </Text>
-            </View> */}
-            <View
-              style={{
-                ...styles.docContainerBorder,
-                paddingHorizontal: 24,
-                paddingVertical: 16,
-                height: 800,
-              }}
-            >
-              {/* <Text
+              <View style={{ ...styles.imageTtd, marginVertical: 8 }}></View>
+              <Text
                 style={{
                   ...styles.text,
+                  fontFamily: "Calibri",
+                  marginTop: 12,
+                  fontSize: 8,
+                  paddingRight: 64,
+                  lineHeight: 1.2,
                   textAlign: "center",
-                  marginBottom: 24,
+                  letterSpacing: 0.2,
                 }}
               >
-                --------------------------------------------Kop----------------------------------------
-              </Text> */}
-              <View
-                style={{
-                  textAlign: "center",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginBottom: 16,
-                }}
-              >
-                <Image
-                  style={{
-                    width: "490px",
-                    height: "96px",
-                    // marginVertical: 16,
-                  }}
-                  src="/kop_surat1.png"
-                />
-              </View>
+                Nama
+              </Text>
               <Text
                 style={{
-                  ...styles.textBoldTitle,
-                  marginBottom: 16,
-                  lineHeight: 1.7,
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  paddingRight: 70,
+                  fontSize: 8,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
                 }}
               >
-                NASKAH HIBAH {"\n"} DAN {"\n"} BERITA ACARA SERAH TERIMA {"\n"}{" "}
-                BARANG MILIK NEGARA {"\n"} ANTARA {"\n"}
-                KEMENTERIAN KESEHATAN {"\n"} DENGAN {"\n"} DINAS KESEHATAN
-                DAERAH {jsonData?.kabupaten} {"\n"} NOMOR {jsonData?.nomorSurat}{" "}
-                {"\n"}
-                TENTANG {"\n"} HIBAH BARANG MILIK NEGARA YANG DARI SEJAK AWAL
-                DISERAHKAN KEPADA {"\n"}
-                MASYARAKAT/PEMERINTAH {"\n"}PADA {"\n"}{" "}
-                {formatTanggal(jsonData?.tanggal) || ""}
+                NIP
               </Text>
-              <Text style={styles.text}>
-                Berdasarkan Peraturan Menteri Keuangan Nomor 111/PMK.06/2016
-                tentang Tata Cara Pelaksanaan Pemindahtanganan Barang Milik
-                Negara (Berita Negara Republik Indonesia Tahun 2016 Nomor 1018)
-                sebagaimana telah diubah dengan Peraturan Menteri Keuangan Nomor
-                165/PMK.06/2021 tentang Perubahan atas Peraturan Menteri
-                Keuangan Nomor 111/PMK.06/2016 tentang Tata Cara Pelaksanaan
-                Pemindahtanganan Barang Milik Negara (Berita Negara Republik
-                Indonesia Tahun 2021 Nomor 1292), dengan ini kami sampaikan
-                bahwa telah dilaksanakan pemindahtanganan BMN berupa Hibah
-                antara{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KESATU{" "}
-                </Text>{" "}
-                dalam hal ini
-                {jsonData?.kepala_unit_pemberi} yang diwakili{" "}
-                {jsonData?.nama_ppk} oleh dan{" "}
-                <Text style={{ marginRight: 16, ...styles.helvetica }}>
-                  PIHAK KEDUA
-                </Text>{" "}
-                dalam hal ini Masyarakat/Pemerintah Daerah yang diwakili oleh
-                Kepala Dinas Kesehatan {jsonData?.kabupaten} berupa BMN dengan
-                rincian terlampir , sejumlah {jsonData?.total_barang_dikirim}{" "}
-                dengan total nilai perolehan sebesar Rp{jsonData?.total_harga},
-                sesuai dengan Berita Acara Serah Terima Operasional (BASTO)
-                nomor {jsonData?.nomorSurat} tanggal {jsonData?.tanggal}{" "}
-                (terlampir). Demikian Naskah Hibah dan BAST ini kami buat,
-                selanjutnya agar digunakan sebagaimana mestinya.
-              </Text>
-
-              <View style={{ marginTop: 16, ...styles.ttdContainer }}>
-                <View style={{ flex: 1 }}></View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.textBold}>
-                    JAKARTA,{" "}
-                    {moment(jsonData?.tanggal_tte_ppk).format(
-                      "D-MM-YYYY",
-                      "id"
-                    )}{" "}
-                  </Text>
-                  <Text style={styles.text}>
-                    {jsonData?.kepala_unit_pemberi}
-                  </Text>
-                  <Image
-                    style={{
-                      ...styles.imageTtd,
-                      marginVertical: 8,
-                      marginLeft: 16,
-                    }}
-                    src={`${jsonData?.tte_ppk}?not-from-cache-please`}
-                  />
-                  <Text style={{ marginTop: 8 }}>
-                    Nama : {jsonData?.nama_ppk || ""} {"\n"}
-                    NIP : {jsonData?.nip_ppk || ""}
-                  </Text>
-                </View>
-              </View>
             </View>
-          </Page>
-          {/* {RenderHibahPages(jsonData, true)} */}
-        </>
-      )}
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <Text>
+            Downloaded on {downloadDate}. [Backend use only: location_group_id =
+            117, username = jawa_barat]
+          </Text>
+        </View>
+      </Page>
+
+      <Page size="FOLIO" style={styles.page}>
+        <Text style={styles.watermark}>FINAL</Text>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            height: 800,
+          }}
+        >
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, textAlign: "center" }}>
+                SURAT PERNYATAAN{" "}
+              </Text>
+              <Text
+                style={{ ...styles.text, marginTop: 8, textAlign: "center" }}
+              >
+                Nomor :
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Yang bertanda tangan di bawah ini :{"\n"}
+                Nama :{"\n"}
+                Jabatan :{"\n\n"}
+                dengan ini menyatakan bahwa :
+              </Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>a.</Text>
+              <Text>
+                Seluruh puskesmas telah melaksanakan Permenkes 31 tahun 2018
+                dengan melakukan melakukan update data sarana, prasarana dan
+                alat kesehatan secara riil melalui aplikasi ASPAK dan telah di
+                validasi oleh Dinas Kesehatan Kabupaten/Kota KAB. BANDUNG.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>b.</Text>
+              <Text>
+                Puskesmas, Pustu dan posyandu mengusulkan alat yang dibutuhkan
+                dalam menjalankan Integrasi layanan Primer (ILP).
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 9 }}>c.</Text>
+              <Text>
+                Alat yang dimiliki saat ini belum memenuhi standar untuk
+                pelayanan di puskesmas, pustu dan posyandu.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>d.</Text>
+              <Text>
+                Alat yang diusulkan tersebut belum diusulkan melalui pembiayaan
+                lainnya.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>e.</Text>
+              <Text>
+                Dinas Kesehatan sanggup menerima alat sesuai dengan alat yang
+                diusulkan dan akan melakukan pencatatan alat ke ASPAK setelah
+                alat diserahterimakan.{" "}
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 10 }}>f.</Text>
+              <Text>
+                Dinas Kesehatan ikut serta memastikan pendistribusikan alat
+                kesehatan hingga ke puskesmas, pustu dan posyandu sesuai dengan
+                Permenkes 1047 tahun 2024 tentang Standar Peralatan Dalam Rangka
+                Penguatan Pelayanan Kesehatan Primer Pada Pusat Kesehatan
+                Masyarakat, Unit Pelayanan Kesehatan Di Desa/Kelurahan, Dan Pos
+                Pelayanan Terpadu.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>g.</Text>
+              <Text>
+                Dinas Kesehatan akan menyiapkan biaya operasional dan biaya
+                pemeliharaan seluruh alat kesehatan yang diusulkan.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>h.</Text>
+              <Text>
+                Dinas Kesehatan akan menanggung biaya operasionalisasi alat
+                laboratorium dalam bentuk reagen dan BMHP.
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 10 }}>i.</Text>
+              <Text>
+                Dinas Kesehatan akan mendukung pemenuhan kebutuhan alat
+                kesehatan yang tidak disediakan oleh pemerintah pusat.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.ttdContainer}>
+            <View style={{ flex: 1 }}></View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ ...styles.text, textAlign: "center" }}>
+                ...............,...................2024
+              </Text>
+              Yang membuat pernyataan
+              <Text
+                style={{ ...styles.text, textAlign: "center", marginTop: 48 }}
+              >
+                Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
+              </Text>
+              <View style={{ ...styles.imageTtd, marginVertical: 8 }}></View>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  marginTop: 12,
+                  fontSize: 8,
+                  paddingRight: 64,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                Nama
+              </Text>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  paddingRight: 70,
+                  fontSize: 8,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                NIP
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <Text>
+            Downloaded on {downloadDate}. [Backend use only: location_group_id =
+            117, username = jawa_barat]
+          </Text>
+        </View>
+      </Page>
+
+      {RenderBarangPages(jsonData)}
+      {RenderHibahPages(jsonData, true)}
     </Document>
   );
   const blob = await pdf(<MyDocument />).toBlob();
