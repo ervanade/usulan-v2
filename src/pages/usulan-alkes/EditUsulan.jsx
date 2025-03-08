@@ -61,6 +61,7 @@ const EditUsulan = () => {
   const [dataKota, setDataKota] = useState([]);
   const [dataKecamatan, setDataKecamatan] = useState([]);
   const [dataPuskesmas, setDataPuskesmas] = useState([]);
+  const [dataPeriode, setDataPeriode] = useState([]);
 
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
   const [selectedKota, setSelectedKota] = useState(null);
@@ -72,6 +73,26 @@ const EditUsulan = () => {
   const [selectedInternet, setSelectedInternet] = useState(null);
 
   const navigate = useNavigate();
+
+  const fetchPeriodeData = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/periode`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setDataPeriode(response.data.data);
+    } catch (error) {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchProvinsi = async () => {
     try {
@@ -212,6 +233,7 @@ const EditUsulan = () => {
 
   useEffect(() => {
     fetchDistribusiData();
+    fetchPeriodeData();
     // fetchProvinsi();
   }, []);
 
@@ -1020,9 +1042,17 @@ const EditUsulan = () => {
             </div>
           </form>
           <div className="rounded-md flex flex-col gap-4 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-            <h2 className="font-medium text-bodydark1 mt-2">
-              Form Usulan Alkes
-            </h2>
+            <div className="flex justify-between items-center">
+              <h2 className="font-medium text-bodydark1 mt-2">
+                Form Usulan Alkes
+              </h2>
+              <h2 className="font-medium text-bodydark1 text-sm mt-2">
+                Periode :{" "}
+                {dataPeriode?.length > 0
+                  ? `${dataPeriode[0]?.periode_name} (Aktif)`
+                  : "Periode Telah Berakhir"}
+              </h2>
+            </div>
             <div className="overflow-x-auto">
               {loading ? (
                 <div className="flex justify-center items-center">
