@@ -88,12 +88,12 @@ function App() {
           <Route path="/" element={<ProtectedRoute />}>
             <Route path="/" element={<Layout />}>
               <Route index element={<Dashboard />} />
-              <Route path="tes-template" element={<TesTemplate />} />
-              <Route path="preview-dokumen/:id" element={<TemplateDokumen />} />
+              {/* <Route path="tes-template" element={<TesTemplate />} />
+              <Route path="preview-dokumen/:id" element={<TemplateDokumen />} /> */}
               <Route path="usulan-alkes" element={<UsulanAlkes />} />
               <Route path="usulan-alkes/edit/:id" element={<EditUsulan />} />
               <Route path="pdf-usulan-alkes" element={<PdfUsulanAlkes />} />
-              <Route path="data-distribusi" element={<DataDistribusi />} />
+              {/* <Route path="data-distribusi" element={<DataDistribusi />} />
               <Route
                 path="data-distribusi/detail/:id"
                 element={<DetailDistribusi />}
@@ -117,12 +117,12 @@ function App() {
               <Route
                 path="dokumen/preview-dokumen/:id"
                 element={<PreviewDokumen />}
-              />
+              /> */}
               <Route
                 path="pdf-usulan-alkes/preview-dokumen/:id"
                 element={<PreviewDokumen />}
               />
-              <Route path="laporanbarang" element={<LaporanBarang />} />
+              {/* <Route path="laporanbarang" element={<LaporanBarang />} />
               <Route
                 path="laporanbarang/detail/:idBarang/:idProvinsi/:idKabupaten"
                 element={<LaporanBarangPuskesmas />}
@@ -153,9 +153,9 @@ function App() {
               <Route
                 path="/data-verifikasi/form-distribusi"
                 element={<TambahDistribusi />}
-              />
+              /> */}
               <Route path="/not-found" element={<NotFound />} />
-              <Route path="notifikasi" element={<Notifikasi />} />
+              {/* <Route path="notifikasi" element={<Notifikasi />} />
               <Route path="/" element={<ProtectedRoutesAdmin />}>
                 <Route path="/logactivity" element={<LogActivity />} />
                 <Route
@@ -247,7 +247,7 @@ function App() {
                   path="master-data-kecamatan/edit/:id"
                   element={<EditKecamatan />}
                 />
-              </Route>
+              </Route> */}
             </Route>
           </Route>
           <Route

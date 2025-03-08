@@ -1661,7 +1661,7 @@ const PreviewDokumen = () => {
       <Breadcrumb
         pageName={`Dokumen ${jsonData?.nama_dokumen}`}
         back={true}
-        linkBack="/dokumen"
+        linkBack="/pdf-usulan-alkes"
         jsonData={jsonData}
       />
       <HeaderDokumen jsonData={jsonData} user={user} />
