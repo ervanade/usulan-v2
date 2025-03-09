@@ -142,6 +142,12 @@ const PreviewDokumen = () => {
     "https://media.istockphoto.com/id/1472819341/photo/background-white-light-grey-total-grunge-abstract-concrete-cement-wall-paper-texture-platinum.webp?b=1&s=170667a&w=0&k=20&c=yoY1jUAKlKVdakeUsRRsNEZdCx2RPIEgaIxSwQ0lS1k=";
 
   const fetchDokumenData = async () => {
+    const decryptedId = decryptId(id);
+    if (!decryptedId) {
+      // Jika decryptId gagal (mengembalikan null atau nilai falsy lainnya)
+      navigate("/not-found"); // Arahkan ke halaman "not found"
+      return; // Hentikan eksekusi fungsi
+    }
     setGetLoading(true);
     Swal.fire({
       title: "Generate dokumen...",

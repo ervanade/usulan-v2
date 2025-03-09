@@ -735,9 +735,12 @@ const UsulanAlkes = () => {
                 },
               }}
               onRowClicked={(row) => {
-                navigate(`/usulan-alkes/edit/${row.id}`, {
-                  replace: true,
-                });
+                navigate(
+                  `/usulan-alkes/edit/${encodeURIComponent(encryptId(row.id))}`,
+                  {
+                    replace: true,
+                  }
+                );
               }}
             />
           )}

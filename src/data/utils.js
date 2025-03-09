@@ -39,8 +39,20 @@ export const encryptId = (id) => {
 };
 
 export const decryptId = (encryptedId) => {
-    const decryptedId = CryptoJS.AES.decrypt(encryptedId, encryptionKey).toString(CryptoJS.enc.Utf8);
-    return decryptedId;
+    try {
+        const decryptedBytes = CryptoJS.AES.decrypt(encryptedId, encryptionKey);
+        const decryptedId = decryptedBytes.toString(CryptoJS.enc.Utf8);
+
+        if (!decryptedId) {
+            console.error("Decryption failed: Empty result");
+            return null; // or throw an error, or return a default value
+        }
+
+        return decryptedId;
+    } catch (error) {
+        console.error("Decryption error:", error);
+        return null; // or throw an error, or return a default value
+    }
 };
 
 export const formatRupiah = (price) => {

@@ -174,6 +174,12 @@ const EditUsulan = () => {
     setGetLoading(true);
 
     setError(false);
+    const decryptedId = decryptId(id);
+    if (!decryptedId) {
+      // Jika decryptId gagal (mengembalikan null atau nilai falsy lainnya)
+      navigate("/not-found"); // Arahkan ke halaman "not found"
+      return; // Hentikan eksekusi fungsi
+    }
     try {
       const response = await axios({
         method: "get",
