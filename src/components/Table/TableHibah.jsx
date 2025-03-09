@@ -263,17 +263,13 @@ const getAllDetailDistribusi = (distribusi) => {
   return distribusi.map((d, distribusiIndex) => ({
     lampiran: distribusiIndex + 1,
     nama_puskesmas: d.nama_puskesmas,
-    details: d.detail_distribusi.map((item, index) => ({
+    kode_puskesmas: d.kode_puskesmas,
+    details: d.alkes.map((item, index) => ({
       no: index + 1 || "",
-      namaBarang: item.jenis_alkes || "",
-      merk: item.merk || "",
-      nomorBukti: item.nomor_bukti || "",
-      jumlah: item.jumlah_total || "",
-      jumlah_dikirim: item.jumlah_dikirim || "",
-      jumlah_diterima: item.jumlah_diterima || "",
-      hargaSatuan: item.harga_satuan || "",
-      jumlahNilai: `Rp. ${item.jumlah_total || ""}`,
-      keterangan: item.keterangan || "",
+      namaAlkes: item.nama_alkes || "",
+      standard: item.standard_rawat_inap || "",
+      berfungsi: item.berfungsi || "",
+      usulan: item.usulan,
     })),
   }));
 };
@@ -281,34 +277,21 @@ const getAllDetailDistribusi = (distribusi) => {
 export const RenderHibahPages = (jsonData, preview) => {
   const distribusiData = getAllDetailDistribusi(jsonData?.distribusi || []);
   const pages = [];
-  const downloadDate = new Date().toLocaleString("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  const downloadDate = (jsonData?.tgl_download || new Date()).toLocaleString(
+    "id-ID",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }
+  );
 
   distribusiData.forEach((distribusi, distribusiIndex) => {
     const totalItems = distribusi.details.length;
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-
-    const totalJumlahDikirim = distribusi.details.reduce(
-      (acc, item) => acc + (parseFloat(item.jumlah_dikirim) || 0),
-      0
-    );
-    const totalHargaSatuan = distribusi.details.reduce(
-      (acc, item) => acc + (parseFloat(item.hargaSatuan) || 0),
-      0
-    );
-    const totalJumlahNilai = distribusi.details.reduce(
-      (acc, item) =>
-        acc +
-        (parseFloat(item.jumlahNilai.replace(/Rp\. /, "").replace(/,/g, "")) ||
-          0),
-      0
-    );
 
     for (let i = 0; i < totalPages; i++) {
       const start = i * ITEMS_PER_PAGE;
@@ -361,8 +344,8 @@ export const RenderHibahPages = (jsonData, preview) => {
                     Lampiran {distribusi.lampiran}.{i + 1}. Data usulan alat,
                     jumlah dan peralatan pada puskesmas.
                   </Text>
-                  {"\n"}Kode Puskesmas: {jsonData?.kabupaten} {"   "} Nama
-                  Puskesmas: {distribusi?.nama_puskesmas}
+                  {"\n"}Kode Puskesmas: {distribusi?.kode_puskesmas} {"   "}{" "}
+                  Nama Puskesmas: {distribusi?.nama_puskesmas}
                 </Text>
               </View>
               <View style={styles.table}>
@@ -371,7 +354,7 @@ export const RenderHibahPages = (jsonData, preview) => {
                     <Text style={styles.tableCellHeader}>No</Text>
                   </View>
                   <View style={styles.tableColHeader}>
-                    <Text style={styles.tableCellHeader}>Nama Barang</Text>
+                    <Text style={styles.tableCellHeader}>Nama Alkes</Text>
                   </View>
 
                   <View style={styles.tableColHeader}>
@@ -391,23 +374,23 @@ export const RenderHibahPages = (jsonData, preview) => {
                     </View>
                     <View style={styles.tableCol}>
                       <Text style={styles.tableCell}>
-                        {items.namaBarang || ""}
+                        {items.namaAlkes || ""}
                       </Text>
                     </View>
 
                     <View style={styles.tableCol}>
                       <Text style={styles.tableCell}>
-                        {items.jumlah_dikirim || ""}
+                        {items.standard || ""}
                       </Text>
                     </View>
                     <View style={styles.tableCol}>
                       <Text style={styles.tableCell}>
-                        Rp. {formatRupiah(items.hargaSatuan) || ""}
+                        {formatRupiah(items.berfungsi) || ""}
                       </Text>
                     </View>
                     <View style={styles.tableCol}>
                       <Text style={styles.tableCell}>
-                        {formatRupiah(items.jumlahNilai) || ""}
+                        {formatRupiah(items.usulan) || ""}
                       </Text>
                     </View>
                   </View>
@@ -417,7 +400,8 @@ export const RenderHibahPages = (jsonData, preview) => {
             <View style={styles.footer}>
               <Text>
                 Downloaded on {downloadDate}. [Backend use only:
-                location_group_id = 117, username = jawa_barat]
+                location_group_id = 117, username ={" "}
+                {jsonData?.user_download || "jawa_barat"}]
               </Text>
             </View>
           </Page>

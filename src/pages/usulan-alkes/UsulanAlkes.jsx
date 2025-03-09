@@ -76,27 +76,15 @@ const UsulanAlkes = () => {
   const handleExport = () => {
     // Implementasi untuk mengekspor data (misalnya ke CSV)
     const exportData = filteredData?.map((item) => ({
+      Puskesmas: item?.nama_puskesmas,
       Provinsi: item?.provinsi,
       Kabupaten_Kota: item?.kabupaten,
       Kecamatan: item?.kecamatan,
-      Puskesmas: item?.nama_puskesmas,
-      Dokumen: item?.nama_dokumen,
-      Program: item?.program,
-      Batch: item?.batch,
-      Tahun_Lokus: item?.tahun_lokus,
-      BAST: item?.nomor_bast,
-      Tanggal_Kirim: item?.tanggal_kirim,
-      Tanggal_Terima: item?.tanggal_terima,
-      Jumlah_Kirim: item?.jumlah_barang_dikirim,
-      Jumlah_Terima: item?.jumlah_barang_diterima,
-      Ket_Daerah: item?.keterangan_daerah,
-      Ket_Ppk: item?.keterangan_ppk,
-      Konfirmasi_Daerah:
-        item?.konfirmasi_daerah == "1"
-          ? "Sudah Konfirmasi"
-          : "Belum Konfirmasi",
-      Konfirmasi_Ppk:
-        item?.konfirmasi_ppk == "1" ? "Sudah Konfirmasi" : "Belum Konfirmasi",
+      Kode_Puskesmas: item?.kode_pusdatin_baru,
+      Status_Pelayanan: item?.pelayanan,
+      Kapasitas_Listrik: item?.kapasitas_listrik,
+      Ketersediaan_Listrik: item?.ketersediaan_listrik,
+      Internet: item?.internet,
     }));
     const wb = XLSX.utils.book_new(),
       ws = XLSX.utils.json_to_sheet(exportData);
@@ -111,14 +99,6 @@ const UsulanAlkes = () => {
       { wch: 10 }, // Kolom 7 (Batch)
       { wch: 15 }, // Kolom 8 (Tahun_Lokus)
       { wch: 15 }, // Kolom 9 (BAST)
-      { wch: 15 }, // Kolom 10 (Tanggal_Kirim)
-      { wch: 15 }, // Kolom 11 (Tanggal_Terima)
-      { wch: 10 }, // Kolom 12 (Jumlah_Kirim)
-      { wch: 10 }, // Kolom 13 (Jumlah_Terima)
-      { wch: 20 }, // Kolom 14 (Ket_Daerah)
-      { wch: 20 }, // Kolom 15 (Ket_Ppk)
-      { wch: 20 }, // Kolom 16 (Konfirmasi_Daerah)
-      { wch: 20 }, // Kolom 17 (Konfirmasi_Ppk)
     ];
 
     XLSX.utils.book_append_sheet(wb, ws, `Data Usulan Alkes`);

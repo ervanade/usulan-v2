@@ -13,7 +13,7 @@ const HeaderDokumen = ({ jsonData, user }) => {
   return (
     <div className="my-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <h1 className="font-semibold mb-3 text-xl lg:text-[28px] tracking-tight text-left text-bodydark1">
-        Dokumen {jsonData?.nama_dokumen || ""}
+        Preview PDF Usulan {jsonData?.kabupaten || ""}
       </h1>
       <ModalTTENew
         isVisible={showModal}

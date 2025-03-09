@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
@@ -17,6 +23,7 @@ import {
   FaCheck,
   FaEdit,
   FaEye,
+  FaInfoCircle,
   FaPlus,
   FaSearch,
   FaTrash,
@@ -48,6 +55,7 @@ const EditUsulan = () => {
     ketersediaan_listrik: "",
     kapasitas_listrik: "",
     internet: "",
+    tgl_upload: null,
     usulan: [],
   });
   const [data, setData] = useState([]);
@@ -159,7 +167,7 @@ const EditUsulan = () => {
       setDataKecamatan([]);
     }
   };
-
+  const isSwalShown = useRef(false);
   // Fetch distribution data
   const fetchDistribusiData = useCallback(async () => {
     setLoading(true);
@@ -194,10 +202,23 @@ const EditUsulan = () => {
         ketersediaan_listrik: data.ketersediaan_listrik || "",
         kapasitas_listrik: data.kapasitas_listrik || "",
         internet: data.internet || "",
+        tgl_upload: data.usulan_alkes[0].tgl_upload || null,
         usulan: data.usulan || [],
       });
       setData(data?.usulan || []);
       setFilteredData(data?.usulan || []);
+      if (
+        data?.usulan_alkes[0]?.tgl_upload &&
+        data?.usulan_alkes[0]?.file_upload &&
+        !isSwalShown.current
+      ) {
+        Swal.fire(
+          "Warning",
+          "Data tidak bisa diubah karena daerah sudah mengupload dokumen usulan!",
+          "warning"
+        );
+        isSwalShown.current = true;
+      }
     } catch (error) {
       setError(true);
       setFilteredData([]);
@@ -539,13 +560,23 @@ const EditUsulan = () => {
   const getResultData = () => {
     return filteredData.map((row) => ({
       id: row.id,
-      berfungsi: editedData[row.id]?.berfungsi || row.berfungsi || 0,
-      usulan: editedData[row.id]?.usulan || row.usulan || 0,
+      berfungsi:
+        editedData[row.id]?.berfungsi !== undefined
+          ? editedData[row.id].berfungsi
+          : row.berfungsi || 0,
+      usulan:
+        editedData[row.id]?.usulan !== undefined
+          ? editedData[row.id].usulan
+          : row.usulan || 0,
     }));
   };
 
   const editUsulan = async () => {
     const resultUsulan = getResultData();
+    const updatedFormData = {
+      ...formData,
+      usulan: resultUsulan, // Pastikan usulan di formData sudah diupdate
+    };
 
     setLoading(true);
     Swal.fire({
@@ -558,29 +589,27 @@ const EditUsulan = () => {
       },
     });
 
-    await axios({
-      method: "put",
-      url: `${
-        import.meta.env.VITE_APP_API_URL
-      }/api/usulan/update/${encodeURIComponent(decryptId(id))}`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user?.token}`,
-      },
-      data: JSON.stringify({ ...formData, usulan: resultUsulan }),
-    })
-      .then(function (response) {
-        Swal.fire("Data Berhasil di Simpan!", "", "success");
-        navigate("/usulan-alkes");
-        setLoading(false);
-        // Swal.close();
-      })
-      .catch((error) => {
-        setLoading(false);
-        // Swal.close();
-        Swal.fire("Error", "Gagal Menyimpan Data", "error");
-        console.log(error);
+    try {
+      const response = await axios({
+        method: "put",
+        url: `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/usulan/update/${encodeURIComponent(decryptId(id))}`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+        data: JSON.stringify(updatedFormData), // Pastikan formData sudah diupdate
       });
+
+      Swal.fire("Data Berhasil di Simpan!", "", "success");
+      navigate("/usulan-alkes");
+    } catch (error) {
+      Swal.fire("Error", "Gagal Menyimpan Data", "error");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Contoh penggunaan getResultData (misalnya, saat tombol "Simpan" ditekan)
@@ -600,12 +629,42 @@ const EditUsulan = () => {
     });
   };
 
+  const handleShowKeterangan = (keterangan, nama_alkes) => {
+    // Format keterangan menjadi daftar barang
+    const daftarBarang = keterangan
+      .split("|") // Pisahkan berdasarkan tanda |
+      .map((item, index) => `${index + 1}. ${item.trim()}`) // Tambahkan nomor urut
+      .join("\n"); // Gabungkan dengan newline
+
+    // Tampilkan popup SweetAlert2
+    Swal.fire({
+      title: `Daftar List Detail ${nama_alkes || ""}`,
+      html: `<pre style="text-align: left; max-height: 300px; overflow-y: auto;">${daftarBarang}</pre>`,
+      showConfirmButton: true,
+      confirmButtonText: "Tutup",
+      width: "600px",
+    });
+  };
+
   const columns = useMemo(
     () => [
       {
         name: <div className="text-wrap">Nama Alkes</div>,
         selector: (row) => row.nama_alkes,
-        cell: (row) => <div className="text-wrap py-2">{row.nama_alkes}</div>,
+        cell: (row) => (
+          <div className="text-wrap py-2 flex items-center flex-col flex-wrap md:flex-row gap-1">
+            {row.nama_alkes}
+            {row.keterangan && ( // Tampilkan ikon jika keterangan ada
+              <FaInfoCircle
+                title="Lihat Info Detail Barang"
+                className="cursor-pointer text-primary hover:text-graydark w-5 h-5 md:w-4 md:h-4"
+                onClick={() =>
+                  handleShowKeterangan(row.keterangan, row.nama_alkes)
+                } // Tampilkan popup saat ikon diklik
+              />
+            )}
+          </div>
+        ),
         minWidth: "110px",
         sortable: true,
       },
@@ -647,6 +706,7 @@ const EditUsulan = () => {
                 handleInputChange(row.id, "berfungsi", e.target.value)
               }
               className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none focus:ring-0"
+              disabled={formData?.tgl_upload}
               min={0} // Pastikan tidak bisa minus
             />
           );
@@ -687,7 +747,7 @@ const EditUsulan = () => {
                 className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none"
                 min={0} // Pastikan tidak bisa minus
                 max={standard === null ? undefined : maxUsulan} // Batasi usulan jika standard tidak null
-                disabled={masihBerfungsi >= standard} // Nonaktifkan input jika masih_berfungsi >= standard
+                disabled={masihBerfungsi >= standard || formData?.tgl_upload} // Nonaktifkan input jika masih_berfungsi >= standard
               />
               {errors[row.id] && (
                 <div className="text-red-500 text-sm mt-1">
@@ -975,6 +1035,7 @@ const EditUsulan = () => {
                     placeholder="Jenis Pelayanan"
                     className="w-full text-sm"
                     theme={selectThemeColors}
+                    isDisabled
                   />
                 </div>
               </div>
@@ -985,7 +1046,7 @@ const EditUsulan = () => {
                     className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="email"
                   >
-                    Ketersediaan Daya Listrik :
+                    Ketersediaan Daya Listrik (PLN) :
                   </label>
                 </div>
                 <div className="">
@@ -995,6 +1056,7 @@ const EditUsulan = () => {
                     onChange={handleDayaChange}
                     placeholder="Ketersediaan Daya"
                     className="w-full text-sm"
+                    isDisabled={formData?.tgl_upload}
                     theme={selectThemeColors}
                   />
                 </div>
@@ -1015,6 +1077,7 @@ const EditUsulan = () => {
                     onChange={handleListrikChange}
                     placeholder="Ketersediaan Listrik"
                     className="w-full text-sm"
+                    isDisabled={formData?.tgl_upload}
                     theme={selectThemeColors}
                   />
                 </div>
@@ -1035,6 +1098,7 @@ const EditUsulan = () => {
                     onChange={handleInternetChange}
                     placeholder="Ketersediaan Internet"
                     className="w-full text-sm"
+                    isDisabled={formData?.tgl_upload}
                     theme={selectThemeColors}
                   />
                 </div>
@@ -1102,12 +1166,14 @@ const EditUsulan = () => {
               )}
             </div>
           </div>
-          <button
-            onClick={handleSimpan}
-            className="mt-4 bg-primary hover:bg-graydark text-white font-bold py-3 px-4 rounded w-full"
-          >
-            Simpan
-          </button>
+          {!formData?.tgl_upload && (
+            <button
+              onClick={handleSimpan}
+              className="mt-4 bg-primary hover:bg-graydark text-white font-bold py-3 px-4 rounded w-full"
+            >
+              Simpan
+            </button>
+          )}
         </div>
       </Card>
     </div>

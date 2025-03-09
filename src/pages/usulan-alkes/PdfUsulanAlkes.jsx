@@ -63,13 +63,14 @@ const PdfUsulanAlkes = () => {
   const [jsonData, setJsonData] = useState({
     id: "",
     nama_dokumen: "",
+    kabupaten: "",
     dokumen_array: [],
   });
 
   const [selectedRows, setSelectedRows] = React.useState([]);
   const [toggleCleared, setToggleCleared] = React.useState(false);
 
-  const handleTTE = async (id, nama_dokumen, dokumen_array) => {
+  const handleTTE = async (id, nama_dokumen, dokumen_array, kabupaten) => {
     // e.preventDefault();
     // setShowModal(true);
     setShowPopup(true);
@@ -77,6 +78,7 @@ const PdfUsulanAlkes = () => {
       id: id,
       nama_dokumen: nama_dokumen,
       dokumen_array: dokumen_array,
+      kabupaten: kabupaten,
     });
   };
 
@@ -118,12 +120,13 @@ const PdfUsulanAlkes = () => {
     );
   }, [filteredData, selectedRows, toggleCleared]);
 
-  const handleModalDokumen = async (e, id, nama_dokumen) => {
+  const handleModalDokumen = async (e, id, nama_dokumen, kabupaten) => {
     e.preventDefault();
     setShowModalUpload(true);
     setJsonData({
       id: id,
       nama_dokumen: nama_dokumen,
+      kabupaten: kabupaten,
     });
   };
 
@@ -133,7 +136,7 @@ const PdfUsulanAlkes = () => {
     try {
       const response = await axios({
         method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/dokumen`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/usulan`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -357,7 +360,7 @@ const PdfUsulanAlkes = () => {
     try {
       const response = await axios({
         method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/searchdoc`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/usulan/filter`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -365,7 +368,6 @@ const PdfUsulanAlkes = () => {
         data: {
           id_provinsi: selectedProvinsi?.value.toString() || "",
           id_kabupaten: selectedKota?.value.toString() || "",
-          id_kecamatan: selectedKecamatan?.value.toString() || "",
         },
       });
       let dataResponse = response.data.data;
@@ -435,10 +437,29 @@ const PdfUsulanAlkes = () => {
     }
   }, [user.role, user.provinsi, user.kabupaten, dataProvinsi, dataKota]);
 
+  const updateDownload = async (id) => {
+    setLoading(true);
+    try {
+      const response = await axios({
+        method: "post",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/usulan/download/${id}`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      fetchDokumenData();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDownload = async (id) => {
     const confirmResult = await Swal.fire({
       title: "Apakah Anda Yakin?",
-      text: "Anda tidak dapat mengubah data setelah mendownload. Lanjutkan?",
+      text: "Anda ingin mendownload dokumen usulan. Lanjutkan?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -466,7 +487,7 @@ const PdfUsulanAlkes = () => {
         method: "get",
         url: `${
           import.meta.env.VITE_APP_API_URL
-        }/api/dokumen/${encodeURIComponent(id)}`,
+        }/api/usulan/${encodeURIComponent(id)}`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -476,56 +497,87 @@ const PdfUsulanAlkes = () => {
       const data = response.data.data;
       // Lakukan proses generate dokumen berdasarkan data JSON yang diterima
       let dataJson = {
-        nama_dokumen: data.nama_dokumen || "",
         id: data.id,
-        nomorSurat: data.nomor_bast || "",
-        tanggal: data.tanggal_bast || defaultDate,
-        tanggal_tte_ppk: data.tanggal_tte_ppk || defaultDate,
-        tanggal_tte_daerah: data.tanggal_tte_daerah || defaultDate,
-        kecamatan: data.kecamatan,
-        puskesmas: data.Puskesmas,
-        namaKapus: data.nama_kapus,
+        tgl_download: data.tgl_download || defaultDate,
+        tgl_upload: data.tgl_upload || defaultDate,
         provinsi: data.provinsi || "",
         kabupaten: data.kabupaten || "",
-        penerima_hibah: data.penerima_hibah || "",
-        kepala_unit_pemberi: data.kepala_unit_pemberi || "",
-        distribusi: data.distribusi || [],
-        nipKapus: "nip.121212",
-        namaBarang: data.nama_barang,
-        status_tte: data.status_tte || "",
-        jumlahDikirim: "24",
-        jumlahDiterima: "24",
-        tte: "",
-        tteDaerah: {
-          image_url:
-            "https://www.shutterstock.com/image-vector/fake-autograph-samples-handdrawn-signatures-260nw-2332469589.jpg",
-          width: 50,
-          height: 50,
+        user_download: data.user_download || "",
+        user_upload: data.user_upload || "",
+        distribusi: data.usulan_detail || [],
+        total_alkes: data.total_alkes || [],
+      };
+      const pdfBlob = await GenerateDokumen(dataJson, false); // GenerateDokumen harus mengembalikan Blob PDF
+
+      saveAs(pdfBlob, `PDF Usulan ${dataJson.kabupaten}.pdf`);
+      await updateDownload(dataJson?.id);
+
+      Swal.fire({
+        icon: "success",
+        title: "Download Complete",
+        text: "Dokumen Sukses Di Download",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Gagal Download Dokumen",
+      });
+      console.log(error);
+    }
+  };
+
+  const handleBukaUpload = async (id) => {
+    try {
+      Swal.fire({
+        title: "Generate dokumen...",
+        text: "Tunggu Sebentar Dokumen Disiapkan...",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
         },
-        ket_daerah: "",
-        ket_ppk: data.keterangan_ppk,
-        tte_daerah: data.tte_daerah || defaultImage,
-        nama_daerah: data.nama_daerah || "",
-        nip_daerah: data.nip_daerah || "",
-        tte_ppk: data.tte_ppk || defaultImage,
-        nama_ppk: data.nama_ppk || "",
-        nip_ppk: data.nip_ppk || "",
-        total_barang_dikirim: data.total_barang_dikirim || "",
-        total_harga: data.total_harga || "",
-        file_dokumen: data.file_dokumen || null,
+      });
+
+      const response = await axios({
+        method: "get",
+        url: `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/usulan/${encodeURIComponent(id)}`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+
+      const data = response.data.data;
+      // Lakukan proses generate dokumen berdasarkan data JSON yang diterima
+      let dataJson = {
+        id: data.id,
+        kecamatan: data.kecamatan,
+        provinsi: data.provinsi || "",
+        kabupaten: data.kabupaten || "",
+        file_upload: data.file_upload || null,
       };
 
-      if (dataJson?.file_dokumen) {
+      if (dataJson?.file_upload) {
         try {
-          const response = await fetch(dataJson?.file_dokumen);
+          const response = await fetch(dataJson?.file_upload);
           if (!response.ok) {
             throw new Error("Network response was not ok.");
           }
           const blob = await response.blob();
-          const fileName = dataJson?.nama_dokumen
-            ? `${dataJson.nama_dokumen}.pdf`
+          const fileName = dataJson?.kabupaten
+            ? `Dokumen Upload Usulan ${dataJson.kabupaten}.pdf`
             : "dokumen.pdf";
           saveAs(blob, fileName);
+          Swal.fire({
+            icon: "success",
+            title: "Download Complete",
+            text: "Dokumen Upload Sukses Di Download",
+            confirmButtonText: "OK",
+          });
         } catch (error) {
           console.error("Failed to download file:", error);
           Swal.fire({
@@ -535,27 +587,12 @@ const PdfUsulanAlkes = () => {
           });
         }
       } else {
-        if (user.role == "3") {
-          if (!user.name || !user.nip) {
-            Swal.fire("Error", "Anda Belum Input Nama / NIP", "error");
-            navigate("/profile");
-            setLoading(false);
-            return;
-          }
-          dataJson.nama_daerah = user.name;
-          dataJson.nip_daerah = user.nip;
-        }
-        const pdfBlob = await GenerateDokumen(dataJson, false); // GenerateDokumen harus mengembalikan Blob PDF
-
-        saveAs(pdfBlob, `${dataJson.nama_dokumen}.pdf`);
+        Swal.fire({
+          icon: "warning",
+          title: "warning",
+          text: "Dokumen Belum di Upload!",
+        });
       }
-
-      Swal.fire({
-        icon: "success",
-        title: "Download Complete",
-        text: "Dokumen Sukses Di Download",
-        confirmButtonText: "OK",
-      });
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -584,8 +621,12 @@ const PdfUsulanAlkes = () => {
       },
       {
         name: <div className="text-wrap">Tanggal Download</div>,
-        selector: (row) => row.tanggal_bast,
-        cell: (row) => <div className="text-wrap py-4">{row.tanggal_bast}</div>,
+        selector: (row) => row.tgl_download,
+        cell: (row) => (
+          <div className="text-wrap py-4">
+            {row.tgl_download?.substring(0, 10) || "Belum Download"}
+          </div>
+        ),
         width: "165px",
         sortable: true,
 
@@ -623,8 +664,14 @@ const PdfUsulanAlkes = () => {
       },
       {
         name: <div className="text-wrap">Tanggal Upload</div>,
-        selector: (row) => row.tanggal_bast,
-        cell: (row) => <div className="text-wrap py-4">{row.tanggal_bast}</div>,
+        selector: (row) => row.tgl_upload,
+        cell: (row) => (
+          <div className="text-wrap py-4">
+            {row.tgl_upload?.substring(0, 10) || (
+              <span className="text-red-500">Belum Upload</span>
+            )}
+          </div>
+        ),
         width: "150px",
         sortable: true,
 
@@ -654,24 +701,32 @@ const PdfUsulanAlkes = () => {
                 <FaEye size={20} />
               </Link>
             </button> */}
-            <button
-              title="Download"
-              className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-22 rounded-md font-medium text-xs"
-              onClick={() => handleDownload(row.id)} // Tambahkan handler download di sini
-            >
-              Buka
-              <br /> Upload
-            </button>
+            {row?.tgl_upload && row?.file_upload ? (
+              <button
+                title="Download"
+                className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-22 rounded-md font-medium text-xs"
+                onClick={() => handleBukaUpload(row.id)} // Tambahkan handler download di sini
+              >
+                Buka
+                <br /> Upload
+              </button>
+            ) : (
+              ""
+            )}
             {(user.role == "2" || user.role == "3" || user.role == "4") &&
-            row.tanggal_upload ? (
+            (!row.tgl_upload || !row.file_upload) ? (
               <button
                 title="Upload Dokumen"
-                className="text-white py-2 w-20 bg-teal-500 rounded-md"
-                onClick={(e) => handleModalDokumen(e, row.id, row.nama_dokumen)}
+                className="text-white py-2 w-20 bg-primary rounded-md"
+                onClick={(e) =>
+                  handleModalDokumen(e, row.id, row.nama_dokumen, row.kabupaten)
+                }
               >
                 Upload <br />
                 Dokumen
               </button>
+            ) : (!row.tgl_upload || !row.file_upload) && user.role == "1" ? (
+              "Belum Upload"
             ) : (
               ""
             )}
@@ -722,22 +777,10 @@ const PdfUsulanAlkes = () => {
   const handleExport = () => {
     // Implementasi untuk mengekspor data (misalnya ke CSV)
     const exportData = filteredData?.map((item) => ({
-      Dokumen: item?.nama_dokumen,
       Provinsi: item?.provinsi,
       Kabupaten_Kota: item?.kabupaten,
-      Program: item?.program,
-      Batch: item?.batch,
-      Tahun_Lokus: item?.tahun_lokus,
-      BAST: item?.nomor_bast,
-      Tanggal_BAST: item?.tanggal_bast,
-      Status_TTE:
-        item?.status_tte == "0"
-          ? "Belum TTE"
-          : item?.status_tte == "1"
-          ? "Daerah Sudah TTE, Direktur Belum TTE"
-          : item?.status_tte == "2"
-          ? "Sudah TTE"
-          : "Belum TTE",
+      Tanggal_Download: item?.tgl_download,
+      Tanggal_Upload: item?.tgl_upload,
     }));
     const wb = XLSX.utils.book_new(),
       ws = XLSX.utils.json_to_sheet(exportData);

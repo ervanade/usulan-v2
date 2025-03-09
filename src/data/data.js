@@ -294,12 +294,24 @@ export const SelectOptions = [
 
 export const dayaOptions = [
     {
-        "label": "< 10.000 VA",
-        "value": "< 10.000 VA"
+        "label": "0 - 3000 VA",
+        "value": "0 - 3000 VA"
     },
     {
-        "label": ">= 10.000 VA",
-        "value": ">= 10.000 VA"
+        "label": "3000 - 7000 VA",
+        "value": "3000 - 7000 VA"
+    },
+    {
+        "label": "7000 - 10000 VA",
+        "value": "7000 - 10000 VA"
+    },
+    {
+        "label": "> 10000 VA",
+        "value": "> 10000 VA"
+    },
+    {
+        "label": "NON PLN",
+        "value": "NON PLN"
     }
 ]
 

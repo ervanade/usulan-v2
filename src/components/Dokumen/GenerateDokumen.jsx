@@ -285,16 +285,19 @@ const styles = StyleSheet.create({
 });
 
 const GenerateDokumen = async (jsonData, preview) => {
-  const downloadDate = new Date().toLocaleString("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  const downloadDate = (jsonData?.tgl_download || new Date()).toLocaleString(
+    "id-ID",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }
+  );
   const MyDocument = () => (
-    <Document title={`Dokumen ${jsonData?.nomorSurat}`}>
+    <Document title={`Dokumen ${jsonData?.kabupaten}`}>
       <Page size="FOLIO" style={styles.page}>
         <View
           style={{
@@ -319,8 +322,7 @@ const GenerateDokumen = async (jsonData, preview) => {
           >
             dibuat oleh kab/kota {"\n\n"}PROPOSAL {"\n\n"}PEMENUHAN ALAT
             KESEHATAN DI PUSKESMAS,{"\n\n"}
-            PUSKESMAS PEMBANTU DAN POSYANDU di {"\n\n"}KABUPATEN/KOTA KAB.
-            BANDUNG
+            KABUPATEN/KOTA {jsonData?.kabupaten}
           </Text>
           <Text
             style={{
@@ -333,14 +335,14 @@ const GenerateDokumen = async (jsonData, preview) => {
               textAlign: "center",
             }}
           >
-            DINAS KESEHATAN KABUPATEN/KOTA KAB. BANDUNG {"\n\n"}PROVINSI JAWA
-            BARAT {"\n\n"}TAHUN 2024
+            DINAS KESEHATAN KABUPATEN/KOTA {jsonData?.kabupaten} {"\n\n"}
+            PROVINSI {jsonData?.provinsi} {"\n\n"}TAHUN 2024
           </Text>
         </View>
         <View style={styles.footer}>
           <Text>
             Downloaded on {downloadDate}. [Backend use only: location_group_id =
-            117, username = jawa_barat]
+            117, username = {jsonData?.user_download || "jawa_barat"}]
           </Text>
         </View>
       </Page>
@@ -785,7 +787,7 @@ const GenerateDokumen = async (jsonData, preview) => {
         <View style={styles.footer}>
           <Text>
             Downloaded on {downloadDate}. [Backend use only: location_group_id =
-            117, username = jawa_barat]
+            117, username = {jsonData?.user_download || "jawa_barat"}]
           </Text>
         </View>
       </Page>
@@ -877,7 +879,8 @@ const GenerateDokumen = async (jsonData, preview) => {
                 Seluruh puskesmas telah melaksanakan Permenkes 31 tahun 2018
                 dengan melakukan melakukan update data sarana, prasarana dan
                 alat kesehatan secara riil melalui aplikasi ASPAK dan telah di
-                validasi oleh Dinas Kesehatan Kabupaten/Kota KAB. BANDUNG.
+                validasi oleh Dinas Kesehatan Kabupaten/Kota{" "}
+                {jsonData?.kabupaten}.
               </Text>
             </View>
 
@@ -1067,7 +1070,7 @@ const GenerateDokumen = async (jsonData, preview) => {
         <View style={styles.footer}>
           <Text>
             Downloaded on {downloadDate}. [Backend use only: location_group_id =
-            117, username = jawa_barat]
+            117, username = {jsonData?.user_download || "jawa_barat"}]
           </Text>
         </View>
       </Page>

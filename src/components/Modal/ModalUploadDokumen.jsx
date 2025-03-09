@@ -42,6 +42,15 @@ const ModalUploadDokumen = ({
       setLoading(false);
       return;
     }
+    Swal.fire({
+      title: "Upload dokumen...",
+      text: "Tunggu Sebentar Upload Disiapkan...",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
     // if (!user.ttd || !user.name || !user.nip) {
     //   Swal.fire("Error", "Anda Belum Input TTE / Nama / NIP", "error");
@@ -53,13 +62,15 @@ const ModalUploadDokumen = ({
     const formDataToSend = new FormData();
     // formDataToSend.append("email", formData.email);
     // formDataToSend.append("password", formData.password);
-    formDataToSend.append("id_dokumen", formData.id_dokumen);
+    // formDataToSend.append("id_dokumen", formData.id_dokumen);
     if (formData.fileDokumen) {
-      formDataToSend.append("file_dokumen", formData.fileDokumen);
+      formDataToSend.append("file_upload", formData.fileDokumen);
     }
     await axios({
       method: "post",
-      url: `${import.meta.env.VITE_APP_API_URL}/api/dokumen/upload`,
+      url: `${import.meta.env.VITE_APP_API_URL}/api/usulan/upload/${
+        formData.id_dokumen
+      }`,
       headers: {
         Authorization: `Bearer ${user?.token}`,
       },
@@ -67,7 +78,7 @@ const ModalUploadDokumen = ({
     })
       .then(function (response) {
         Swal.fire("Dokumen Berhasil diUpload!", "", "success");
-        navigate("/dokumen");
+        navigate("/pdf-usulan-alkes");
       })
       .catch((error) => {
         Swal.fire("Gagal Upload Dokumen!", "", "error");
@@ -113,13 +124,12 @@ const ModalUploadDokumen = ({
       setLoading(false);
       return;
     }
-
     Swal.fire({
       title: "Perhatian",
-      text: "Dokumen sudah sesuai & di Tanda Tangan, Upload Dokumen BAST ini?",
+      text: "Anda tidak dapat mengubah data setelah mengupload. Lanjutkan?",
       showCancelButton: true,
       denyButtonColor: "#3B82F6",
-      confirmButtonColor: "#16B3AC",
+      confirmButtonColor: "#027d77",
       confirmButtonText: "Ya",
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
@@ -222,7 +232,7 @@ const ModalUploadDokumen = ({
             throw new Error("Network response was not ok.");
           }
           const blob = await response.blob();
-          saveAs(blob, dataJson?.nama_dokumen || "dokumen.pdf"); // Use FileSaver to save the file with the specified name
+          saveAs(blob, `PDF Usulan ${dataJson?.kabupaten}` || "dokumen.pdf"); // Use FileSaver to save the file with the specified name
         } catch (error) {
           console.error("Failed to download file:", error);
           Swal.fire({
@@ -234,7 +244,7 @@ const ModalUploadDokumen = ({
       } else {
         const pdfBlob = await GenerateDokumen(dataJson); // GenerateDokumen harus mengembalikan Blob PDF
 
-        saveAs(pdfBlob, `${dataJson.nama_dokumen}.pdf`);
+        saveAs(pdfBlob, `PDF Usulan ${dataJson?.kabupaten}.pdf`);
       }
 
       Swal.fire({
@@ -265,8 +275,8 @@ const ModalUploadDokumen = ({
           <div className="flex items-start justify-between p-5 border-b border-solid border-black/20 rounded-t ">
             <h3 className="text-xl font-bold text-primary">
               {editIndex !== null
-                ? `Upload Dokumen ${jsonData?.nama_dokumen}`
-                : `Upload Dokumen ${jsonData?.nama_dokumen}`}
+                ? `Upload Dokumen ${jsonData?.kabupaten}`
+                : `Upload Dokumen ${jsonData?.kabupaten}`}
             </h3>
             <button
               className="bg-transparent border-0 text-black float-right"
@@ -288,7 +298,7 @@ const ModalUploadDokumen = ({
                 </p>
                 <button
                   title="Download"
-                  className="text-teal-400 hover:text-teal-500 flex items-center gap-2"
+                  className="text-primary hover:text-graydark flex items-center gap-2"
                   onClick={() => handleDownload(jsonData?.id)} // Tambahkan handler download di sini
                 >
                   <span className="hidden sm:block sm:text-sm">
@@ -436,7 +446,7 @@ const ModalUploadDokumen = ({
                 Close
               </button>
               <button
-                className="bg-[#0ACBC2]  text-white font-bold py-2 px-6 rounded-md focus:outline-none focus:shadow-outline dark:bg-transparent mr-1 mb-1"
+                className="bg-primary  text-white font-bold py-2 px-6 rounded-md focus:outline-none focus:shadow-outline dark:bg-transparent mr-1 mb-1"
                 type="submit"
                 onClick={handleSave}
               >

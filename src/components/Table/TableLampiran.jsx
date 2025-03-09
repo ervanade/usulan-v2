@@ -259,49 +259,31 @@ const formatRupiah = (price) => {
 const ITEMS_PER_PAGE = 32;
 
 const getAllDetailDistribusi = (distribusi) => {
-  return distribusi.flatMap((d) =>
-    d.detail_distribusi.map((item, index) => ({
-      no: index + 1 || "",
-      namaBarang: item.jenis_alkes || "",
-      merk: item.merk || "",
-      nomorBukti: item.nomor_bukti || "",
-      jumlah: item.jumlah_total || "",
-      jumlah_dikirim: item.jumlah_dikirim || "",
-      jumlah_diterima: item.jumlah_diterima || "",
-      hargaSatuan: item.harga_satuan || "",
-      jumlahNilai: `Rp. ${item.jumlah_total || ""}`,
-      keterangan: `Pus. ${d.nama_puskesmas}` || "",
-    }))
-  );
+  return distribusi?.map((item, index) => ({
+    no: index + 1 || "",
+    namaAlkes: item.nama_alkes || "",
+    standard: item.standard_rawat_inap || "",
+    berfungsi: item.berfungsi || "",
+    usulan: item.usulan,
+  }));
 };
 
 export const RenderBarangPages = (jsonData, preview) => {
-  const dataBarang = getAllDetailDistribusi(jsonData?.distribusi || []);
+  const dataBarang = getAllDetailDistribusi(jsonData?.total_alkes || []);
+  console.log(dataBarang);
   const pages = [];
-  const totalItems = dataBarang.length;
+  const totalItems = dataBarang?.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-  const downloadDate = new Date().toLocaleString("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-  const totalJumlahDikirim = dataBarang.reduce(
-    (acc, item) => acc + (parseFloat(item.jumlah_dikirim) || 0),
-    0
-  );
-  const totalHargaSatuan = dataBarang.reduce(
-    (acc, item) => acc + (parseFloat(item.hargaSatuan) || 0),
-    0
-  );
-  const totalJumlahNilai = dataBarang.reduce(
-    (acc, item) =>
-      acc +
-      (parseFloat(item.jumlahNilai.replace(/Rp\. /, "").replace(/,/g, "")) ||
-        0),
-    0
+  const downloadDate = (jsonData?.tgl_download || new Date()).toLocaleString(
+    "id-ID",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }
   );
 
   for (let i = 0; i < totalPages; i++) {
@@ -346,9 +328,8 @@ export const RenderBarangPages = (jsonData, preview) => {
                 }}
               >
                 Lampiran {i + 1}. Data usulan alat, jumlah dan peralatan pada
-                puskesmas.
+                puskesmas Kabupaten: {jsonData?.kabupaten}
               </Text>
-              {"\n"}Kabupaten: {jsonData?.kabupaten}
             </Text>
           </View>
 
@@ -377,22 +358,20 @@ export const RenderBarangPages = (jsonData, preview) => {
                   <Text style={styles.tableCell}>{start + index + 1}</Text>
                 </View>
                 <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{items.namaBarang || ""}</Text>
+                  <Text style={styles.tableCell}>{items.namaAlkes || ""}</Text>
                 </View>
 
                 <View style={styles.tableCol}>
+                  <Text style={styles.tableCell}>{items.standard || ""}</Text>
+                </View>
+                <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>
-                    {items.jumlah_dikirim || ""}
+                    {formatRupiah(items.berfungsi) || ""}
                   </Text>
                 </View>
                 <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>
-                    Rp. {formatRupiah(items.hargaSatuan) || ""}
-                  </Text>
-                </View>
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>
-                    {formatRupiah(items.jumlahNilai) || ""}
+                    {formatRupiah(items.usulan) || ""}
                   </Text>
                 </View>
               </View>
@@ -402,7 +381,7 @@ export const RenderBarangPages = (jsonData, preview) => {
         <View style={styles.footer}>
           <Text>
             Downloaded on {downloadDate}. [Backend use only: location_group_id =
-            117, username = jawa_barat]
+            117, username = {jsonData?.user_download || "jawa_barat"}]
           </Text>
         </View>
       </Page>
