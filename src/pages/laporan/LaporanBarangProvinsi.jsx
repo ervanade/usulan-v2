@@ -69,7 +69,7 @@ const LaporanBarangProvinsi = () => {
         method: "get",
         url: `${
           import.meta.env.VITE_APP_API_URL
-        }/api/laporan/${encodeURIComponent(decryptId(idBarang))}`,
+        }/api/lapalkes/${encodeURIComponent(decryptId(idBarang))}`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -228,7 +228,7 @@ const LaporanBarangProvinsi = () => {
     try {
       const response = await axios({
         method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/laporan/detail`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/lapalkes/detail`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -318,7 +318,7 @@ const LaporanBarangProvinsi = () => {
         // width: "180px",
       },
       {
-        name: <div className="text-wrap">Nama Barang</div>,
+        name: <div className="text-wrap">Nama Alkes</div>,
         selector: (row) => row.nama_alkes,
         cell: (row) => <div className="text-wrap py-2">{row.nama_alkes}</div>,
 
@@ -326,24 +326,16 @@ const LaporanBarangProvinsi = () => {
         width: "200px",
       },
       {
-        name: "Jumlah Dikirim",
-        selector: (row) => Number(row.jumlah_dikirim),
+        name: "Jumlah Eksisting",
+        selector: (row) => Number(row.berfungsi),
         sortable: true,
         // width: "100px",
       },
       {
-        name: "Jumlah Diterima",
-        selector: (row) => Number(row.jumlah_diterima),
+        name: "Jumlah Usulan",
+        selector: (row) => Number(row.usulan),
         sortable: true,
         // width: "100px",
-      },
-      {
-        name: "Total Harga (Rp)",
-        selector: (row) => Number(row.jumlah_total),
-        cell: (row) => formatRupiah(row.jumlah_total),
-
-        sortable: true,
-        width: "200px",
       },
       {
         name: "Aksi",
@@ -354,7 +346,7 @@ const LaporanBarangProvinsi = () => {
               className="text-green-400 hover:text-green-500"
             >
               <Link
-                to={`/laporanbarang/detail/${encodeURIComponent(
+                to={`/laporan/detail/${encodeURIComponent(
                   idBarang
                 )}/${encodeURIComponent(encryptId(row?.id_provinsi))}`}
               >
@@ -371,14 +363,13 @@ const LaporanBarangProvinsi = () => {
     []
   );
   const handleExport = async () => {
-    const XLSX = await import("xlsx");    // Implementasi untuk mengekspor data (misalnya ke CSV)
+    const XLSX = await import("xlsx"); // Implementasi untuk mengekspor data (misalnya ke CSV)
 
     const exportData = filteredData?.map((item) => ({
       Provinsi: item?.provinsi,
-      "Nama Barang": item?.nama_alkes,
-      "Jumlah Barang Dikirim": item?.jumlah_dikirim,
-      "Jumlah Barang Diterima": item?.jumlah_diterima,
-      "Total Harga": formatRupiah(item?.jumlah_total),
+      "Nama Alkes": item?.nama_alkes,
+      "Jumlah Eksisting": item?.berfungsi,
+      "Jumlah Usulan": item?.usulan,
     }));
     const wb = XLSX.utils.book_new();
 
@@ -399,13 +390,13 @@ const LaporanBarangProvinsi = () => {
     wsFilteredData["!cols"] = cols;
 
     // Menambahkan sheet ke workbook
-    XLSX.utils.book_append_sheet(wb, wsFilteredData, "Data Distribusi");
+    XLSX.utils.book_append_sheet(wb, wsFilteredData, "Data Alkes Provinsi");
 
     // Export file excel
     const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
     XLSX.writeFile(
       wb,
-      `Data laporan Per Barang ${
+      `Data laporan Per Provinsi ${
         filteredData[0]?.nama_alkes || ""
       } ${tanggal}.xlsx`
     );
@@ -423,14 +414,14 @@ const LaporanBarangProvinsi = () => {
   return (
     <div>
       <Breadcrumb
-        pageName={`Data Laporan Barang Provinsi`}
-        title={`Data Laporan Barang ${
+        pageName={`Data Laporan Alkes Provinsi`}
+        title={`Data Laporan Alkes ${
           filteredData[0]?.nama_alkes || ""
         } Per Provinsi`}
       />
       <div className="flex justify-end mb-4">
         <button
-          onClick={() => navigate(`/laporanbarang`)}
+          onClick={() => navigate(`/laporan`)}
           className="flex items-center px-4 py-2 bg-primary text-white rounded-md font-semibold"
         >
           Back
@@ -474,7 +465,7 @@ const LaporanBarangProvinsi = () => {
           </div>
           <div className="div flex gap-2 flex-row">
             <button
-              title="Export Data Distribusi"
+              title="Export Data Alkes"
               className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
               onClick={handleExport}
             >

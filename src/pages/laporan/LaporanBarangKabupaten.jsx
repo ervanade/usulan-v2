@@ -69,7 +69,7 @@ const LaporanBarangKabupaten = () => {
         method: "get",
         url: `${
           import.meta.env.VITE_APP_API_URL
-        }/api/laporan/${encodeURIComponent(
+        }/api/lapalkes/${encodeURIComponent(
           decryptId(idBarang)
         )}/${encodeURIComponent(decryptId(idProvinsi))}`,
         headers: {
@@ -230,7 +230,7 @@ const LaporanBarangKabupaten = () => {
     try {
       const response = await axios({
         method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/laporan/detail`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/lapalkes/detail`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -320,7 +320,7 @@ const LaporanBarangKabupaten = () => {
         // width: "180px",
       },
       {
-        name: <div className="text-wrap">Nama Barang</div>,
+        name: <div className="text-wrap">Nama Alkes</div>,
         selector: (row) => row.nama_alkes,
         cell: (row) => <div className="text-wrap py-2">{row.nama_alkes}</div>,
 
@@ -328,24 +328,16 @@ const LaporanBarangKabupaten = () => {
         width: "200px",
       },
       {
-        name: "Jumlah Dikirim",
-        selector: (row) => Number(row.jumlah_dikirim),
+        name: "Jumlah Eksisting",
+        selector: (row) => Number(row.berfungsi),
         sortable: true,
         // width: "100px",
       },
       {
-        name: "Jumlah Diterima",
-        selector: (row) => Number(row.jumlah_diterima),
+        name: "Jumlah Usulan",
+        selector: (row) => Number(row.usulan),
         sortable: true,
         // width: "100px",
-      },
-      {
-        name: "Total Harga (Rp)",
-        selector: (row) => Number(row.jumlah_total),
-        cell: (row) => formatRupiah(row.jumlah_total),
-
-        sortable: true,
-        width: "200px",
       },
       {
         name: "Aksi",
@@ -356,7 +348,7 @@ const LaporanBarangKabupaten = () => {
               className="text-green-400 hover:text-green-500"
             >
               <Link
-                to={`/laporanbarang/detail/${encodeURIComponent(
+                to={`/laporan/detail/${encodeURIComponent(
                   idBarang
                 )}/${encodeURIComponent(idProvinsi)}/${encodeURIComponent(
                   encryptId(row?.id_kabupaten)
@@ -376,14 +368,13 @@ const LaporanBarangKabupaten = () => {
   );
 
   const handleExport = async () => {
-    const XLSX = await import("xlsx");    // Implementasi untuk mengekspor data (misalnya ke CSV)
+    const XLSX = await import("xlsx"); // Implementasi untuk mengekspor data (misalnya ke CSV)
 
     const exportData = filteredData?.map((item) => ({
       Kabupaten: item?.kabupaten,
-      "Nama Barang": item?.nama_alkes,
-      "Jumlah Barang Dikirim": item?.jumlah_dikirim,
-      "Jumlah Barang Diterima": item?.jumlah_diterima,
-      "Total Harga": formatRupiah(item?.jumlah_total),
+      "Nama Alkes": item?.nama_alkes,
+      "Jumlah Eksisting": item?.berfungsi,
+      "Jumlah Usulan": item?.usulan,
     }));
     const wb = XLSX.utils.book_new();
 
@@ -404,13 +395,17 @@ const LaporanBarangKabupaten = () => {
     wsFilteredData["!cols"] = cols;
 
     // Menambahkan sheet ke workbook
-    XLSX.utils.book_append_sheet(wb, wsFilteredData, "Data Distribusi");
+    XLSX.utils.book_append_sheet(
+      wb,
+      wsFilteredData,
+      "Data Alkes Per Kabupaten"
+    );
 
     // Export file excel
     const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
     XLSX.writeFile(
       wb,
-      `Data laporan Per Barang ${
+      `Data laporan Per Kabupaten ${
         filteredData[0]?.nama_alkes || ""
       } ${tanggal}.xlsx`
     );
@@ -428,15 +423,15 @@ const LaporanBarangKabupaten = () => {
   return (
     <div>
       <Breadcrumb
-        pageName={`Data Laporan Barang Kabupaten`}
-        title={`Data Laporan Barang ${
+        pageName={`Data Laporan Alkes Kabupaten`}
+        title={`Data Laporan Alkes ${
           filteredData[0]?.nama_alkes || ""
         } Per Kabupaten  ${filteredData[0]?.provinsi || ""} `}
       />
       <div className="flex justify-end mb-4">
         <button
           onClick={() =>
-            navigate(`/laporanbarang/detail/${encodeURIComponent(idBarang)}`)
+            navigate(`/laporan/detail/${encodeURIComponent(idBarang)}`)
           }
           className="flex items-center px-4 py-2 bg-primary text-white rounded-md font-semibold"
         >

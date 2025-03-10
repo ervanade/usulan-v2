@@ -6,7 +6,7 @@ import { AiOutlineDatabase } from "react-icons/ai";
 import { MdOutlineDomainVerification, MdReport } from "react-icons/md";
 import { FaTasks, FaUsers } from "react-icons/fa";
 import { GrDocumentText } from "react-icons/gr";
-import { TbReport } from "react-icons/tb";
+import { TbChartArea, TbChartBar, TbReport } from "react-icons/tb";
 import { useSelector } from "react-redux";
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -279,7 +279,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
               {/* <!-- Menu Item Profile --> */}
 
-              {/* <li>
+              <li>
                 <NavLink
                   to="/laporan"
                   className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
@@ -287,10 +287,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     "bg-graydark dark:bg-meta-4 text-primary"
                   }`}
                 >
-                  <TbReport size={22} />
+                  <TbChartBar size={22} />
                   Laporan
                 </NavLink>
-              </li> */}
+              </li>
             </ul>
           </div>
           {/* <!-- Others Group --> */}

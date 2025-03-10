@@ -59,7 +59,7 @@ const LaporanBarang = () => {
     try {
       const response = await axios({
         method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/laporan`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/lapalkes`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -128,7 +128,7 @@ const LaporanBarang = () => {
     try {
       const response = await axios({
         method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/barang`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/alkes`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -217,7 +217,7 @@ const LaporanBarang = () => {
     try {
       const response = await axios({
         method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/laporan`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/lapalkes`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -225,7 +225,7 @@ const LaporanBarang = () => {
         data: {
           id_provinsi: selectedProvinsi?.value?.toString() || "0",
           id_kabupaten: selectedKota?.value?.toString() || "0",
-          id_barang: selectedBarang?.value?.toString() || "0",
+          id_alkes: selectedBarang?.value?.toString() || "0",
         },
       });
       setFilteredData(response.data.data);
@@ -297,7 +297,7 @@ const LaporanBarang = () => {
       //   width: "180px",
       // },
       {
-        name: <div className="text-wrap">Nama Barang</div>,
+        name: <div className="text-wrap">Nama Alkes</div>,
         selector: (row) => row.nama_alkes,
         cell: (row) => <div className="text-wrap py-2">{row.nama_alkes}</div>,
 
@@ -305,24 +305,16 @@ const LaporanBarang = () => {
         width: "200px",
       },
       {
-        name: "Jumlah Dikirim",
-        selector: (row) => Number(row.jumlah_dikirim),
+        name: "Jumlah Eksisting",
+        selector: (row) => Number(row.berfungsi),
         sortable: true,
         // width: "100px",
       },
       {
-        name: "Jumlah Diterima",
-        selector: (row) => Number(row.jumlah_diterima),
+        name: "Jumlah Usulan",
+        selector: (row) => Number(row.usulan),
         sortable: true,
         // width: "100px",
-      },
-      {
-        name: "Total Harga (Rp)",
-        selector: (row) => Number(row.jumlah_total),
-        cell: (row) => formatRupiah(row.jumlah_total),
-
-        sortable: true,
-        width: "200px",
       },
       {
         name: "Aksi",
@@ -333,8 +325,8 @@ const LaporanBarang = () => {
               className="text-green-400 hover:text-green-500"
             >
               <Link
-                to={`/laporanbarang/detail/${encodeURIComponent(
-                  encryptId(row?.id_barang)
+                to={`/laporan/detail/${encodeURIComponent(
+                  encryptId(row?.id_alkes)
                 )}`}
               >
                 <FaEye size={16} />
@@ -351,13 +343,12 @@ const LaporanBarang = () => {
   );
 
   const handleExport = async () => {
-    const XLSX = await import("xlsx");    // Implementasi untuk mengekspor data (misalnya ke CSV)
+    const XLSX = await import("xlsx"); // Implementasi untuk mengekspor data (misalnya ke CSV)
 
     const exportData = filteredData?.map((item) => ({
-      "Nama Barang": item?.nama_alkes,
-      "Jumlah Barang Dikirim": item?.jumlah_dikirim,
-      "Jumlah Barang Diterima": item?.jumlah_diterima,
-      "Total Harga": formatRupiah(item?.jumlah_total),
+      "Nama Alkes": item?.nama_alkes,
+      "Jumlah Eksisting": item?.berfungsi,
+      "Jumlah Usulan": item?.usulan,
     }));
     const wb = XLSX.utils.book_new();
 
@@ -378,11 +369,11 @@ const LaporanBarang = () => {
     wsFilteredData["!cols"] = cols;
 
     // Menambahkan sheet ke workbook
-    XLSX.utils.book_append_sheet(wb, wsFilteredData, "Data Laporan Barang");
+    XLSX.utils.book_append_sheet(wb, wsFilteredData, "Data Laporan Alkes");
 
     // Export file excel
     const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
-    XLSX.writeFile(wb, `Data laporan Per Barang ${tanggal}.xlsx`);
+    XLSX.writeFile(wb, `Data laporan Per Alkes ${tanggal}.xlsx`);
   };
 
   if (getLoading) {
@@ -397,8 +388,8 @@ const LaporanBarang = () => {
   return (
     <div>
       <Breadcrumb
-        pageName="Data Laporan Barang"
-        title="Data Laporan Per Barang"
+        pageName="Data Laporan Alkes"
+        title="Data Laporan Per Alkes"
       />
       <div className="flex flex-col items-center justify-center w-full tracking-tight mb-8">
         <div className="flex items-center lg:items-end mt-8 gap-4 flex-col lg:flex-row">
@@ -434,7 +425,7 @@ const LaporanBarang = () => {
                 className="block text-[#728294] text-base font-normal mb-2"
                 htmlFor="barang"
               >
-                Barang
+                Alkes
               </label>
               <Select
                 options={dataBarang}
@@ -449,7 +440,7 @@ const LaporanBarang = () => {
                     primary: "grey",
                   },
                 })}
-                placeholder={"Pilih Barang"}
+                placeholder={"Pilih Alkes"}
               />
             </div>
           </div>

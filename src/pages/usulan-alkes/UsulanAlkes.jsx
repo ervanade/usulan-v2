@@ -66,7 +66,7 @@ const UsulanAlkes = () => {
     setFilteredData(filtered);
   };
 
-  const handleExport = async() => {
+  const handleExport = async () => {
     const XLSX = await import("xlsx");
 
     // Implementasi untuk mengekspor data (misalnya ke CSV)
@@ -438,7 +438,7 @@ const UsulanAlkes = () => {
   );
 
   useEffect(() => {
-    if (user.role == "3") {
+    if (user.role == "3" || user.role == "5") {
       fetchUserData();
     }
   }, [user.role, fetchUserData]);
@@ -460,7 +460,11 @@ const UsulanAlkes = () => {
 
   // Set selected options for provinces and cities based on user's initial data
   useEffect(() => {
-    if (user.role == "3" && user.provinsi && dataProvinsi.length > 0) {
+    if (
+      (user.role == "3" || user.role == "5") &&
+      user.provinsi &&
+      dataProvinsi.length > 0
+    ) {
       const initialOption = dataProvinsi.find(
         (prov) => prov.value == user.provinsi
       );
@@ -532,7 +536,7 @@ const UsulanAlkes = () => {
                     primary: "grey",
                   },
                 })}
-                isDisabled={user.role == "3"}
+                isDisabled={user.role == "3" || user.role == "5"}
               />
             </div>
             <div>
@@ -664,7 +668,7 @@ const UsulanAlkes = () => {
             ) : (
               ""
             )}
-            {user.role == "3" && dataDokumen.length > 0 ? (
+            {/* {user.role == "3" && dataDokumen.length > 0 ? (
               <button
                 title="Tandatangani Dokumen BMN"
                 className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white  bg-teal-600 rounded-md tracking-tight"
@@ -681,7 +685,7 @@ const UsulanAlkes = () => {
               </button>
             ) : (
               ""
-            )}
+            )} */}
           </div>
         </div>
         <div className="overflow-x-auto">

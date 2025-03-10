@@ -148,120 +148,96 @@ const ModalUploadDokumen = ({
     setFormData((prev) => ({ ...prev, id_dokumen: jsonData?.id }));
   }, [jsonData]);
 
-  const handleDownload = async (id) => {
-    try {
-      Swal.fire({
-        title: "Generate dokumen...",
-        text: "Tunggu Sebentar Dokumen Disiapkan...",
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-          Swal.showLoading();
-        },
-      });
+  // const updateDownload = async (id) => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios({
+  //       method: "post",
+  //       url: `${import.meta.env.VITE_APP_API_URL}/api/usulan/download/${id}`,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${user?.token}`,
+  //       },
+  //     });
+  //     fetchDokumenData();
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-      const response = await axios({
-        method: "get",
-        url: `${
-          import.meta.env.VITE_APP_API_URL
-        }/api/dokumen/${encodeURIComponent(id)}`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
+  // const handleDownload = async (id) => {
+  //   const confirmResult = await Swal.fire({
+  //     title: "Apakah Anda Yakin?",
+  //     text: "Anda ingin mendownload dokumen usulan. Lanjutkan?",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Ya, Download",
+  //     cancelButtonText: "Batal",
+  //   });
 
-      const data = response.data.data;
-      // Lakukan proses generate dokumen berdasarkan data JSON yang diterima
-      const dataJson = {
-        nama_dokumen: data.nama_dokumen || "",
-        id: data.id,
-        nomorSurat: data.nomor_bast || "",
-        tanggal: data.tanggal_bast || defaultDate,
-        tanggal_tte_ppk: data.tanggal_tte_ppk || defaultDate,
-        tanggal_tte_daerah: data.tanggal_tte_daerah || defaultDate,
-        kecamatan: data.kecamatan,
-        puskesmas: data.Puskesmas,
-        namaKapus: data.nama_kapus,
-        provinsi: data.provinsi || "",
-        kabupaten: data.kabupaten || "",
-        penerima_hibah: data.penerima_hibah || "",
-        kepala_unit_pemberi: data.kepala_unit_pemberi || "",
-        distribusi: data.distribusi || [],
-        nipKapus: "nip.121212",
-        namaBarang: data.nama_barang,
-        status_tte: data.status_tte || "",
-        jumlahDikirim: "24",
-        jumlahDiterima: "24",
-        tte: "",
-        tteDaerah: {
-          image_url:
-            "https://www.shutterstock.com/image-vector/fake-autograph-samples-handdrawn-signatures-260nw-2332469589.jpg",
-          width: 50,
-          height: 50,
-        },
-        ket_daerah: "",
-        ket_ppk: data.keterangan_ppk,
-        tte_daerah: data.tte_daerah || defaultImage,
-        nama_daerah:
-          user?.role == "3"
-            ? data.nama_daerah || user?.name || ""
-            : data.nama_daerah || "",
-        nip_daerah:
-          user?.role == "3"
-            ? data.nip_daerah || user?.nip || ""
-            : data.nip_daerah || "",
-        tte_ppk: data.tte_ppk || defaultImage,
-        nama_ppk:
-          user?.role == "4"
-            ? data.nama_ppk || user?.name || ""
-            : data.nama_ppk || "",
-        nip_ppk:
-          user?.role == "4"
-            ? data.nip_ppk || user?.nip || ""
-            : data.nip_ppk || "",
-        total_barang_dikirim: data.total_barang_dikirim || "",
-        total_harga: data.total_harga || "",
-        logo_daerah: data.logo_daerah || "",
-        file_dokumen: data.file_dokumen || null,
-      };
-      if (dataJson?.file_dokumen) {
-        try {
-          const response = await fetch(dataJson?.file_dokumen);
-          if (!response.ok) {
-            throw new Error("Network response was not ok.");
-          }
-          const blob = await response.blob();
-          saveAs(blob, `PDF Usulan ${dataJson?.kabupaten}` || "dokumen.pdf"); // Use FileSaver to save the file with the specified name
-        } catch (error) {
-          console.error("Failed to download file:", error);
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Gagal Download Dokumen",
-          });
-        }
-      } else {
-        const pdfBlob = await GenerateDokumen(dataJson); // GenerateDokumen harus mengembalikan Blob PDF
+  //   // Jika pengguna memilih "Batal", hentikan proses
+  //   if (!confirmResult.isConfirmed) {
+  //     return;
+  //   }
+  //   try {
+  //     Swal.fire({
+  //       title: "Generate dokumen...",
+  //       text: "Tunggu Sebentar Dokumen Disiapkan...",
+  //       allowOutsideClick: false,
+  //       showConfirmButton: false,
+  //       willOpen: () => {
+  //         Swal.showLoading();
+  //       },
+  //     });
 
-        saveAs(pdfBlob, `PDF Usulan ${dataJson?.kabupaten}.pdf`);
-      }
+  //     const response = await axios({
+  //       method: "get",
+  //       url: `${
+  //         import.meta.env.VITE_APP_API_URL
+  //       }/api/usulan/${encodeURIComponent(id)}`,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${user?.token}`,
+  //       },
+  //     });
 
-      Swal.fire({
-        icon: "success",
-        title: "Download Complete",
-        text: "Dokumen Sukses Di Download",
-        confirmButtonText: "OK",
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Gagal Download Dokumen",
-      });
-      console.log(error);
-    }
-  };
+  //     const data = response.data.data;
+  //     // Lakukan proses generate dokumen berdasarkan data JSON yang diterima
+  //     let dataJson = {
+  //       id: data.id,
+  //       tgl_download: data.tgl_download || defaultDate,
+  //       tgl_upload: data.tgl_upload || defaultDate,
+  //       provinsi: data.provinsi || "",
+  //       kabupaten: data.kabupaten || "",
+  //       user_download: data.user_download || "",
+  //       user_upload: data.user_upload || "",
+  //       distribusi: data.usulan_detail || [],
+  //       total_alkes: data.total_alkes || [],
+  //     };
+  //     const pdfBlob = await GenerateDokumen(dataJson, false); // GenerateDokumen harus mengembalikan Blob PDF
+
+  //     saveAs(pdfBlob, `PDF Usulan ${dataJson.kabupaten}.pdf`);
+  //     await updateDownload(dataJson?.id);
+
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "Download Complete",
+  //       text: "Dokumen Sukses Di Download",
+  //       confirmButtonText: "OK",
+  //     });
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Error",
+  //       text: "Gagal Download Dokumen",
+  //     });
+  //     console.log(error);
+  //   }
+  // };
 
   if (!show) {
     return null;
@@ -296,7 +272,7 @@ const ModalUploadDokumen = ({
                   Petunjuk: Harap Download Dokumen Terlebih Dahulu & TTD Sebelum
                   Mengupload.
                 </p>
-                <button
+                {/* <button
                   title="Download"
                   className="text-primary hover:text-graydark flex items-center gap-2"
                   onClick={() => handleDownload(jsonData?.id)} // Tambahkan handler download di sini
@@ -305,7 +281,7 @@ const ModalUploadDokumen = ({
                     Download Dokumen
                   </span>
                   <FaDownload size={16} />
-                </button>
+                </button> */}
               </div>
 
               <div className="mt-6 mb-4 flex-col sm:gap-2 w-full flex ">

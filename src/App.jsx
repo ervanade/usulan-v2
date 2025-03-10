@@ -39,14 +39,13 @@ import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 // import Laporan from "./pages/laporan/Laporan";
 // import DetailLaporanKabupaten from "./pages/laporan/DetailLaporanKabupaten";
 // import DetailLaporanPuskesmas from "./pages/laporan/DetailLaporanPuskesmas";
-// import LaporanBarang from "./pages/laporan/LaporanBarang";
-// import LaporanDetailBarang from "./pages/laporan/LaporanDetailBarang";
+import LaporanBarang from "./pages/laporan/LaporanBarang";
 // import TesUpload from "./pages/tes-upload/TesUpload";
 // import LogActivity from "./pages/log/LogActivity";
 // import DetailLogActivity from "./pages/log/DetailLogActivity";
-// import LaporanBarangProvinsi from "./pages/laporan/LaporanBarangProvinsi";
-// import LaporanBarangKabupaten from "./pages/laporan/LaporanBarangKabupaten";
-// import LaporanBarangPuskesmas from "./pages/laporan/LaporanBarangPuskesmas";
+import LaporanBarangProvinsi from "./pages/laporan/LaporanBarangProvinsi";
+import LaporanBarangKabupaten from "./pages/laporan/LaporanBarangKabupaten";
+import LaporanBarangPuskesmas from "./pages/laporan/LaporanBarangPuskesmas";
 // import Notifikasi from "./pages/notifikasi/Notifikasi";
 import UsulanAlkes from "./pages/usulan-alkes/UsulanAlkes.jsx";
 import PdfUsulanAlkes from "./pages/usulan-alkes/PdfUsulanAlkes.jsx";
@@ -111,21 +110,21 @@ function App() {
                 path="pdf-usulan-alkes/preview-dokumen/:id"
                 element={<PreviewDokumen />}
               />
-              {/* <Route path="laporanbarang" element={<LaporanBarang />} />
+              <Route path="laporan" element={<LaporanBarang />} />
               <Route
-                path="laporanbarang/detail/:idBarang/:idProvinsi/:idKabupaten"
+                path="laporan/detail/:idBarang/:idProvinsi/:idKabupaten"
                 element={<LaporanBarangPuskesmas />}
               />
               <Route
-                path="laporanbarang/detail/:idBarang/:idProvinsi"
+                path="laporan/detail/:idBarang/:idProvinsi"
                 element={<LaporanBarangKabupaten />}
               />
               <Route
-                path="laporanbarang/detail/:idBarang"
+                path="laporan/detail/:idBarang"
                 element={<LaporanBarangProvinsi />}
               />
 
-              <Route path="laporan" element={<Laporan />} />
+              {/* <Route path="laporan" element={<Laporan />} />
               <Route
                 path="laporan/detail/:idProvinsi/:idKabupaten/:idPuskesmas"
                 element={<DetailLaporanPuskesmas />}

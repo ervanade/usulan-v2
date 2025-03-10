@@ -74,7 +74,6 @@ const PdfUsulanAlkes = () => {
     });
   };
 
-
   const handleModalDokumen = async (e, id, nama_dokumen, kabupaten) => {
     e.preventDefault();
     setShowModalUpload(true);
@@ -346,7 +345,7 @@ const PdfUsulanAlkes = () => {
   };
 
   useEffect(() => {
-    if (user.role == "3") {
+    if (user.role == "3" || user.role == "5") {
       fetchUserData();
     }
   }, [user.role, fetchUserData]);
@@ -368,7 +367,11 @@ const PdfUsulanAlkes = () => {
 
   // Set selected options for provinces and cities based on user's initial data
   useEffect(() => {
-    if (user.role == "3" && user.provinsi && dataProvinsi.length > 0) {
+    if (
+      (user.role == "3" || user.role == "5") &&
+      user.provinsi &&
+      dataProvinsi.length > 0
+    ) {
       const initialOption = dataProvinsi.find(
         (prov) => prov.value == user.provinsi
       );
@@ -668,7 +671,7 @@ const PdfUsulanAlkes = () => {
             ) : (
               "Belum Upload"
             )}
-            {/* {(user.role == "2" || user.role == "3" || user.role == "4") &&
+            {/* {user.role == "3") &&
             (!row.tgl_upload || !row.file_upload) ? (
               <button
                 title="Upload Dokumen"
@@ -732,7 +735,7 @@ const PdfUsulanAlkes = () => {
   const handleExport = async () => {
     // Lazy load library xlsx
     const XLSX = await import("xlsx");
-  
+
     // Implementasi untuk mengekspor data (misalnya ke CSV)
     const exportData = filteredData?.map((item) => ({
       Provinsi: item?.provinsi,
@@ -740,9 +743,9 @@ const PdfUsulanAlkes = () => {
       Tanggal_Download: item?.tgl_download,
       Tanggal_Upload: item?.tgl_upload,
     }));
-  
+
     const ws = XLSX.utils.json_to_sheet(exportData);
-  
+
     ws["!cols"] = [
       { wch: 20 }, // Kolom 1 (Provinsi)
       { wch: 20 }, // Kolom 2 (Kabupaten_Kota)
@@ -762,7 +765,7 @@ const PdfUsulanAlkes = () => {
       { wch: 20 }, // Kolom 16 (Konfirmasi_Daerah)
       { wch: 20 }, // Kolom 17 (Konfirmasi_Ppk)
     ];
-  
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, `Data PDF Usulan`);
     XLSX.writeFile(wb, "Data PDF Usulan.xlsx");
@@ -807,7 +810,7 @@ const PdfUsulanAlkes = () => {
                     primary: "grey",
                   },
                 })}
-                isDisabled={user.role == "3"}
+                isDisabled={user.role == "3" || user.role == "5"}
               />
             </div>
             <div>

@@ -69,7 +69,7 @@ const LaporanBarangPuskesmas = () => {
         method: "get",
         url: `${
           import.meta.env.VITE_APP_API_URL
-        }/api/laporan/${encodeURIComponent(
+        }/api/lapalkes/${encodeURIComponent(
           decryptId(idBarang)
         )}/${encodeURIComponent(decryptId(idProvinsi))}/${encodeURIComponent(
           decryptId(idKabupaten)
@@ -232,7 +232,7 @@ const LaporanBarangPuskesmas = () => {
     try {
       const response = await axios({
         method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/laporan/detail`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/lapalkes/detail`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -320,10 +320,12 @@ const LaporanBarangPuskesmas = () => {
       //     width: "180px",
       //   },
       {
-        name: "Kecamatan",
-        selector: (row) => row.kecamatan,
+        name: <div className="text-wrap">Nama Alkes</div>,
+        selector: (row) => row.nama_alkes,
+        cell: (row) => <div className="text-wrap py-2">{row.nama_alkes}</div>,
+
         sortable: true,
-        // width: "180px",
+        width: "200px",
       },
       {
         name: "Puskesmas",
@@ -332,32 +334,23 @@ const LaporanBarangPuskesmas = () => {
         // width: "180px",
       },
       {
-        name: <div className="text-wrap">Nama Barang</div>,
-        selector: (row) => row.nama_alkes,
-        cell: (row) => <div className="text-wrap py-2">{row.nama_alkes}</div>,
-
+        name: "Kecamatan",
+        selector: (row) => row.kecamatan,
         sortable: true,
-        width: "200px",
+        // width: "180px",
       },
+
       {
-        name: "Jumlah Dikirim",
-        selector: (row) => Number(row.jumlah_dikirim),
+        name: "Jumlah Eksisting",
+        selector: (row) => Number(row.berfungsi),
         sortable: true,
         // width: "100px",
       },
       {
-        name: "Jumlah Diterima",
-        selector: (row) => Number(row.jumlah_diterima),
+        name: "Jumlah Usulan",
+        selector: (row) => Number(row.usulan),
         sortable: true,
         // width: "100px",
-      },
-      {
-        name: "Total Harga (Rp)",
-        selector: (row) => Number(row.jumlah_total),
-        cell: (row) => formatRupiah(row.jumlah_total),
-
-        sortable: true,
-        width: "200px",
       },
     ],
     []
@@ -368,12 +361,11 @@ const LaporanBarangPuskesmas = () => {
     // Implementasi untuk mengekspor data (misalnya ke CSV)
 
     const exportData = filteredData?.map((item) => ({
-      Kecamatan: item?.kecamatan,
+      "Nama Alkes": item?.nama_alkes,
       Puskesmas: item?.nama_puskesmas,
-      "Nama Barang": item?.nama_alkes,
-      "Jumlah Barang Dikirim": item?.jumlah_dikirim,
-      "Jumlah Barang Diterima": item?.jumlah_diterima,
-      "Total Harga": formatRupiah(item?.jumlah_total),
+      Kecamatan: item?.kecamatan,
+      "Jumlah Eksisting": item?.berfungsi,
+      "Jumlah Usulan": item?.usulan,
     }));
     const wb = XLSX.utils.book_new();
 
@@ -394,13 +386,17 @@ const LaporanBarangPuskesmas = () => {
     wsFilteredData["!cols"] = cols;
 
     // Menambahkan sheet ke workbook
-    XLSX.utils.book_append_sheet(wb, wsFilteredData, "Data Distribusi");
+    XLSX.utils.book_append_sheet(
+      wb,
+      wsFilteredData,
+      "Data Alkes Per Puskesmas"
+    );
 
     // Export file excel
     const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
     XLSX.writeFile(
       wb,
-      `Data laporan Per Barang ${
+      `Data laporan Per Puskesmas ${
         filteredData[0]?.nama_alkes || ""
       } ${tanggal}.xlsx`
     );
@@ -418,8 +414,8 @@ const LaporanBarangPuskesmas = () => {
   return (
     <div>
       <Breadcrumb
-        pageName={`Data Laporan Barang Puskesmas`}
-        title={`Data Laporan Barang ${
+        pageName={`Data Laporan Alkes Puskesmas`}
+        title={`Data Laporan Alkes ${
           filteredData[0]?.nama_alkes || ""
         } Per Puskesmas  ${filteredData[0]?.kabupaten || ""} `}
       />
@@ -427,7 +423,7 @@ const LaporanBarangPuskesmas = () => {
         <button
           onClick={() =>
             navigate(
-              `/laporanbarang/detail/${encodeURIComponent(
+              `/laporan/detail/${encodeURIComponent(
                 idBarang
               )}/${encodeURIComponent(idProvinsi)}`
             )

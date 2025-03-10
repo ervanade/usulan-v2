@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     transform: "translate(-50%, -50%)", // Pusatkan teks
     fontSize: 80, // Ukuran font besar
     color: "red", // Warna merah
-    opacity: 0.2, // Opacity rendah untuk efek watermark
+    opacity: 0.08, // Opacity rendah untuk efek watermark
     zIndex: -1, // Letakkan di belakang konten lain
   },
 });
@@ -379,8 +379,8 @@ export const RenderBarangPages = (jsonData, preview) => {
         </View>
         <View style={styles.footer}>
           <Text>
-            Downloaded on {downloadDate}. [Backend use only: location_group_id =
-            117, username = {jsonData?.user_download || ""}]
+            Downloaded on {downloadDate}. [username ={" "}
+            {jsonData?.user_download || ""}]
           </Text>
         </View>
       </Page>
