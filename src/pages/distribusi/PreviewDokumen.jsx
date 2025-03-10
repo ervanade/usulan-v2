@@ -1,14 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
-  Page,
-  Document,
-  Image,
   StyleSheet,
-  View,
-  Text,
-  PDFViewer,
   Font,
-  PDFDownloadLink,
 } from "@react-pdf/renderer";
 import {
   Document as DocumentPreview,
@@ -16,36 +9,20 @@ import {
   pdfjs,
 } from "react-pdf";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
-import ReactDOMServer from "react-dom/server";
 import moment from "moment";
 import "moment/locale/id";
-import Html from "react-pdf-html";
-import { dataDistribusiBekasi } from "../../data/data";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import {
-  DataTableCell,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-} from "@david.kucsai/react-pdf-table";
-import { TableRow } from "@david.kucsai/react-pdf-table/lib/TableRow";
+import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.jsx";
 import { useMediaQuery } from "react-responsive";
-import ModalTTE from "../../components/Modal/ModalTTE";
 import { decryptId } from "../../data/utils";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { CgSpinner } from "react-icons/cg";
-import HeaderDokumen from "../../components/Title/HeaderDokumen";
-import { RenderBarangPages } from "../../components/Table/TableLampiran";
-import { RenderHibahPages } from "../../components/Table/TableHibah";
+import HeaderDokumen from "../../components/Title/HeaderDokumen.jsx";
 import { FaDownload, FaSpinner } from "react-icons/fa";
-import { PDFDocument } from "pdf-lib";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 // Import the main component
-import { Viewer, TextLayer, Worker, LoadError } from "@react-pdf-viewer/core";
 // import { pdfjs as PdfJs } from "pdfjs-dist";
 // Import the styles
 import "@react-pdf-viewer/core/lib/styles/index.css";
@@ -58,8 +35,8 @@ import { MdWarning } from "react-icons/md";
 
 // pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
 // pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
-const worker = `/fonts/pdf.worker.min.mjs`;
-// const worker = `//unpkg.com/pdfjs-dist@${`4.8.69`}/build/pdf.worker.min.mjs`;
+// const worker = `/fonts/pdf.worker.min.mjs`;
+const worker = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 pdfjs.GlobalWorkerOptions.workerSrc = worker;
 
 const resizeObserverOptions = {};
@@ -186,66 +163,6 @@ const PreviewDokumen = () => {
           distribusi: data.usulan_detail || [],
           total_alkes: data.total_alkes || [],
         });
-        // if (data?.file_dokumen) {
-        //   setPdfUrl(data?.file_dokumen);
-        //   Swal.close();
-        //   setGetLoading(false);
-        //   return;
-        // }
-
-        // const dataJson = {
-        //   nama_dokumen: data.nama_dokumen || "",
-        //   id: data.id,
-        //   nomorSurat: data.nomor_bast || "",
-        //   tanggal: data.tanggal_bast || defaultDate,
-        //   tanggal_kirim: data.tanggal_kirim || defaultDate,
-        //   tanggal_tte_ppk: data.tanggal_tte_ppk || defaultDate,
-        //   tanggal_tte_daerah: data.tanggal_tte_daerah || defaultDate,
-        //   kecamatan: data.kecamatan,
-        //   puskesmas: data.Puskesmas,
-        //   namaKapus: data.nama_kapus,
-        //   provinsi: data.provinsi || "",
-        //   kabupaten: data.kabupaten || "",
-        //   penerima_hibah: data.penerima_hibah || "",
-        //   kepala_unit_pemberi: data.kepala_unit_pemberi || "",
-        //   distribusi: data.distribusi || [],
-        //   nipKapus: "nip.121212",
-        //   namaBarang: data.nama_barang,
-        //   status_tte: data.status_tte || "",
-        //   jumlahDikirim: "24",
-        //   jumlahDiterima: "24",
-        //   tte: "",
-        //   tteDaerah: {
-        //     image_url:
-        //       "https://www.shutterstock.com/image-vector/fake-autograph-samples-handdrawn-signatures-260nw-2332469589.jpg",
-        //     width: 50,
-        //     height: 50,
-        //   },
-        //   ket_daerah: "",
-        //   ket_ppk: data.keterangan_ppk,
-        //   tte_daerah: data.tte_daerah || defaultImage,
-        //   logo_daerah: data.logo_daerah || "",
-        //   nama_daerah:
-        //     user?.role == "3"
-        //       ? data.nama_daerah || user?.name || ""
-        //       : data.nama_daerah || "",
-        //   nip_daerah:
-        //     user?.role == "3"
-        //       ? data.nip_daerah || user?.nip || ""
-        //       : data.nip_daerah || "",
-        //   tte_ppk: data.tte_ppk || defaultImage,
-        //   nama_ppk:
-        //     user?.role == "4"
-        //       ? data.nama_ppk || user?.name || ""
-        //       : data.nama_ppk || "",
-        //   nip_ppk:
-        //     user?.role == "4"
-        //       ? data.nip_ppk || user?.nip || ""
-        //       : data.nip_ppk || "",
-        //   total_barang_dikirim: data.total_barang_dikirim || "",
-        //   total_harga: data.total_harga || "",
-        //   file_dokumen: data.file_dokumen || null,
-        // };
         const dataJson = {
           id: data.id,
           tgl_download: data.tgl_download || defaultDate,
@@ -298,19 +215,6 @@ const PreviewDokumen = () => {
 
   useEffect(() => {
     jsonData ? setIsIFrameLoaded(true) : "";
-    // const iframeCurrent = iframeRef.current;
-
-    // const handleLoad = () => setIsIFrameLoaded(true);
-
-    // if (iframeCurrent) {
-    //   iframeCurrent.addEventListener("load", handleLoad);
-    // }
-
-    // return () => {
-    //   if (iframeCurrent) {
-    //     iframeCurrent.removeEventListener("load", handleLoad);
-    //   }
-    // };
   }, [jsonData]);
 
   Font.register({

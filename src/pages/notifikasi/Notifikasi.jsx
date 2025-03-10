@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
-import * as XLSX from "xlsx";
 import {
   dataDistribusiBekasi,
   dataKecamatan,

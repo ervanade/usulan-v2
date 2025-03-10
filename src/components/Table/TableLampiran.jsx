@@ -270,7 +270,6 @@ const getAllDetailDistribusi = (distribusi) => {
 
 export const RenderBarangPages = (jsonData, preview) => {
   const dataBarang = getAllDetailDistribusi(jsonData?.total_alkes || []);
-  console.log(dataBarang);
   const pages = [];
   const totalItems = dataBarang?.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -362,16 +361,16 @@ export const RenderBarangPages = (jsonData, preview) => {
                 </View>
 
                 <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{items.standard || ""}</Text>
+                  <Text style={styles.tableCell}>{items.standard || "0"}</Text>
                 </View>
                 <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>
-                    {formatRupiah(items.berfungsi) || ""}
+                    {formatRupiah(items.berfungsi) || "0"}
                   </Text>
                 </View>
                 <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>
-                    {formatRupiah(items.usulan) || ""}
+                    {formatRupiah(items.usulan) || "0"}
                   </Text>
                 </View>
               </View>
@@ -381,7 +380,7 @@ export const RenderBarangPages = (jsonData, preview) => {
         <View style={styles.footer}>
           <Text>
             Downloaded on {downloadDate}. [Backend use only: location_group_id =
-            117, username = {jsonData?.user_download || "jawa_barat"}]
+            117, username = {jsonData?.user_download || ""}]
           </Text>
         </View>
       </Page>

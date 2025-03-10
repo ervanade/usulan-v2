@@ -1,14 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
+import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.jsx";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
-import * as XLSX from "xlsx";
-import {
-  dataDistribusiBekasi,
-  dataKecamatan,
-  dataKota,
-  dataProvinsi,
-} from "../../data/data";
 import { encryptId, selectThemeColors } from "../../data/utils";
 import {
   FaCheck,
@@ -73,7 +66,9 @@ const UsulanAlkes = () => {
     setFilteredData(filtered);
   };
 
-  const handleExport = () => {
+  const handleExport = async() => {
+    const XLSX = await import("xlsx");
+
     // Implementasi untuk mengekspor data (misalnya ke CSV)
     const exportData = filteredData?.map((item) => ({
       Puskesmas: item?.nama_puskesmas,

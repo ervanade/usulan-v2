@@ -5,20 +5,15 @@ import React, {
   useRef,
   useState,
 } from "react";
-import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
+import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.jsx";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
-import * as XLSX from "xlsx";
 import {
-  dataDistribusiBekasi,
-  dataKecamatan,
-  dataKota,
-  dataProvinsi,
   dayaOptions,
   pelayananOptions,
   SelectOptions,
-} from "../../data/data";
-import { decryptId, encryptId, selectThemeColors } from "../../data/utils";
+} from "../../data/data.js";
+import { decryptId, encryptId, selectThemeColors } from "../../data/utils.js";
 import {
   FaCheck,
   FaEdit,
@@ -28,13 +23,11 @@ import {
   FaSearch,
   FaTrash,
 } from "react-icons/fa";
-import { BiExport, BiSolidFileExport } from "react-icons/bi";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
 import Swal from "sweetalert2";
-import FormInput from "../../components/Form/FormInput";
 import Card from "../../components/Card/Card";
 
 const EditUsulan = () => {

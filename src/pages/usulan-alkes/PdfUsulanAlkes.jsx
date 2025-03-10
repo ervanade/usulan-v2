@@ -1,13 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
+import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.jsx";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
-import {
-  dataDistribusiBekasi,
-  dataKecamatan,
-  dataKota,
-  dataProvinsi,
-} from "../../data/data";
 import { encryptId, selectThemeColors } from "../../data/utils";
 import {
   FaDownload,
@@ -24,12 +18,10 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { CgSpinner } from "react-icons/cg";
-import ModalTTE from "../../components/Modal/ModalTTE";
-import GenerateDokumen from "../../components/Dokumen/GenerateDokumen";
-import ModalUploadDokumen from "../../components/Modal/ModalUploadDokumen";
-import { differenceBy } from "lodash";
-import ModalTTENew from "../../components/Modal/ModalTTENew";
-import * as XLSX from "xlsx";
+import ModalTTE from "../../components/Modal/ModalTTE.jsx";
+import GenerateDokumen from "../../components/Dokumen/GenerateDokumen.jsx";
+import ModalUploadDokumen from "../../components/Modal/ModalUploadDokumen.jsx";
+import ModalTTENew from "../../components/Modal/ModalTTENew.jsx";
 
 const PdfUsulanAlkes = () => {
   const user = useSelector((a) => a.auth.user);
@@ -82,43 +74,6 @@ const PdfUsulanAlkes = () => {
     });
   };
 
-  const handleRowSelected = React.useCallback((state) => {
-    setSelectedRows(state.selectedRows);
-  }, []);
-
-  const contextActions = React.useMemo(() => {
-    const handleDelete = () => {
-      setToggleCleared(!toggleCleared);
-      setData(differenceBy(filteredData, selectedRows, "nama_dokumen"));
-      handleTTE(null, null, selectedRows);
-    };
-
-    const handleReset = () => {
-      setToggleCleared(!toggleCleared);
-      setSelectedRows([]);
-    };
-
-    return (
-      <div className="flex items-center gap-2">
-        <button
-          key="delete"
-          onClick={() => handleReset()}
-          className="p-2 bg-red-500 rounded-md text-white text-base"
-          icon
-        >
-          Reset
-        </button>
-        <button
-          key="delete"
-          onClick={handleDelete}
-          className="p-2 bg-teal-500 rounded-md text-white text-base"
-          icon
-        >
-          TTE Dokumen
-        </button>
-      </div>
-    );
-  }, [filteredData, selectedRows, toggleCleared]);
 
   const handleModalDokumen = async (e, id, nama_dokumen, kabupaten) => {
     e.preventDefault();
@@ -774,7 +729,10 @@ const PdfUsulanAlkes = () => {
     []
   );
 
-  const handleExport = () => {
+  const handleExport = async () => {
+    // Lazy load library xlsx
+    const XLSX = await import("xlsx");
+  
     // Implementasi untuk mengekspor data (misalnya ke CSV)
     const exportData = filteredData?.map((item) => ({
       Provinsi: item?.provinsi,
@@ -782,9 +740,9 @@ const PdfUsulanAlkes = () => {
       Tanggal_Download: item?.tgl_download,
       Tanggal_Upload: item?.tgl_upload,
     }));
-    const wb = XLSX.utils.book_new(),
-      ws = XLSX.utils.json_to_sheet(exportData);
-
+  
+    const ws = XLSX.utils.json_to_sheet(exportData);
+  
     ws["!cols"] = [
       { wch: 20 }, // Kolom 1 (Provinsi)
       { wch: 20 }, // Kolom 2 (Kabupaten_Kota)
@@ -804,9 +762,10 @@ const PdfUsulanAlkes = () => {
       { wch: 20 }, // Kolom 16 (Konfirmasi_Daerah)
       { wch: 20 }, // Kolom 17 (Konfirmasi_Ppk)
     ];
-
-    XLSX.utils.book_append_sheet(wb, ws, `Data Dokumen`);
-    XLSX.writeFile(wb, "Data Dokumen.xlsx");
+  
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `Data PDF Usulan`);
+    XLSX.writeFile(wb, "Data PDF Usulan.xlsx");
   };
   // if (getLoading) {
   //   return (

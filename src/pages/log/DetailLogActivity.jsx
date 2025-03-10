@@ -14,7 +14,6 @@ import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
-import * as XLSX from "xlsx";
 import FormInput from "../../components/Form/FormInput";
 
 const DetailLogActivity = () => {

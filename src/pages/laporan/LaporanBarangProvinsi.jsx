@@ -16,7 +16,6 @@ import {
   FaSearch,
   FaTrash,
 } from "react-icons/fa";
-import * as XLSX from "xlsx";
 import { BiExport, BiSolidFileExport } from "react-icons/bi";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -371,8 +370,8 @@ const LaporanBarangProvinsi = () => {
     ],
     []
   );
-  const handleExport = () => {
-    // Implementasi untuk mengekspor data (misalnya ke CSV)
+  const handleExport = async () => {
+    const XLSX = await import("xlsx");    // Implementasi untuk mengekspor data (misalnya ke CSV)
 
     const exportData = filteredData?.map((item) => ({
       Provinsi: item?.provinsi,

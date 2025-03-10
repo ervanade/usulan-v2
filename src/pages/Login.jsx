@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import useColorMode from "../hooks/useColorMode";
-import { dataUser } from "../data/data";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../store/authSlice";
+import { loginUser } from "../store/authSlice.js";
 import axios from "axios";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { FaEye, FaEyeSlash } from "react-icons/fa";

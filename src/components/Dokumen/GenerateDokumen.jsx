@@ -2,40 +2,16 @@ import React, { useEffect, useState, useRef } from "react";
 import {
   Page,
   Document,
-  Image,
   StyleSheet,
   View,
   Text,
-  PDFViewer,
   Font,
-  PDFDownloadLink,
   pdf,
 } from "@react-pdf/renderer";
-import ReactDOMServer from "react-dom/server";
 import moment from "moment";
 import "moment/dist/locale/id";
-import Html from "react-pdf-html";
-import { dataDistribusiBekasi } from "../../data/data";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import {
-  DataTableCell,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-} from "@david.kucsai/react-pdf-table";
-import { TableRow } from "@david.kucsai/react-pdf-table/lib/TableRow";
-import { useMediaQuery } from "react-responsive";
-import ModalTTE from "../../components/Modal/ModalTTE";
-import { decryptId } from "../../data/utils";
-import axios from "axios";
-import { useSelector } from "react-redux";
-import { CgSpinner } from "react-icons/cg";
-import { FaDownload } from "react-icons/fa";
 import { RenderHibahPages } from "../Table/TableHibah";
 import { RenderBarangPages } from "../Table/TableLampiran";
-import { formatTanggal } from "../../data/data";
 
 const defaultImage =
   "https://media.istockphoto.com/id/1472819341/photo/background-white-light-grey-total-grunge-abstract-concrete-cement-wall-paper-texture-platinum.webp?b=1&s=170667a&w=0&k=20&c=yoY1jUAKlKVdakeUsRRsNEZdCx2RPIEgaIxSwQ0lS1k=";
@@ -336,13 +312,13 @@ const GenerateDokumen = async (jsonData, preview) => {
             }}
           >
             DINAS KESEHATAN KABUPATEN/KOTA {jsonData?.kabupaten} {"\n\n"}
-            PROVINSI {jsonData?.provinsi} {"\n\n"}TAHUN 2024
+            PROVINSI {jsonData?.provinsi} {"\n\n"}TAHUN 2025
           </Text>
         </View>
         <View style={styles.footer}>
           <Text>
             Downloaded on {downloadDate}. [Backend use only: location_group_id =
-            117, username = {jsonData?.user_download || "jawa_barat"}]
+            117, username = {jsonData?.user_download || ""}]
           </Text>
         </View>
       </Page>
@@ -427,7 +403,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 tingkat kecamatan. Kami melakukan perbaikan usulan terhadap
                 alat-alat kesehatan di Puskesmas, dan Posyandu yang sebelumnya
                 sudah diusulkan dan perlu penyesuain terhadap kondisi di tahun
-                2024 ini.
+                2025 ini.
               </Text>
             </View>
             <View
@@ -447,7 +423,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 pemerintah daerah mengakibatkan pemenuhan alat kesehatan belum
                 dapat dilakukan dalam kurun waktu cepat untuk mendukung
                 transformasi layanan primer. Atas dasar pertimbangan tersebut,
-                tahun 2024 ini kami mengajukan perbaikan usulan pemenuhan alat
+                tahun 2025 ini kami mengajukan perbaikan usulan pemenuhan alat
                 kesehatan di puskesmas, pustu, dan posyandu kepada Kementerian
                 Kesehatan.
               </Text>
@@ -636,7 +612,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text>
                 Usulan peralatan puskesmas pembantu dalam lampiran ini diusulkan
                 dengan memasukkan kriteria SDM di puskesmas pembantu lengkap
-                sesuai data SISDMK per Juni 2024 yang terdiri dari minimal 2
+                sesuai data SISDMK per Juni 2025 yang terdiri dari minimal 2
                 jenis tenaga kesehatan yaitu terdiri dari Bidan, dan Perawat.{" "}
                 {"\n"}
                 <Text style={{ ...styles.helvetica }}>Nama alat terlampir</Text>
@@ -787,7 +763,7 @@ const GenerateDokumen = async (jsonData, preview) => {
         <View style={styles.footer}>
           <Text>
             Downloaded on {downloadDate}. [Backend use only: location_group_id =
-            117, username = {jsonData?.user_download || "jawa_barat"}]
+            117, username = {jsonData?.user_download || ""}]
           </Text>
         </View>
       </Page>
@@ -827,11 +803,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text style={{ ...styles.helvetica, textAlign: "center" }}>
                 SURAT PERNYATAAN{" "}
               </Text>
-              <Text
-                style={{ ...styles.text, marginTop: 8, textAlign: "center" }}
-              >
-                Nomor :
-              </Text>
+
             </View>
             <View
               style={{
@@ -848,8 +820,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 Yang bertanda tangan di bawah ini :{"\n"}
                 Nama :{"\n"}
                 Jabatan :{"\n\n"}
-                dengan ini menyatakan bahwa :
-              </Text>
+                Dengan ini menyatakan bahwa informasi yang tertera di proposal usulan alkes untuk 7 alat (Opthalmoskop, otoskop, garpu tala, spray can, sanitarian kit, CO analyzer, dan thermal ablation) sudah sesuai dengan kebutuhan Puskesmas. Selain itu, Dinas Kesehatan juga berkomitmen untuk:              </Text>
             </View>
           </View>
 
@@ -874,13 +845,9 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 8 }}>a.</Text>
+              <Text style={{ marginRight: 8 }}>1.</Text>
               <Text>
-                Seluruh puskesmas telah melaksanakan Permenkes 31 tahun 2018
-                dengan melakukan melakukan update data sarana, prasarana dan
-                alat kesehatan secara riil melalui aplikasi ASPAK dan telah di
-                validasi oleh Dinas Kesehatan Kabupaten/Kota{" "}
-                {jsonData?.kabupaten}.
+              Melaksanakan Permenkes 31 tahun 2018 dengan melakukan update data sarana, prasarana dan alat kesehatan secara riil melalui aplikasi ASPAK oleh puskesmas dan telah di validasi oleh Dinas Kesehatan Kabupaten/Kota.
               </Text>
             </View>
 
@@ -894,10 +861,9 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 8 }}>b.</Text>
+              <Text style={{ marginRight: 8 }}>2.</Text>
               <Text>
-                Puskesmas, Pustu dan posyandu mengusulkan alat yang dibutuhkan
-                dalam menjalankan Integrasi layanan Primer (ILP).
+              Memastikan SDM tetap ada agar barang tetap dapat digunakan secara optimal oleh tenaga kesehatan yang sesuai dengan kompetensinya sebelum alat didistribusikan.
               </Text>
             </View>
 
@@ -911,10 +877,9 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 9 }}>c.</Text>
+              <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>
-                Alat yang dimiliki saat ini belum memenuhi standar untuk
-                pelayanan di puskesmas, pustu dan posyandu.
+              Memastikan bahwa sarana dan prasarana (Listrik, internet, luas ruangan, luas bangunan, dll.) memenuhi standar dan tersedia sebelum alat didistribusikan.
               </Text>
             </View>
 
@@ -928,10 +893,9 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 8 }}>d.</Text>
+              <Text style={{ marginRight: 8 }}>4.</Text>
               <Text>
-                Alat yang diusulkan tersebut belum diusulkan melalui pembiayaan
-                lainnya.
+              Menjalankan Integrasi layanan Primer (ILP) pada Puskesmas, Pustu dan posyandu yang mengusulkan alat kesehatan.
               </Text>
             </View>
 
@@ -945,11 +909,9 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 8 }}>e.</Text>
+              <Text style={{ marginRight: 8 }}>5.</Text>
               <Text>
-                Dinas Kesehatan sanggup menerima alat sesuai dengan alat yang
-                diusulkan dan akan melakukan pencatatan alat ke ASPAK setelah
-                alat diserahterimakan.{" "}
+              tidak menganggarkan melalui pembiayaan lainnya untuk alat kesehatan yang diusulkan sampai dengan alat kesehatan tersebut sudah terdistribusi.
               </Text>
             </View>
             <View
@@ -962,14 +924,9 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 10 }}>f.</Text>
+              <Text style={{ marginRight: 8 }}>6.</Text>
               <Text>
-                Dinas Kesehatan ikut serta memastikan pendistribusikan alat
-                kesehatan hingga ke puskesmas, pustu dan posyandu sesuai dengan
-                Permenkes 1047 tahun 2024 tentang Standar Peralatan Dalam Rangka
-                Penguatan Pelayanan Kesehatan Primer Pada Pusat Kesehatan
-                Masyarakat, Unit Pelayanan Kesehatan Di Desa/Kelurahan, Dan Pos
-                Pelayanan Terpadu.
+              Sanggup menerima alat sesuai dengan alat yang diusulkan dan akan melakukan pencatatan alat ke ASPAK setelah alat diserahterimakan.
               </Text>
             </View>
 
@@ -983,10 +940,9 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 8 }}>g.</Text>
+              <Text style={{ marginRight: 8 }}>7.</Text>
               <Text>
-                Dinas Kesehatan akan menyiapkan biaya operasional dan biaya
-                pemeliharaan seluruh alat kesehatan yang diusulkan.
+              Ikut serta memastikan pendistribusikan alat kesehatan hingga ke puskesmas, pustu dan posyandu sesuai dengan Permenkes 1047 tahun 2024 tentang Standar Peralatan Dalam Rangka Penguatan Pelayanan Kesehatan Primer Pada Pusat Kesehatan Masyarakat, Unit Pelayanan Kesehatan di Desa/Kelurahan, Dan Pos Pelayanan Terpadu.
               </Text>
             </View>
 
@@ -1000,7 +956,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 8 }}>h.</Text>
+              <Text style={{ marginRight: 8 }}>8.</Text>
               <Text>
                 Dinas Kesehatan akan menanggung biaya operasionalisasi alat
                 laboratorium dalam bentuk reagen dan BMHP.
@@ -1016,19 +972,46 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 10 }}>i.</Text>
+              <Text style={{ marginRight: 8 }}>9.</Text>
               <Text>
-                Dinas Kesehatan akan mendukung pemenuhan kebutuhan alat
-                kesehatan yang tidak disediakan oleh pemerintah pusat.
+              Menyiapkan biaya operasional dan biaya pemeliharaan seluruh alat kesehatan yang diusulkan.
               </Text>
             </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 4 }}>10.</Text>
+              <Text>
+              Menanggung biaya operasional alat laboratorium dalam bentuk reagen dan BMHP, serta sarana prasana lainnya (Listrik, internet, ruangan, dll.)              </Text>
+            </View>
           </View>
+          <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text>
+              Dinas Kesehatan {jsonData?.kabupaten} menyatakan akan bertanggungjawab atas kebenaran data yang disampaikan dalam usulan Alkes untuk 7 alat (Opthalmoskop, otoskop, garpu tala, spray can, sanitarian kit, CO analyzer, dan thermal ablation) melalui proyek SOPHI. Demikian pernyataan ini dibuat dengan sebenar-benarnya dalam keadaan sadar, untuk digunakan sebagaimana mestinya.            </Text>
+            </View>
 
           <View style={styles.ttdContainer}>
             <View style={{ flex: 1 }}></View>
             <View style={{ flex: 1 }}>
               <Text style={{ ...styles.text, textAlign: "center" }}>
-                ...............,...................2024
+                ...............,...................2025
               </Text>
               Yang membuat pernyataan
               <Text
@@ -1070,7 +1053,7 @@ const GenerateDokumen = async (jsonData, preview) => {
         <View style={styles.footer}>
           <Text>
             Downloaded on {downloadDate}. [Backend use only: location_group_id =
-            117, username = {jsonData?.user_download || "jawa_barat"}]
+            117, username = {jsonData?.user_download || ""}]
           </Text>
         </View>
       </Page>

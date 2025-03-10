@@ -8,7 +8,6 @@ import {
   dataKota,
   dataProvinsi,
 } from "../../data/data";
-import * as XLSX from "xlsx";
 import moment from "moment/moment";
 import {
   decryptId,
@@ -51,7 +50,8 @@ const DetailLaporanPuskesmas = () => {
     setFilteredData(filtered);
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
+    const XLSX = await import("xlsx");
     // Implementasi untuk mengekspor data (misalnya ke CSV)
     const dashboardData = [
       {
