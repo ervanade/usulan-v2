@@ -666,9 +666,9 @@ const PdfUsulanAlkes = () => {
                 <br /> Upload
               </button>
             ) : (
-              ""
+              "Belum Upload"
             )}
-            {(user.role == "2" || user.role == "3" || user.role == "4") &&
+            {/* {(user.role == "2" || user.role == "3" || user.role == "4") &&
             (!row.tgl_upload || !row.file_upload) ? (
               <button
                 title="Upload Dokumen"
@@ -684,7 +684,7 @@ const PdfUsulanAlkes = () => {
               "Belum Upload"
             ) : (
               ""
-            )}
+            )} */}
           </div>
         ),
         ignoreRowClick: true,
