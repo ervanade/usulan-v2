@@ -1169,15 +1169,14 @@ const EditUsulan = () => {
               )}
             </div>
           </div>
-          {!formData?.tgl_upload ||
-            (user?.role != "5" && (
-              <button
-                onClick={handleSimpan}
-                className="mt-4 bg-primary hover:bg-graydark text-white font-bold py-3 px-4 rounded w-full"
-              >
-                Simpan
-              </button>
-            ))}
+          {user?.role !== "5" && !formData?.tgl_upload && (
+            <button
+              onClick={handleSimpan}
+              className="mt-4 bg-primary hover:bg-graydark text-white font-bold py-3 px-4 rounded w-full"
+            >
+              Simpan
+            </button>
+          )}
         </div>
       </Card>
     </div>
