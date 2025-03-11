@@ -325,9 +325,13 @@ const LaporanBarang = () => {
               className="text-green-400 hover:text-green-500"
             >
               <Link
-                to={`/laporan/detail/${encodeURIComponent(
-                  encryptId(row?.id_alkes)
-                )}`}
+                to={`/laporan/detail/${
+                  user?.role == "3"
+                    ? encodeURIComponent(encryptId(row?.id_alkes)) +
+                      "/" +
+                      encodeURIComponent(encryptId(user?.provinsi))
+                    : encodeURIComponent(encryptId(row?.id_alkes))
+                }`}
               >
                 <FaEye size={16} />
               </Link>
@@ -374,6 +378,80 @@ const LaporanBarang = () => {
     // Export file excel
     const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
     XLSX.writeFile(wb, `Data laporan Per Alkes ${tanggal}.xlsx`);
+  };
+
+  const handleExportAll = async () => {
+    const XLSX = await import("xlsx");
+    const moment = (await import("moment")).default;
+
+    const kabupatenDummies = [
+      "Bandung",
+      "Bogor",
+      "Jakarta",
+      "Surabaya",
+      "Medan",
+    ];
+    const provinsiDummies = [
+      "Jawa Barat",
+      "DKI Jakarta",
+      "Jawa Timur",
+      "Sumatera Utara",
+    ];
+
+    const exportData = [];
+
+    filteredData?.forEach((item) => {
+      for (let i = 0; i < 5; i++) {
+        exportData.push({
+          "Nama Alkes": item?.nama_alkes,
+          Kabupaten: `${kabupatenDummies[i]}`,
+          Provinsi: provinsiDummies[i % provinsiDummies.length],
+          "Jumlah Eksisting": item?.berfungsi,
+          "Jumlah Usulan": item?.usulan,
+          "Jumlah Puskesmas": "10",
+        });
+      }
+    });
+
+    const wb = XLSX.utils.book_new();
+
+    const cols = [
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 25 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 },
+    ];
+
+    // Sheet 1: Urutkan berdasarkan "Nama Alkes"
+    const exportDataAlkes = [...exportData]; // Buat salinan array agar tidak mengubah array asli
+    exportDataAlkes.sort((a, b) => {
+      if (a["Nama Alkes"] < b["Nama Alkes"]) return -1;
+      if (a["Nama Alkes"] > b["Nama Alkes"]) return 1;
+      return 0;
+    });
+    const wsAlkes = XLSX.utils.json_to_sheet(exportDataAlkes);
+    wsAlkes["!cols"] = cols;
+    XLSX.utils.book_append_sheet(wb, wsAlkes, "Data Sort by Alkes");
+
+    // Sheet 2: Urutkan berdasarkan "Provinsi"
+    const exportDataProvinsi = [...exportData]; // Buat salinan array
+    exportDataProvinsi.sort((a, b) => {
+      if (a.Provinsi < b.Provinsi) return -1;
+      if (a.Provinsi > b.Provinsi) return 1;
+      if (a["Nama Alkes"] < b["Nama Alkes"]) return -1;
+      if (a["Nama Alkes"] > b["Nama Alkes"]) return 1;
+      return 0;
+    });
+    const wsProvinsi = XLSX.utils.json_to_sheet(exportDataProvinsi);
+    wsProvinsi["!cols"] = cols;
+    XLSX.utils.book_append_sheet(wb, wsProvinsi, "Data Sort by Provinsi");
+
+    const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
+    XLSX.writeFile(wb, `Data laporan Semua Alkes Kabupaten ${tanggal}.xlsx`);
   };
 
   if (getLoading) {
@@ -493,8 +571,19 @@ const LaporanBarang = () => {
             />
           </div>
           <div className="div flex gap-2 flex-row">
+            {user?.role == "1" && (
+              <button
+                title="Export Data All"
+                className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
+                onClick={handleExportAll}
+              >
+                <BiExport />
+                <span className="hidden sm:block">Export All</span>
+              </button>
+            )}
+
             <button
-              title="Export Data Distribusi"
+              title="Export Data Alkes"
               className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
               onClick={handleExport}
             >

@@ -431,7 +431,13 @@ const LaporanBarangKabupaten = () => {
       <div className="flex justify-end mb-4">
         <button
           onClick={() =>
-            navigate(`/laporan/detail/${encodeURIComponent(idBarang)}`)
+            navigate(
+              `/laporan${
+                user?.role == "3"
+                  ? ""
+                  : `/detail/` + encodeURIComponent(idBarang)
+              }`
+            )
           }
           className="flex items-center px-4 py-2 bg-primary text-white rounded-md font-semibold"
         >
