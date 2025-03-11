@@ -705,7 +705,7 @@ const EditUsulan = () => {
                 handleInputChange(row.id, "berfungsi", e.target.value)
               }
               className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none focus:ring-0"
-              disabled={formData?.tgl_upload || user?.role == "5"}
+              disabled={user?.role == "5"}
               min={0} // Pastikan tidak bisa minus
             />
           );
@@ -746,11 +746,7 @@ const EditUsulan = () => {
                 className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none"
                 min={0} // Pastikan tidak bisa minus
                 max={standard === null ? undefined : maxUsulan} // Batasi usulan jika standard tidak null
-                disabled={
-                  masihBerfungsi >= standard ||
-                  formData?.tgl_upload ||
-                  user?.role == "5"
-                } // Nonaktifkan input jika masih_berfungsi >= standard
+                disabled={masihBerfungsi >= standard || user?.role == "5"} // Nonaktifkan input jika masih_berfungsi >= standard
               />
               {errors[row.id] && (
                 <div className="text-red-500 text-sm mt-1">
@@ -1059,7 +1055,7 @@ const EditUsulan = () => {
                     onChange={handleDayaChange}
                     placeholder="Ketersediaan Daya"
                     className="w-full text-sm"
-                    isDisabled={formData?.tgl_upload || user?.role == "5"}
+                    isDisabled={user?.role == "5"}
                     theme={selectThemeColors}
                   />
                 </div>
@@ -1080,7 +1076,7 @@ const EditUsulan = () => {
                     onChange={handleListrikChange}
                     placeholder="Ketersediaan Listrik"
                     className="w-full text-sm"
-                    isDisabled={formData?.tgl_upload || user?.role == "5"}
+                    isDisabled={user?.role == "5"}
                     theme={selectThemeColors}
                   />
                 </div>
@@ -1101,7 +1097,7 @@ const EditUsulan = () => {
                     onChange={handleInternetChange}
                     placeholder="Ketersediaan Internet"
                     className="w-full text-sm"
-                    isDisabled={formData?.tgl_upload || user?.role == "5"}
+                    isDisabled={user?.role == "5"}
                     theme={selectThemeColors}
                   />
                 </div>
@@ -1169,7 +1165,7 @@ const EditUsulan = () => {
               )}
             </div>
           </div>
-          {user?.role !== "5" && !formData?.tgl_upload && (
+          {user?.role !== "5" && (
             <button
               onClick={handleSimpan}
               className="mt-4 bg-primary hover:bg-graydark text-white font-bold py-3 px-4 rounded w-full"

@@ -669,10 +669,9 @@ const PdfUsulanAlkes = () => {
                 <br /> Upload
               </button>
             ) : (
-              "Belum Upload"
+              ""
             )}
-            {/* {user.role == "3") &&
-            (!row.tgl_upload || !row.file_upload) ? (
+            {user.role == "3" ? (
               <button
                 title="Upload Dokumen"
                 className="text-white py-2 w-20 bg-primary rounded-md"
@@ -683,16 +682,17 @@ const PdfUsulanAlkes = () => {
                 Upload <br />
                 Dokumen
               </button>
-            ) : (!row.tgl_upload || !row.file_upload) && user.role == "1" ? (
+            ) : (!row.tgl_upload || !row.file_upload) &&
+              (user.role == "1" || user.role == "5") ? (
               "Belum Upload"
             ) : (
               ""
-            )} */}
+            )}
           </div>
         ),
         ignoreRowClick: true,
         button: true,
-        minWidth: "100px",
+        minWidth: "200px",
       },
 
       {
