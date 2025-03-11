@@ -384,74 +384,99 @@ const LaporanBarang = () => {
     const XLSX = await import("xlsx");
     const moment = (await import("moment")).default;
 
-    const kabupatenDummies = [
-      "Bandung",
-      "Bogor",
-      "Jakarta",
-      "Surabaya",
-      "Medan",
-    ];
-    const provinsiDummies = [
-      "Jawa Barat",
-      "DKI Jakarta",
-      "Jawa Timur",
-      "Sumatera Utara",
-    ];
+    // Menampilkan loading
+    Swal.fire({
+      title: "Loading...",
+      text: "Sedang mengambil data dari server",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
-    const exportData = [];
+    try {
+      // Mengambil data dari API dengan headers
+      const response = await fetch(
+        "https://api.tatakelolakesmas.com/api/lapalkes/total",
+        {
+          method: "GET", // Metode request
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`, // Menggunakan token dari user
+          },
+        }
+      );
 
-    filteredData?.forEach((item) => {
-      for (let i = 0; i < 5; i++) {
-        exportData.push({
-          "Nama Alkes": item?.nama_alkes,
-          Kabupaten: `${kabupatenDummies[i]}`,
-          Provinsi: provinsiDummies[i % provinsiDummies.length],
-          "Jumlah Eksisting": item?.berfungsi,
-          "Jumlah Usulan": item?.usulan,
-          "Jumlah Puskesmas": "10",
-        });
+      // Cek jika response tidak OK
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    });
 
-    const wb = XLSX.utils.book_new();
+      const data = await response.json();
 
-    const cols = [
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 25 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 20 },
-    ];
+      if (!data || !data.data) {
+        throw new Error("Data tidak ditemukan");
+      }
 
-    // Sheet 1: Urutkan berdasarkan "Nama Alkes"
-    const exportDataAlkes = [...exportData]; // Buat salinan array agar tidak mengubah array asli
-    exportDataAlkes.sort((a, b) => {
-      if (a["Nama Alkes"] < b["Nama Alkes"]) return -1;
-      if (a["Nama Alkes"] > b["Nama Alkes"]) return 1;
-      return 0;
-    });
-    const wsAlkes = XLSX.utils.json_to_sheet(exportDataAlkes);
-    wsAlkes["!cols"] = cols;
-    XLSX.utils.book_append_sheet(wb, wsAlkes, "Data Sort by Alkes");
+      const exportData = data.data.map((item) => ({
+        "Nama Alkes": item.nama_alkes,
+        Kabupaten: item.kabupaten,
+        Provinsi: item.provinsi,
+        "Jumlah Eksisting": item.berfungsi,
+        "Jumlah Usulan": item.usulan,
+        "Jumlah Puskesmas": item.total_puskesmas,
+      }));
 
-    // Sheet 2: Urutkan berdasarkan "Provinsi"
-    const exportDataProvinsi = [...exportData]; // Buat salinan array
-    exportDataProvinsi.sort((a, b) => {
-      if (a.Provinsi < b.Provinsi) return -1;
-      if (a.Provinsi > b.Provinsi) return 1;
-      if (a["Nama Alkes"] < b["Nama Alkes"]) return -1;
-      if (a["Nama Alkes"] > b["Nama Alkes"]) return 1;
-      return 0;
-    });
-    const wsProvinsi = XLSX.utils.json_to_sheet(exportDataProvinsi);
-    wsProvinsi["!cols"] = cols;
-    XLSX.utils.book_append_sheet(wb, wsProvinsi, "Data Sort by Provinsi");
+      const wb = XLSX.utils.book_new();
 
-    const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
-    XLSX.writeFile(wb, `Data laporan Semua Alkes Kabupaten ${tanggal}.xlsx`);
+      const cols = [
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 25 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+      ];
+
+      // Sheet 1: Urutkan berdasarkan "Nama Alkes"
+
+      const wsAlkes = XLSX.utils.json_to_sheet(exportData);
+      wsAlkes["!cols"] = cols;
+      XLSX.utils.book_append_sheet(wb, wsAlkes, "Data Sort by Provinsi");
+
+      // Sheet 2: Urutkan berdasarkan "Provinsi"
+      const exportDataAlkes = [...exportData];
+      exportDataAlkes.sort((a, b) => {
+        if (a["Nama Alkes"] < b["Nama Alkes"]) return -1;
+        if (a["Nama Alkes"] > b["Nama Alkes"]) return 1;
+        return 0;
+      });
+      const wsProvinsi = XLSX.utils.json_to_sheet(exportDataAlkes);
+      wsProvinsi["!cols"] = cols;
+      XLSX.utils.book_append_sheet(wb, wsProvinsi, "Data Sort by Alkes");
+
+      const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
+      XLSX.writeFile(wb, `Data laporan Semua Alkes Kabupaten ${tanggal}.xlsx`);
+
+      // Menampilkan notifikasi berhasil
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil!",
+        text: "Data berhasil diambil dan diexport",
+      });
+    } catch (error) {
+      // Menampilkan notifikasi gagal
+      Swal.fire({
+        icon: "error",
+        title: "Gagal!",
+        text: "Terjadi kesalahan saat mengambil data: " + error.message,
+      });
+    } finally {
+      // Menutup loading
+      Swal.close();
+    }
   };
 
   if (getLoading) {
@@ -571,16 +596,14 @@ const LaporanBarang = () => {
             />
           </div>
           <div className="div flex gap-2 flex-row">
-            {user?.role == "1" && (
-              <button
-                title="Export Data All"
-                className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
-                onClick={handleExportAll}
-              >
-                <BiExport />
-                <span className="hidden sm:block">Export All</span>
-              </button>
-            )}
+            <button
+              title="Export Data All"
+              className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
+              onClick={handleExportAll}
+            >
+              <BiExport />
+              <span className="hidden sm:block">Export All</span>
+            </button>
 
             <button
               title="Export Data Alkes"

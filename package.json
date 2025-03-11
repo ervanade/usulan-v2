@@ -40,6 +40,7 @@
     "redux-persist": "^6.0.0",
     "styled-components": "^6.1.11",
     "sweetalert2": "^11.12.1",
+    "swr": "^2.3.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
