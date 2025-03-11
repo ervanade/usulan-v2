@@ -397,7 +397,7 @@ const LaporanBarang = () => {
     try {
       // Mengambil data dari API dengan headers
       const response = await fetch(
-        "https://api.tatakelolakesmas.com/api/lapalkes/total",
+        "https://api.tatakelolakesmas.com/api/lapalkes/semua",
         {
           method: "GET", // Metode request
           headers: {
@@ -420,11 +420,11 @@ const LaporanBarang = () => {
 
       const exportData = data.data.map((item) => ({
         "Nama Alkes": item.nama_alkes,
+        Puskesmas: item?.nama_puskesmas,
         Kabupaten: item.kabupaten,
         Provinsi: item.provinsi,
         "Jumlah Eksisting": item.berfungsi,
         "Jumlah Usulan": item.usulan,
-        "Jumlah Puskesmas": item.total_puskesmas,
       }));
 
       const wb = XLSX.utils.book_new();
@@ -444,7 +444,7 @@ const LaporanBarang = () => {
 
       const wsAlkes = XLSX.utils.json_to_sheet(exportData);
       wsAlkes["!cols"] = cols;
-      XLSX.utils.book_append_sheet(wb, wsAlkes, "Data Sort by Provinsi");
+      XLSX.utils.book_append_sheet(wb, wsAlkes, "Data Sort by Puskesmas");
 
       // Sheet 2: Urutkan berdasarkan "Provinsi"
       const exportDataAlkes = [...exportData];
@@ -458,7 +458,7 @@ const LaporanBarang = () => {
       XLSX.utils.book_append_sheet(wb, wsProvinsi, "Data Sort by Alkes");
 
       const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
-      XLSX.writeFile(wb, `Data laporan Semua Alkes Kabupaten ${tanggal}.xlsx`);
+      XLSX.writeFile(wb, `Data laporan Semua Alkes Puskesmas ${tanggal}.xlsx`);
 
       // Menampilkan notifikasi berhasil
       Swal.fire({
