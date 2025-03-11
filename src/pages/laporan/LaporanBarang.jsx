@@ -447,18 +447,20 @@ const LaporanBarang = () => {
       XLSX.utils.book_append_sheet(wb, wsAlkes, "Data Sort by Puskesmas");
 
       // Sheet 2: Urutkan berdasarkan "Provinsi"
-      const exportDataAlkes = [...exportData];
-      exportDataAlkes.sort((a, b) => {
-        if (a["Nama Alkes"] < b["Nama Alkes"]) return -1;
-        if (a["Nama Alkes"] > b["Nama Alkes"]) return 1;
-        return 0;
-      });
-      const wsProvinsi = XLSX.utils.json_to_sheet(exportDataAlkes);
-      wsProvinsi["!cols"] = cols;
-      XLSX.utils.book_append_sheet(wb, wsProvinsi, "Data Sort by Alkes");
+      // const exportDataAlkes = [...exportData];
+      // exportDataAlkes.sort((a, b) => {
+      //   if (a["Nama Alkes"] < b["Nama Alkes"]) return -1;
+      //   if (a["Nama Alkes"] > b["Nama Alkes"]) return 1;
+      //   return 0;
+      // });
+      // const wsProvinsi = XLSX.utils.json_to_sheet(exportDataAlkes);
+      // wsProvinsi["!cols"] = cols;
+      // XLSX.utils.book_append_sheet(wb, wsProvinsi, "Data Sort by Alkes");
 
       const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
-      XLSX.writeFile(wb, `Data laporan Semua Alkes Puskesmas ${tanggal}.xlsx`);
+      XLSX.writeFile(wb, `Data laporan Semua Alkes Puskesmas ${tanggal}.xlsx`, {
+        compression: true, // Aktifkan kompresi
+      });
 
       // Menampilkan notifikasi berhasil
       Swal.fire({
