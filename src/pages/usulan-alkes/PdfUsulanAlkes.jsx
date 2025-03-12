@@ -579,7 +579,7 @@ const PdfUsulanAlkes = () => {
       },
       {
         name: <div className="text-wrap">Tanggal Download</div>,
-        selector: (row) => row.tgl_download,
+        selector: (row) => row.tgl_download?.substring(0, 10) || "Belum Download",
         cell: (row) => (
           <div className="text-wrap py-4">
             {row.tgl_download?.substring(0, 10) || "Belum Download"}
@@ -622,7 +622,7 @@ const PdfUsulanAlkes = () => {
       },
       {
         name: <div className="text-wrap">Tanggal Upload</div>,
-        selector: (row) => row.tgl_upload,
+        selector: (row) => row.tgl_upload?.substring(0, 10) || "Belum Upload",
         cell: (row) => (
           <div className="text-wrap py-4">
             {row.tgl_upload?.substring(0, 10) || (
