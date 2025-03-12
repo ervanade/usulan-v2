@@ -206,18 +206,18 @@ const EditUsulan = () => {
       });
       setData(data?.usulan || []);
       setFilteredData(data?.usulan || []);
-      if (
-        data?.usulan_alkes[0]?.tgl_upload &&
-        data?.usulan_alkes[0]?.file_upload &&
-        !isSwalShown.current
-      ) {
-        Swal.fire(
-          "Warning",
-          "Data tidak bisa diubah karena daerah sudah mengupload dokumen usulan!",
-          "warning"
-        );
-        isSwalShown.current = true;
-      }
+      // if (
+      //   data?.usulan_alkes[0]?.tgl_upload &&
+      //   data?.usulan_alkes[0]?.file_upload &&
+      //   !isSwalShown.current
+      // ) {
+      //   Swal.fire(
+      //     "Warning",
+      //     "Data tidak bisa diubah karena daerah sudah mengupload dokumen usulan!",
+      //     "warning"
+      //   );
+      //   isSwalShown.current = true;
+      // }
     } catch (error) {
       setError(true);
       setFilteredData([]);
