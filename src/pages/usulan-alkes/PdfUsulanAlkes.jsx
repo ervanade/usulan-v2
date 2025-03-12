@@ -407,6 +407,7 @@ const PdfUsulanAlkes = () => {
         },
       });
       fetchDokumenData();
+      setSearch("");
     } catch (error) {
       console.log(error);
     } finally {
@@ -521,15 +522,28 @@ const PdfUsulanAlkes = () => {
 
       if (dataJson?.file_upload) {
         try {
-          const response = await fetch(dataJson?.file_upload);
-          if (!response.ok) {
-            throw new Error("Network response was not ok.");
-          }
-          const blob = await response.blob();
+          // Menggunakan axios untuk mengambil file
+          const response = await axios.get(dataJson?.file_upload, {
+            responseType: "blob", // Mengatur respons sebagai blob (file)
+            headers: {
+              Authorization: `Bearer ${user?.token}`, // Jika memerlukan token
+            },
+          });
+
+          // Mendapatkan file blob dari respons
+          const blob = new Blob([response.data], {
+            type: response.headers["content-type"],
+          });
+
+          // Menentukan nama file
           const fileName = dataJson?.kabupaten
             ? `Dokumen Upload Usulan ${dataJson.kabupaten}.pdf`
             : "dokumen.pdf";
+
+          // Menggunakan file-saver untuk menyimpan file
           saveAs(blob, fileName);
+
+          // Menampilkan notifikasi sukses
           Swal.fire({
             icon: "success",
             title: "Download Complete",
@@ -538,9 +552,11 @@ const PdfUsulanAlkes = () => {
           });
         } catch (error) {
           console.error("Failed to download file:", error);
+
+          // Menampilkan notifikasi gagal
           Swal.fire({
             icon: "error",
-            title: "Download Gagal",
+            title: "Gagal Download Dokumen",
             text: "Silahkan Coba Beberapa Saat Lagi",
           });
         }
@@ -579,7 +595,8 @@ const PdfUsulanAlkes = () => {
       },
       {
         name: <div className="text-wrap">Tanggal Download</div>,
-        selector: (row) => row.tgl_download?.substring(0, 10) || "Belum Download",
+        selector: (row) =>
+          row.tgl_download?.substring(0, 10) || "Belum Download",
         cell: (row) => (
           <div className="text-wrap py-4">
             {row.tgl_download?.substring(0, 10) || "Belum Download"}
