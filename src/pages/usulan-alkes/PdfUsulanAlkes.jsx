@@ -525,9 +525,6 @@ const PdfUsulanAlkes = () => {
           // Menggunakan axios untuk mengambil file
           const response = await axios.get(dataJson?.file_upload, {
             responseType: "blob", // Mengatur respons sebagai blob (file)
-            headers: {
-              Authorization: `Bearer ${user?.token}`, // Jika memerlukan token
-            },
           });
 
           // Mendapatkan file blob dari respons
@@ -654,6 +651,8 @@ const PdfUsulanAlkes = () => {
       },
       {
         name: <div className="text-wrap">Upload</div>,
+        selector: (row) => (row?.tgl_upload && row?.file_upload ? "1" : "0"),
+        sortable: true,
         cell: (row) => (
           <div className="flex items-center space-x-2">
             {/* <button
