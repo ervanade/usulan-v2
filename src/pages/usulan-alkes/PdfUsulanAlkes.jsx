@@ -479,8 +479,8 @@ const PdfUsulanAlkes = () => {
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: "Gagal Download Dokumen",
+        title: "Download Gagal",
+        text: "Silahkan Coba Beberapa Saat Lagi",
       });
       console.log(error);
     }
@@ -540,8 +540,8 @@ const PdfUsulanAlkes = () => {
           console.error("Failed to download file:", error);
           Swal.fire({
             icon: "error",
-            title: "Error",
-            text: "Gagal Download Dokumen",
+            title: "Download Gagal",
+            text: "Silahkan Coba Beberapa Saat Lagi",
           });
         }
       } else {
@@ -554,8 +554,8 @@ const PdfUsulanAlkes = () => {
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: "Gagal Download Dokumen",
+        title: "Download Gagal",
+        text: "Silahkan Coba Beberapa Saat Lagi",
       });
       console.log(error);
     }
