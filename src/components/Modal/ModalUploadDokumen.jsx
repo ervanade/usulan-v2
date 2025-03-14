@@ -422,7 +422,7 @@ const ModalUploadDokumen = ({
                 Close
               </button>
               <button
-                className="bg-primary  text-white font-bold py-2 px-6 rounded-md focus:outline-none focus:shadow-outline dark:bg-transparent mr-1 mb-1"
+                className="bg-primary  text-white font-bold py-2 px-6 rounded-md focus:outline-none focus:shadow-outline mr-1 mb-1"
                 type="submit"
                 onClick={handleSave}
               >
