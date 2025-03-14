@@ -413,7 +413,7 @@ const ModalUploadDokumen = ({
                 {user?.role == "3" ? "User Daerah" : "Direktur"}
               </p>
             </div>
-            <div className="flex items-center justify-end p-6 border-t gap-2 border-solid border-black/20 rounded-b">
+            <div className="hidden flex items-center justify-end p-6 border-t gap-2 border-solid border-black/20 rounded-b">
               <button
                 className="text-red-500 border-red-500 border background-transparent rounded-md font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
                 type="button"

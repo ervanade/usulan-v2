@@ -687,7 +687,7 @@ const PdfUsulanAlkes = () => {
             ) : (
               ""
             )}
-            {user.role == "3" ? (
+            {/* {user.role == "3" ? (
               <button
                 title="Upload Dokumen"
                 className="text-white py-2 w-20 bg-primary rounded-md"
@@ -703,7 +703,7 @@ const PdfUsulanAlkes = () => {
               "Belum Upload"
             ) : (
               ""
-            )}
+            )} */}
           </div>
         ),
         ignoreRowClick: true,
