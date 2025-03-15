@@ -419,10 +419,10 @@ const LaporanBarang = () => {
       }
 
       const exportData = data.data.map((item) => ({
-        "Nama Alkes": item.nama_alkes,
-        Puskesmas: item?.nama_puskesmas,
-        Kabupaten: item.kabupaten,
         Provinsi: item.provinsi,
+        Kabupaten: item.kabupaten,
+        Puskesmas: item?.nama_puskesmas,
+        "Nama Alkes": item.nama_alkes,
         "Jumlah Eksisting": item.berfungsi,
         "Jumlah Usulan": item.usulan,
       }));
