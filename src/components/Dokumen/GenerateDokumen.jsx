@@ -923,7 +923,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>5.</Text>
               <Text>
-                tidak menganggarkan melalui pembiayaan lainnya untuk alat
+                Tidak menganggarkan melalui pembiayaan lainnya untuk alat
                 kesehatan yang diusulkan sampai dengan alat kesehatan tersebut
                 sudah terdistribusi.
               </Text>
