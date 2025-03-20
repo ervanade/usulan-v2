@@ -959,10 +959,12 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text style={{ marginRight: 8 }}>7.</Text>
               <Text>
                 Ikut serta memastikan pendistribusikan alat kesehatan hingga ke
-                puskesmas, pustu dan posyandu sesuai dengan Permenkes 1047 tahun
-                2024 tentang Standar Peralatan Dalam Rangka Penguatan Pelayanan
+                puskesmas, pustu dan posyandu sesuai dengan Keputusan Menteri
+                Kesehatan Nomor HK.01.07/MENKES/1578/2024, Perubahan atas
+                Keputusan Menteri Kesehatan Nomor HK.01.07/MENKES/1047/2024
+                tentang Standar Peralatan Dalam Rangka Penguatan Pelayanan
                 Kesehatan Primer Pada Pusat Kesehatan Masyarakat, Unit Pelayanan
-                Kesehatan di Desa/Kelurahan, Dan Pos Pelayanan Terpadu.
+                Kesehatan di Desa/Kelurahan, dan Pos Pelayanan Terpadu.
               </Text>
             </View>
 
