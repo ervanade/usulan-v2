@@ -245,9 +245,9 @@ const styles = StyleSheet.create({
   watermark: {
     position: "absolute",
     top: "50%", // Posisi tengah vertikal
-    left: "45%", // Posisi tengah horizontal
-    transform: "translate(-50%, -50%)", // Pusatkan teks
-    fontSize: 80, // Ukuran font besar
+    left: "43%", // Posisi tengah horizontal
+    transform: "translate(-50%, -50%) rotate(-45deg)", // Pusatkan dan miringkan 45 derajat ke kiri bawah
+    fontSize: 90, // Ukuran font besar
     color: "red", // Warna merah
     opacity: 0.08, // Opacity rendah untuk efek watermark
     zIndex: -1, // Letakkan di belakang konten lain
@@ -293,7 +293,7 @@ export const RenderBarangPages = (jsonData, preview) => {
 
     pages.push(
       <Page key={i} size="FOLIO" style={{ paddingTop: 0, ...styles.page }}>
-        <Text style={{ ...styles.watermark, left: preview ? "30%" : "45%" }}>
+        <Text style={{ ...styles.watermark, left: preview ? "30%" : "43%" }}>
           {preview ? "PREVIEW" : "FINAL"}
         </Text>
         <View
