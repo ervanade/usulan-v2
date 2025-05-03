@@ -53,6 +53,7 @@ import EditUsulan from "./pages/usulan-alkes/EditUsulan.jsx";
 import DataPeriode from "./pages/master-periode/DataPeriode.jsx";
 import TambahPeriode from "./pages/master-periode/TambahPeriode.jsx";
 import EditPeriode from "./pages/master-periode/EditPeriode.jsx";
+import PreviewVerif from "./pages/ba-verif/PreviewVerif.jsx";
 
 function App() {
   const { pathname } = useLocation();
@@ -106,6 +107,10 @@ function App() {
                 path="dokumen/preview-dokumen/:id"
                 element={<PreviewDokumen />}
               /> */}
+              <Route
+                path="ba-verif/preview-dokumen/:id"
+                element={<PreviewVerif />}
+              />
               <Route
                 path="pdf-usulan-alkes/preview-dokumen/:id"
                 element={<PreviewDokumen />}
