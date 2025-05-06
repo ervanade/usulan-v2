@@ -581,21 +581,26 @@ export const RenderVerifPages = (jsonData, preview) => {
                   bertanggung jawab sesuai dengan ketentuan berlaku.
                 </Text>
               </View>
-              <View style={styles.ttdContainer}>
-                <View style={{ flex: 1 }}></View>
+              <View style={{ ...styles.ttdContainer, marginTop: 24 }}>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ ...styles.text, textAlign: "center" }}>
-                    ...............,...................2025
+                  <Text
+                    style={{
+                      ...styles.text,
+                      textAlign: "center",
+                      marginTop: 24,
+                    }}
+                  >
+                    {/* Jakarta, dd mm 2025 */}
                   </Text>
                   Yang membuat pernyataan
                   <Text
                     style={{
                       ...styles.text,
                       textAlign: "center",
-                      marginTop: 48,
+                      marginTop: 16,
                     }}
                   >
-                    Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
+                    Informan/Narasumber {"\n"} Dinas Kesehatan (Jabatan)
                   </Text>
                   <View
                     style={{ ...styles.imageTtd, marginVertical: 8 }}
@@ -626,6 +631,142 @@ export const RenderVerifPages = (jsonData, preview) => {
                     }}
                   >
                     NIP
+                  </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ ...styles.text, textAlign: "center" }}>
+                    Jakarta, dd mm 2025
+                  </Text>
+                  Yang membuat pernyataan
+                  <Text
+                    style={{
+                      ...styles.text,
+                      textAlign: "center",
+                      marginTop: 24,
+                    }}
+                  >
+                    Verifikator {"\n"} Jabatan
+                  </Text>
+                  <View
+                    style={{ ...styles.imageTtd, marginVertical: 8 }}
+                  ></View>
+                  <Text
+                    style={{
+                      ...styles.text,
+                      fontFamily: "Calibri",
+                      marginTop: 12,
+                      fontSize: 8,
+                      paddingRight: 64,
+                      lineHeight: 1.2,
+                      textAlign: "center",
+                      letterSpacing: 0.2,
+                    }}
+                  >
+                    Nama
+                  </Text>
+                  <Text
+                    style={{
+                      ...styles.text,
+                      fontFamily: "Calibri",
+                      paddingRight: 70,
+                      fontSize: 8,
+                      lineHeight: 1.2,
+                      textAlign: "center",
+                      letterSpacing: 0.2,
+                    }}
+                  >
+                    NIP
+                  </Text>
+                </View>
+              </View>
+              <Text
+                style={{ ...styles.text, textAlign: "center", marginTop: 24 }}
+              >
+                Mengetahui,
+              </Text>
+              <View style={{ ...styles.ttdContainer, marginTop: 8 }}>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      ...styles.text,
+                      textAlign: "center",
+                      marginTop: 16,
+                    }}
+                  >
+                    Dinas Kesehatan Provinsi {"\n"} (Jabatan)
+                  </Text>
+                  <View
+                    style={{ ...styles.imageTtd, marginVertical: 8 }}
+                  ></View>
+                  <Text
+                    style={{
+                      ...styles.text,
+                      fontFamily: "Calibri",
+                      marginTop: 12,
+                      fontSize: 8,
+                      paddingRight: 64,
+                      lineHeight: 1.2,
+                      textAlign: "center",
+                      letterSpacing: 0.2,
+                    }}
+                  >
+                    Nama
+                  </Text>
+                  <Text
+                    style={{
+                      ...styles.text,
+                      fontFamily: "Calibri",
+                      paddingRight: 70,
+                      fontSize: 8,
+                      lineHeight: 1.2,
+                      textAlign: "center",
+                      letterSpacing: 0.2,
+                    }}
+                  >
+                    NIP
+                  </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  Yang membuat pernyataan
+                  <Text
+                    style={{
+                      ...styles.text,
+                      textAlign: "center",
+                      marginTop: 16,
+                    }}
+                  >
+                    Ketua Tim Kerja Sarana, Prasarana, dan Alat {"\n"} Kesehatan
+                    Pelayanan Kesehatan Primer
+                  </Text>
+                  <View
+                    style={{ ...styles.imageTtd, marginVertical: 8 }}
+                  ></View>
+                  <Text
+                    style={{
+                      ...styles.text,
+                      fontFamily: "Calibri",
+                      marginTop: 12,
+                      fontSize: 8,
+                      paddingRight: 8,
+                      lineHeight: 1.2,
+                      textAlign: "center",
+                      letterSpacing: 0.2,
+                    }}
+                  >
+                    Bondan Wicaksono Adhi, S.E., M.B.A
+                  </Text>
+                  <Text
+                    style={{
+                      ...styles.text,
+                      fontFamily: "Calibri",
+                      paddingRight: 16,
+                      fontSize: 8,
+                      lineHeight: 1.2,
+                      textAlign: "center",
+                      letterSpacing: 0.2,
+                    }}
+                  >
+                    NIP. 198705262010121002
                   </Text>
                 </View>
               </View>
