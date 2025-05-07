@@ -12,6 +12,7 @@ import moment from "moment";
 import "moment/dist/locale/id";
 import { RenderHibahPages } from "../Table/TableHibah";
 import { RenderBarangPages } from "../Table/TableLampiran";
+import { RenderAlkesPages } from "../Table/TableAlkes";
 
 const defaultImage =
   "https://media.istockphoto.com/id/1472819341/photo/background-white-light-grey-total-grunge-abstract-concrete-cement-wall-paper-texture-platinum.webp?b=1&s=170667a&w=0&k=20&c=yoY1jUAKlKVdakeUsRRsNEZdCx2RPIEgaIxSwQ0lS1k=";
@@ -1092,6 +1093,8 @@ const GenerateDokumen = async (jsonData, preview) => {
           </Text>
         </View>
       </Page>
+      {RenderAlkesPages(jsonData, preview)}
+
 
       <Page size="FOLIO" style={styles.page}>
         <Text style={{ ...styles.watermark, left: preview ? "27%" : "39%" }}>
@@ -1126,7 +1129,9 @@ const GenerateDokumen = async (jsonData, preview) => {
               }}
             >
               <Text style={{ ...styles.helvetica, textAlign: "center", textDecoration: "underline" }}>
-                SURAT PERNYATAAN{" "}{"\n"}
+                SURAT PERNYATAAN{" "}
+              </Text>
+              <Text style={{ ...styles.helvetica, textAlign: "center"}}>
                 No. {"                   "}
               </Text>
             </View>
@@ -1294,9 +1299,8 @@ const GenerateDokumen = async (jsonData, preview) => {
             <Text>
               Dinas Kesehatan {jsonData?.kabupaten} menyatakan akan
               bertanggungjawab atas kebenaran data yang disampaikan dalam usulan
-              Alkes untuk 7 alat (Opthalmoskop, otoskop, garpu tala, spray can,
-              sanitarian kit, CO analyzer, dan thermal ablation) melalui proyek
-              SOPHI. Demikian pernyataan ini dibuat dengan sebenar-benarnya
+              alat kesehatan untuk 50 alat jenis alkes melalui proyek
+              SOPHI. {"\n"}Demikian pernyataan ini dibuat dengan sebenar-benarnya
               dalam keadaan sadar, untuk digunakan sebagaimana mestinya.{" "}
             </Text>
           </View>
