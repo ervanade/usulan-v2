@@ -112,7 +112,7 @@ const DataBarang = () => {
         Swal.fire({
           icon: "success",
           title: "Deleted!",
-          text: "Your Barang has been deleted.",
+          text: "Your Alkes has been deleted.",
         });
       }
     });
@@ -121,7 +121,7 @@ const DataBarang = () => {
   const columns = useMemo(
     () => [
       {
-        name: <div className="text-wrap">Nama Barang</div>,
+        name: <div className="text-wrap">Nama Alkes</div>,
         selector: (row) => row.nama_alkes,
         cell: (row) => <div className="text-wrap py-2">{row.nama_alkes}</div>,
 
@@ -214,7 +214,7 @@ const DataBarang = () => {
 
   return (
     <div>
-      <Breadcrumb pageName="Data Barang" title="Data Barang" />
+      <Breadcrumb pageName="Data Alkes" title="Data Alkes" />
       <div className="rounded-md flex flex-col gap-4 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex justify-between mb-4 items-center">
           <div className="relative">

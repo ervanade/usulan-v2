@@ -404,7 +404,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               >
                                 Data Puskesmas
                               </NavLink>
-                            </li>
+                            </li> */}
                             <li>
                               <NavLink
                                 to="/master-data-barang"
@@ -416,7 +416,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                                 Data Alkes
                               </NavLink>
                             </li>
-                            <li>
+                            {/* <li>
                               <NavLink
                                 to="/master-data-provinsi"
                                 className={({ isActive }) =>

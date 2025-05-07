@@ -13,15 +13,15 @@ import NotFound from "./pages/NotFound.jsx";
 import ProtectedRoutesAdmin from "./components/Layout/ProtectedRoutesAdmin.jsx";
 // import Profile from "./pages/Profile";
 import PreviewDokumen from "./pages/distribusi/PreviewDokumen.jsx";
-// import DataBarang from "./pages/master-barang/DataBarang";
+import DataBarang from "./pages/master-barang/DataBarang";
 // import DataPuskesmas from "./pages/master-puskesmas/DataPuskesmas";
 // import DataKecamatan from "./pages/master-kecamatan/DataKecamatan";
 // import DataProvinsi from "./pages/master-provinsi/DataProvinsi";
 // import TambahUser from "./pages/admin/TambahUser";
 // import EditProvinsi from "./pages/master-provinsi/EditProvinsi";
 // import TambahProvinsi from "./pages/master-provinsi/TambahProvinsi";
-// import TambahBarang from "./pages/master-barang/TambahBarang";
-// import EditBarang from "./pages/master-barang/EditBarang";
+import TambahBarang from "./pages/master-barang/TambahBarang";
+import EditBarang from "./pages/master-barang/EditBarang";
 // import TambahPuskesmas from "./pages/master-puskesmas/TambahPuskesmas";
 // import EditPuskesmas from "./pages/master-puskesmas/EditPuskesmas";
 // import DataKota from "./pages/master-kota/DataKota";
@@ -173,7 +173,7 @@ function App() {
                 <Route
                   path="data-distribusi/add"
                   element={<TambahDistribusi />}
-                />
+                /> */}
 
                 <Route path="master-data-barang" element={<DataBarang />} />
                 <Route
@@ -185,7 +185,7 @@ function App() {
                   element={<EditBarang />}
                 />
 
-                <Route
+                {/* <Route
                   path="master-data-puskesmas"
                   element={<DataPuskesmas />}
                 />
