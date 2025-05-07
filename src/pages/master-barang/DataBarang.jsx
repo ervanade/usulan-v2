@@ -252,7 +252,7 @@ const DataBarang = () => {
           </div>
           <div className="div flex gap-2 flex-row">
             <button
-              title="Export Data Barang"
+              title="Export Data Alkes"
               className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
               onClick={handleExport}
             >
@@ -261,7 +261,7 @@ const DataBarang = () => {
             </button>
             {user.role == "1" ? (
               <button
-                title="Tambah Data Barang"
+                title="Tambah Data Alkes"
                 className="flex items-center gap-2 cursor-pointer text-base text-white  bg-primary rounded-md tracking-tight"
               >
                 <Link
@@ -269,7 +269,7 @@ const DataBarang = () => {
                   className="flex items-center gap-2 px-4 py-2"
                 >
                   <FaPlus size={16} />
-                  <span className="hidden sm:block">Tambah Data Barang</span>
+                  <span className="hidden sm:block">Tambah Data Alkes</span>
                 </Link>
               </button>
             ) : (

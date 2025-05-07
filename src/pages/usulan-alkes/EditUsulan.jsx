@@ -619,7 +619,7 @@ const EditUsulan = () => {
       title: "Perhatian",
       text: "Data yang diisi adalah sebenarnya dan dapat dipertanggungjawabkan?",
       showCancelButton: true,
-      confirmButtonColor: "#027d77",
+      confirmButtonColor: "#28B3A9",
       confirmButtonText: "Ya, Simpan Data",
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */

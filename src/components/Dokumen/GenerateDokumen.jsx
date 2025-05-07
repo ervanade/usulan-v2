@@ -253,7 +253,10 @@ const styles = StyleSheet.create({
     top: "50%", // Posisi tengah vertikal
     left: "43%", // Posisi tengah horizontal
     transform: "translate(-50%, -50%) rotate(-45deg)", // Pusatkan dan miringkan 45 derajat ke kiri bawah
-    fontSize: 90, // Ukuran font besar
+    fontSize: 100, // Ukuran font besar
+    fontWeight: 700,
+    lineHeight: 1.2,
+    letterSpacing: 0.5,
     color: "red", // Warna merah
     opacity: 0.08, // Opacity rendah untuk efek watermark
     zIndex: -1, // Letakkan di belakang konten lain
@@ -769,7 +772,7 @@ const GenerateDokumen = async (jsonData, preview) => {
       </Page>
 
       <Page size="FOLIO" style={styles.page}>
-        <Text style={{ ...styles.watermark, left: preview ? "30%" : "43%" }}>
+        <Text style={{ ...styles.watermark, left: preview ? "27%" : "39%" }}>
           {preview ? "PREVIEW" : "FINAL"}
         </Text>
         <View
@@ -1017,6 +1020,265 @@ const GenerateDokumen = async (jsonData, preview) => {
                 internet, ruangan, dll.){" "}
               </Text>
             </View>
+          </View>
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "row",
+              marginTop: 8,
+              width: "100%",
+            }}
+          >
+            <Text>
+              Dinas Kesehatan {jsonData?.kabupaten} menyatakan akan
+              bertanggungjawab atas kebenaran data yang disampaikan dalam usulan
+              Alkes untuk 7 alat (Opthalmoskop, otoskop, garpu tala, spray can,
+              sanitarian kit, CO analyzer, dan thermal ablation) melalui proyek
+              SOPHI. Demikian pernyataan ini dibuat dengan sebenar-benarnya
+              dalam keadaan sadar, untuk digunakan sebagaimana mestinya.{" "}
+            </Text>
+          </View>
+
+          <View style={styles.ttdContainer}>
+            <View style={{ flex: 1 }}></View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ ...styles.text, textAlign: "center" }}>
+                ...............,...................2025
+              </Text>
+              Yang membuat pernyataan
+              <Text
+                style={{ ...styles.text, textAlign: "center", marginTop: 48 }}
+              >
+                Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
+              </Text>
+              <View style={{ ...styles.imageTtd, marginVertical: 8 }}></View>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  marginTop: 12,
+                  fontSize: 8,
+                  paddingRight: 64,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                Nama
+              </Text>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  paddingRight: 70,
+                  fontSize: 8,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                NIP
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <Text>
+            Downloaded on {downloadDate}. [username ={" "}
+            {jsonData?.user_download || ""}]
+          </Text>
+        </View>
+      </Page>
+
+      <Page size="FOLIO" style={styles.page}>
+        <Text style={{ ...styles.watermark, left: preview ? "27%" : "39%" }}>
+          {preview ? "PREVIEW" : "FINAL"}
+        </Text>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            height: 800,
+          }}
+        >
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, textAlign: "center", textDecoration: "underline" }}>
+                SURAT PERNYATAAN{" "}{"\n"}
+                No. {"                   "}
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Yang bertanda tangan di bawah ini :{"\n"}
+                Nama :{"\n"}
+                Jabatan :{"\n"}
+                Instansi :{"\n\n"}
+                Dengan ini menyatakan bahwa informasi yang tertera di proposal usulan alat kesehatan untuk ..... (jumlah) jenis alkes sudah sesuai dengan kebutuhan Puskesmas, Pustu, dan Posyandu. {"\n"} Selain itu, Dinas
+                Kesehatan juga berkomitmen untuk:{" "}
+              </Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>1.</Text>
+              <Text>
+                Melaksanakan Permenkes 31 tahun 2018 dengan melakukan update
+                data sarana, prasarana dan alat kesehatan secara riil melalui
+                aplikasi ASPAK oleh puskesmas dan telah di validasi oleh Dinas
+                Kesehatan Kabupaten/Kota.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>2.</Text>
+              <Text>
+                Memastikan SDM tetap ada agar barang tetap dapat digunakan
+                secara optimal oleh tenaga kesehatan yang sesuai dengan
+                kompetensinya sebelum alat didistribusikan.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>3.</Text>
+              <Text>
+              3.	Memastikan bahwa sarana dan prasarana (luas ruangan, listrik, internet, IPAL, air bersih) memenuhi standar dan tersedia sebelum alat didistribusikan.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>4.</Text>
+              <Text>
+              Tidak menggarkan melalui pembiayaan lainnya untuk alat kesehatan yang diusulkan sampai dengan alat kesehatan tersebut sudah terdistribusi.
+
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>5.</Text>
+              <Text>
+              Sanggup menerima alat sesuai dengan alat yang diusulkan dan akan melakukan pencatatan alat ke ASPAK setelah alat diserahterimakan.
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>6.</Text>
+              <Text>
+              Ikut serta memastikan pendistribusian alat kesehatan hingga ke puskesmas, pustu, dan posyandu sesuai dengan Kepmenkes tentang Standar Peralatan dalam Rangka Penguatan Pelayanan Kesehatan Primer pada Pusat Kesehatan Masyarakat, Unit Pelayanan Kesehatan di Desa/Kelurahan, dan Pos Pelayanan Terpadu.              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>7.</Text>
+              <Text>
+              Menyiapkan biaya operasional untuk pemeliharaan alat kesehatan, reagen dan BMHP, serta sarana prasarana lainnya (luas ruangan, listrik, internet, IPAL, air bersih).               </Text>
+            </View>
+
+
           </View>
           <View
             style={{

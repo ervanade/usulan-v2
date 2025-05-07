@@ -129,7 +129,7 @@ const ModalUploadDokumen = ({
       text: "Anda tidak dapat mengubah data setelah mengupload. Lanjutkan?",
       showCancelButton: true,
       denyButtonColor: "#3B82F6",
-      confirmButtonColor: "#027d77",
+      confirmButtonColor: "#28B3A9",
       confirmButtonText: "Ya",
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
