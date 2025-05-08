@@ -248,7 +248,7 @@ const Laporan = () => {
   );
 
   const handleExport = async () => {
-    const XLSX = await import("xlsx");    
+    const XLSX = await import("xlsx");
     // Implementasi untuk mengekspor data (misalnya ke CSV)
     const dashboardData = [
       {
@@ -506,8 +506,8 @@ const Laporan = () => {
                 headCells: {
                   style: {
                     padding: 12,
-                    backgroundColor: "#b1e4e0", // Warna header biru
-                    color: "#212121", // Teks header putih
+                    backgroundColor: "#0FAD91", // Warna header biru
+                    color: "#fff", // Teks header putih
                     fontWeight: 700,
                     fontSize: 14,
                   },

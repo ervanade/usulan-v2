@@ -63,21 +63,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-999 flex h-screen w-67 flex-col overflow-y-hidden bg-[#32a197] duration-300 ease-linear dark:bg-boxdark lg:static ${
+      className={`absolute left-0 top-0 z-999 flex h-screen w-67 flex-col overflow-y-hidden bg-[#fff] duration-0 ease-linear dark:bg-boxdark lg:static ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-4 py-2 lg:py-4 round">
-        <NavLink to="/" className="hidden">
-          <img src={`/logo-kemenkes.png`} alt="Logo" />
+        <NavLink to="/" className="">
+          <img src={`/logo-alkes.png`} alt="Logo" />
         </NavLink>
         <button
           ref={trigger}
           onClick={() => setSidebarOpen(!sidebarOpen)}
           aria-controls="sidebar"
           aria-expanded={sidebarOpen}
-          className="grid h-10 w-10 place-content-center rounded-full opacity-100 text-white hover:bg-graydark ml-auto"
+          className="grid h-10 w-10 place-content-center rounded-full opacity-100 text-boxdark hover:bg-gradient-to-r from-emerald-600 to-teal-500 ml-auto hover:text-white"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -119,21 +119,23 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       </div>
       {/* <!-- SIDEBAR HEADER --> */}
 
-      <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+      <div className="no-scrollbar flex flex-col overflow-y-auto duration-0 ease-linear">
         {/* <!-- Sidebar Menu --> */}
         <nav className="mt-1 py-4 px-4 lg:mt-1 lg:px-4">
           {/* <!-- Menu Group --> */}
           <div>
-            <h3 className="mb-4 ml-4 text-sm font-semibold text-white">MENU</h3>
+            <h3 className="mb-4 ml-4 text-sm font-semibold text-boxdark">
+              MENU
+            </h3>
 
             <ul className="mb-6 flex flex-col gap-1.5">
               {/* <!-- Menu Item Dashboard --> */}
               <li>
                 <NavLink
                   to="/usulan-alkes"
-                  className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                  className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                     isActive(["/usulan-alkes"]) &&
-                    "bg-graydark dark:bg-meta-4 text-primary"
+                    "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                   }`}
                 >
                   <GrDocumentText size={20} />
@@ -143,9 +145,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <li>
                 <NavLink
                   to="/pdf-usulan-alkes"
-                  className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                  className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                     pathname.includes("pdf-usulan-alkes") &&
-                    "bg-graydark dark:bg-meta-4 text-primary"
+                    "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                   }`}
                 >
                   <TbReport size={20} />
@@ -155,9 +157,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               {/* <li>
                 <NavLink
                   to="/"
-                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-3 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                  className={`group relative flex items-center gap-2.5 rounded-md px-4 py-3 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                     (pathname === "/" || pathname.includes("dashboard")) &&
-                    "bg-graydark dark:bg-meta-4 text-primary"
+                    "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                   }`}
                 >
                   <HiOutlineHome size={22} />
@@ -171,9 +173,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <li>
                     <NavLink
                       to="/data-distribusi"
-                      className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                         pathname.includes("data-distribusi") &&
-                        "bg-graydark dark:bg-meta-4 text-primary"
+                        "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                       }`}
                     >
                       <AiOutlineDatabase size={20} />
@@ -183,12 +185,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <li>
                     <NavLink
                       to="/dokumen"
-                      className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                         isActive([
                           "/dokumen",
                           "/dokumen/add",
                           "/dokumen/edit",
-                        ]) && "bg-graydark dark:bg-meta-4 text-primary"
+                        ]) && "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                       }`}
                     >
                       <MdOutlineDomainVerification size={22} />
@@ -201,12 +203,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <li>
                     <NavLink
                       to="/dokumen"
-                      className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                         isActive([
                           "/dokumen",
                           "/dokumen/add",
                           "/dokumen/edit",
-                        ]) && "bg-graydark dark:bg-meta-4 text-primary"
+                        ]) && "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                       }`}
                     >
                       <MdOutlineDomainVerification size={22} />
@@ -216,9 +218,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <li>
                     <NavLink
                       to="/data-distribusi"
-                      className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                         pathname.includes("data-distribusi") &&
-                        "bg-graydark dark:bg-meta-4 text-primary"
+                        "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                       }`}
                     >
                       <AiOutlineDatabase size={20} />
@@ -231,12 +233,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <li>
                     <NavLink
                       to="/dokumen"
-                      className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                         isActive([
                           "/dokumen",
                           "/dokumen/add",
                           "/dokumen/edit",
-                        ]) && "bg-graydark dark:bg-meta-4 text-primary"
+                        ]) && "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                       }`}
                     >
                       <MdOutlineDomainVerification size={22} />
@@ -251,9 +253,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 <li>
                   <NavLink
                     to="/dokumen"
-                    className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                       pathname === ("/dokumen") &&
-                      "bg-graydark dark:bg-meta-4 text-primary"
+                      "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                     }`}
                   >
                     <MdOutlineDomainVerification size={22} />
@@ -266,9 +268,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <li>
                 <NavLink
                   to="/data-distribusi"
-                  className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                  className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                     pathname.includes("data-distribusi") &&
-                    "bg-graydark dark:bg-meta-4 text-primary"
+                    "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                   }`}
                 >
                   <AiOutlineDatabase size={20} />
@@ -282,9 +284,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <li>
                 <NavLink
                   to="/laporan"
-                  className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                  className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                     pathname.includes("laporan") &&
-                    "bg-graydark dark:bg-meta-4 text-primary"
+                    "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                   }`}
                 >
                   <TbChartBar size={22} />
@@ -296,7 +298,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           {/* <!-- Others Group --> */}
           {user.role == "1" ? (
             <div>
-              <h3 className="mb-4 ml-4 text-sm font-semibold text-white">
+              <h3 className="mb-4 ml-4 text-sm font-semibold text-boxdark">
                 ADMIN
               </h3>
 
@@ -312,10 +314,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                       <React.Fragment>
                         <NavLink
                           to="#"
-                          className={`group relative flex items-center gap-2.5 rounded-md px-4 py-3 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                          className={`group relative flex items-center gap-2.5 rounded-md px-4 py-3 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                             (pathname === "/master" ||
                               pathname.includes("master")) &&
-                            "bg-graydark dark:bg-meta-4 text-primary"
+                            "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                           }`}
                           onClick={(e) => {
                             e.preventDefault();
@@ -387,8 +389,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               <NavLink
                                 to="/master-data-periode"
                                 className={({ isActive }) =>
-                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-white duration-300 ease-in-out hover:text-bodydark " +
-                                  (isActive && "!text-bodydark")
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
                                 }
                               >
                                 Data Periode
@@ -398,8 +400,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               <NavLink
                                 to="/master-data-puskesmas"
                                 className={({ isActive }) =>
-                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-white duration-300 ease-in-out hover:text-bodydark " +
-                                  (isActive && "!text-bodydark")
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
                                 }
                               >
                                 Data Puskesmas
@@ -409,8 +411,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               <NavLink
                                 to="/master-data-barang"
                                 className={({ isActive }) =>
-                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-white duration-300 ease-in-out hover:text-bodydark " +
-                                  (isActive && "!text-bodydark")
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
                                 }
                               >
                                 Data Alkes
@@ -420,8 +422,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               <NavLink
                                 to="/master-data-provinsi"
                                 className={({ isActive }) =>
-                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-white duration-300 ease-in-out hover:text-bodydark " +
-                                  (isActive && "!text-bodydark")
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
                                 }
                               >
                                 Data Provinsi
@@ -431,8 +433,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               <NavLink
                                 to="/master-data-kota"
                                 className={({ isActive }) =>
-                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-white duration-300 ease-in-out hover:text-bodydark " +
-                                  (isActive && "!text-bodydark")
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
                                 }
                               >
                                 Data Kab/Kota
@@ -442,8 +444,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               <NavLink
                                 to="/master-data-kecamatan"
                                 className={({ isActive }) =>
-                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-white duration-300 ease-in-out hover:text-bodydark " +
-                                  (isActive && "!text-bodydark")
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
                                 }
                               >
                                 Data Kecamatan
@@ -454,8 +456,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               <NavLink
                                 to="/master-data-penyedia"
                                 className={({ isActive }) =>
-                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-white duration-300 ease-in-out hover:text-bodydark " +
-                                  (isActive && "!text-bodydark")
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
                                 }
                               >
                                 Data Penyedia
@@ -466,8 +468,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               <NavLink
                                 to="/tes-template"
                                 className={({ isActive }) =>
-                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-white duration-300 ease-in-out hover:text-bodydark " +
-                                  (isActive && "!text-bodydark")
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
                                 }
                               >
                                 Template Dokumen
@@ -484,9 +486,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 {/* <li>
                   <NavLink
                     to="/user-management"
-                    className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                       pathname.includes("user-management") &&
-                      "bg-graydark dark:bg-meta-4 text-primary"
+                      "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                     }`}
                   >
                     <FaUsers size={20} />
@@ -496,9 +498,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 <li>
                   <NavLink
                     to="/logactivity"
-                    className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-white duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
                       pathname.includes("logactivity") &&
-                      "bg-graydark dark:bg-meta-4 text-primary"
+                      "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                     }`}
                   >
                     <FaTasks size={20} />

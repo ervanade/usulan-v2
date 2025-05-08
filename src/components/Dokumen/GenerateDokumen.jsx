@@ -773,7 +773,7 @@ const GenerateDokumen = async (jsonData, preview) => {
       </Page>
 
       <Page size="FOLIO" style={styles.page}>
-        <Text style={{ ...styles.watermark, left: preview ? "27%" : "39%" }}>
+        <Text style={{ ...styles.watermark, left: preview ? "25%" : "39%" }}>
           {preview ? "PREVIEW" : "FINAL"}
         </Text>
         <View
@@ -1095,9 +1095,8 @@ const GenerateDokumen = async (jsonData, preview) => {
       </Page>
       {RenderAlkesPages(jsonData, preview)}
 
-
       <Page size="FOLIO" style={styles.page}>
-        <Text style={{ ...styles.watermark, left: preview ? "27%" : "39%" }}>
+        <Text style={{ ...styles.watermark, left: preview ? "25%" : "39%" }}>
           {preview ? "PREVIEW" : "FINAL"}
         </Text>
         <View
@@ -1128,10 +1127,16 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
-              <Text style={{ ...styles.helvetica, textAlign: "center", textDecoration: "underline" }}>
+              <Text
+                style={{
+                  ...styles.helvetica,
+                  textAlign: "center",
+                  textDecoration: "underline",
+                }}
+              >
                 SURAT PERNYATAAN{" "}
               </Text>
-              <Text style={{ ...styles.helvetica, textAlign: "center"}}>
+              <Text style={{ ...styles.helvetica, textAlign: "center" }}>
                 No. {"                   "}
               </Text>
             </View>
@@ -1151,8 +1156,12 @@ const GenerateDokumen = async (jsonData, preview) => {
                 Nama :{"\n"}
                 Jabatan :{"\n"}
                 Instansi :{"\n\n"}
-                Dengan ini menyatakan bahwa informasi yang tertera di proposal usulan alat kesehatan untuk ..... (jumlah) jenis alkes sudah sesuai dengan kebutuhan Puskesmas, Pustu, dan Posyandu. {"\n"} Selain itu, Dinas
-                Kesehatan juga berkomitmen untuk:{" "}
+                Dengan ini menyatakan bahwa informasi yang tertera di proposal
+                usulan alat kesehatan untuk ..... (jumlah) jenis alkes sudah
+                sesuai dengan kebutuhan Puskesmas, Pustu, dan Posyandu. {
+                  "\n"
+                }{" "}
+                Selain itu, Dinas Kesehatan juga berkomitmen untuk:{" "}
               </Text>
             </View>
           </View>
@@ -1217,7 +1226,9 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>
-              3.	Memastikan bahwa sarana dan prasarana (luas ruangan, listrik, internet, IPAL, air bersih) memenuhi standar dan tersedia sebelum alat didistribusikan.
+                3. Memastikan bahwa sarana dan prasarana (luas ruangan, listrik,
+                internet, IPAL, air bersih) memenuhi standar dan tersedia
+                sebelum alat didistribusikan.
               </Text>
             </View>
 
@@ -1233,8 +1244,9 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>4.</Text>
               <Text>
-              Tidak menggarkan melalui pembiayaan lainnya untuk alat kesehatan yang diusulkan sampai dengan alat kesehatan tersebut sudah terdistribusi.
-
+                Tidak menggarkan melalui pembiayaan lainnya untuk alat kesehatan
+                yang diusulkan sampai dengan alat kesehatan tersebut sudah
+                terdistribusi.
               </Text>
             </View>
 
@@ -1250,7 +1262,9 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>5.</Text>
               <Text>
-              Sanggup menerima alat sesuai dengan alat yang diusulkan dan akan melakukan pencatatan alat ke ASPAK setelah alat diserahterimakan.
+                Sanggup menerima alat sesuai dengan alat yang diusulkan dan akan
+                melakukan pencatatan alat ke ASPAK setelah alat
+                diserahterimakan.
               </Text>
             </View>
             <View
@@ -1265,7 +1279,12 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>6.</Text>
               <Text>
-              Ikut serta memastikan pendistribusian alat kesehatan hingga ke puskesmas, pustu, dan posyandu sesuai dengan Kepmenkes tentang Standar Peralatan dalam Rangka Penguatan Pelayanan Kesehatan Primer pada Pusat Kesehatan Masyarakat, Unit Pelayanan Kesehatan di Desa/Kelurahan, dan Pos Pelayanan Terpadu.              </Text>
+                Ikut serta memastikan pendistribusian alat kesehatan hingga ke
+                puskesmas, pustu, dan posyandu sesuai dengan Kepmenkes tentang
+                Standar Peralatan dalam Rangka Penguatan Pelayanan Kesehatan
+                Primer pada Pusat Kesehatan Masyarakat, Unit Pelayanan Kesehatan
+                di Desa/Kelurahan, dan Pos Pelayanan Terpadu.{" "}
+              </Text>
             </View>
 
             <View
@@ -1280,10 +1299,11 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>7.</Text>
               <Text>
-              Menyiapkan biaya operasional untuk pemeliharaan alat kesehatan, reagen dan BMHP, serta sarana prasarana lainnya (luas ruangan, listrik, internet, IPAL, air bersih).               </Text>
+                Menyiapkan biaya operasional untuk pemeliharaan alat kesehatan,
+                reagen dan BMHP, serta sarana prasarana lainnya (luas ruangan,
+                listrik, internet, IPAL, air bersih).{" "}
+              </Text>
             </View>
-
-
           </View>
           <View
             style={{
@@ -1299,9 +1319,9 @@ const GenerateDokumen = async (jsonData, preview) => {
             <Text>
               Dinas Kesehatan {jsonData?.kabupaten} menyatakan akan
               bertanggungjawab atas kebenaran data yang disampaikan dalam usulan
-              alat kesehatan untuk 50 alat jenis alkes melalui proyek
-              SOPHI. {"\n"}Demikian pernyataan ini dibuat dengan sebenar-benarnya
-              dalam keadaan sadar, untuk digunakan sebagaimana mestinya.{" "}
+              alat kesehatan untuk 50 alat jenis alkes melalui proyek SOPHI.{" "}
+              {"\n"}Demikian pernyataan ini dibuat dengan sebenar-benarnya dalam
+              keadaan sadar, untuk digunakan sebagaimana mestinya.{" "}
             </Text>
           </View>
 

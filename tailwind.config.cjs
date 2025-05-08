@@ -31,7 +31,7 @@ export default {
         bodydark: '#D3D3D3',
         bodydark1: '#728294',
         bodydark2: '#8A99AF',
-        primary: '#32a197',
+        primary: '#0FAD91',
         secondary: '#80CAEE',
         stroke: '#E2E8F0',
         gray: '#EFF4FB',

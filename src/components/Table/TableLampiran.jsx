@@ -250,7 +250,8 @@ const styles = StyleSheet.create({
     fontSize: 100, // Ukuran font besar
     fontWeight: 700,
     lineHeight: 1.2,
-    letterSpacing: 0.5,    color: "red", // Warna merah
+    letterSpacing: 0.5,
+    color: "red", // Warna merah
     opacity: 0.08, // Opacity rendah untuk efek watermark
     zIndex: -1, // Letakkan di belakang konten lain
   },
@@ -295,7 +296,7 @@ export const RenderBarangPages = (jsonData, preview) => {
 
     pages.push(
       <Page key={i} size="FOLIO" style={{ paddingTop: 0, ...styles.page }}>
-        <Text style={{ ...styles.watermark, left: preview ? "27%" : "39%" }}>
+        <Text style={{ ...styles.watermark, left: preview ? "25%" : "39%" }}>
           {preview ? "PREVIEW" : "FINAL"}
         </Text>
         <View

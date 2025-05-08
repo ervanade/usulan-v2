@@ -310,7 +310,7 @@ export const RenderHibahPages = (jsonData, preview) => {
             style={{ paddingTop: 0, ...styles.page }}
           >
             <Text
-              style={{ ...styles.watermark, left: preview ? "27%" : "39%" }}
+              style={{ ...styles.watermark, left: preview ? "25%" : "39%" }}
             >
               {preview ? "PREVIEW" : "FINAL"}
             </Text>

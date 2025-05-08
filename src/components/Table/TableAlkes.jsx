@@ -8,6 +8,7 @@ import {
   PDFViewer,
   Font,
 } from "@react-pdf/renderer";
+import { alkesDokumen } from "../../data/data";
 
 const defaultImage =
   "https://media.istockphoto.com/id/1472819341/photo/background-white-light-grey-total-grunge-abstract-concrete-cement-wall-paper-texture-platinum.webp?b=1&s=170667a&w=0&k=20&c=yoY1jUAKlKVdakeUsRRsNEZdCx2RPIEgaIxSwQ0lS1k=";
@@ -229,7 +230,7 @@ const styles = StyleSheet.create({
     verticalAlign: "middle",
   },
   tableCell: {
-    margin: 5,
+    margin: 3.5,
     fontSize: 8,
     lineHeight: 1,
     textAlign: "center",
@@ -250,7 +251,8 @@ const styles = StyleSheet.create({
     fontSize: 100, // Ukuran font besar
     fontWeight: 700,
     lineHeight: 1.2,
-    letterSpacing: 0.5,    color: "red", // Warna merah
+    letterSpacing: 0.5,
+    color: "red", // Warna merah
     opacity: 0.08, // Opacity rendah untuk efek watermark
     zIndex: -1, // Letakkan di belakang konten lain
   },
@@ -258,20 +260,18 @@ const styles = StyleSheet.create({
 const formatRupiah = (price) => {
   return `${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 };
-const ITEMS_PER_PAGE = 32;
+const ITEMS_PER_PAGE = 51;
 
 const getAllDetailDistribusi = (distribusi) => {
   return distribusi?.map((item, index) => ({
     no: index + 1 || "",
     namaAlkes: item.nama_alkes || "",
-    standard: item.standard_rawat_inap || "",
-    berfungsi: item.berfungsi || "",
-    usulan: item.usulan,
+    standard: item.standard || "",
   }));
 };
 
 export const RenderAlkesPages = (jsonData, preview) => {
-  const dataBarang = getAllDetailDistribusi(jsonData?.total_alkes || []);
+  const dataBarang = getAllDetailDistribusi(alkesDokumen || []);
   const pages = [];
   const totalItems = dataBarang?.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -295,42 +295,33 @@ export const RenderAlkesPages = (jsonData, preview) => {
 
     pages.push(
       <Page key={i} size="FOLIO" style={{ paddingTop: 0, ...styles.page }}>
-        <Text style={{ ...styles.watermark, left: preview ? "27%" : "39%" }}>
+        <Text style={{ ...styles.watermark, left: preview ? "25%" : "39%" }}>
           {preview ? "PREVIEW" : "FINAL"}
         </Text>
         <View
           style={{
             paddingVertical: 0,
             marginTop: 0,
-            height: 800,
+            height: 865,
           }}
         >
           <View
             style={{
-              ...styles.titleContainer,
-              marginBottom: 16,
-              marginTop: 0,
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              marginBottom: 8,
             }}
           >
             <Text
-              style={{
-                ...styles.reportTitle,
-                letterSpacing: 0.7,
-                width: "100%",
-                lineHeight: 1.5,
-              }}
+              style={{ ...styles.helvetica, textAlign: "center", fontSize: 10 }}
             >
-              <Text
-                style={{
-                  ...styles.helvetica,
-                  letterSpacing: 0.7,
-                  width: "100%",
-                  lineHeight: 1.5,
-                }}
-              >
-                Lampiran {i + 1}. Data usulan alat, jumlah dan peralatan pada
-                puskesmas Kabupaten: {jsonData?.kabupaten}
-              </Text>
+              DAFTAR ALAT KESEHATAN YANG DISEDIAKAN MELALUI{"\n"}
+              PROYEK PENGUATAN SISTEM PELAYANAN KESEHATAN PRIMER {"\n"}
+              (STRENGTHENING OF PRIMARY HEALTH CARE IN INDONESIA)
             </Text>
           </View>
 
@@ -344,9 +335,10 @@ export const RenderAlkesPages = (jsonData, preview) => {
               </View>
 
               <View style={styles.tableColHeader}>
-                <Text style={styles.tableCellHeader}>Standard</Text>
+                <Text style={styles.tableCellHeader}>
+                  Jumlah Standar Minimal Alat (KMK 1578)
+                </Text>
               </View>
-
             </View>
             {currentData.map((items, index) => (
               <View style={styles.tableRow} key={index}>
@@ -360,7 +352,6 @@ export const RenderAlkesPages = (jsonData, preview) => {
                 <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>{items.standard || "0"}</Text>
                 </View>
-
               </View>
             ))}
           </View>
