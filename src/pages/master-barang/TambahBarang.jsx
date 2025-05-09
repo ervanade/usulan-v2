@@ -182,11 +182,11 @@ const TambahBarang = () => {
 
   return (
     <div>
-      <Breadcrumb pageName="Form Tambah Data Barang" />
+      <Breadcrumb pageName="Form Tambah Data Alkes" />
       <Card>
         <div className="card-header flex justify-between">
           <h1 className="mb-12 font-medium font-antic text-xl lg:text-[28px] tracking-tight text-left text-bodydark1">
-            {user.role == "1" ? "Form Tambah Data Barang" : ""}
+            {user.role == "1" ? "Form Tambah Data Alkes" : ""}
           </h1>
           <div>
             <Link
@@ -205,7 +205,7 @@ const TambahBarang = () => {
                   className="block text-[#728294] text-base font-normal mb-2"
                   htmlFor="nama_alkes"
                 >
-                  Nama Barang :
+                  Nama Alkes :
                 </label>
               </div>
               <div className="sm:flex-[5_5_0%]">
@@ -223,49 +223,30 @@ const TambahBarang = () => {
               </div>
             </div>
 
-            {/* <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="email"
-                >
-                  Standar Rawat Inap :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <Select
-                  name="standar_rawat_inap"
-                  options={SelectOptions}
-                  value={selectedStandar}
-                  onChange={handleSelectChange}
-                  placeholder="Standar Rawat Inap"
-                  className="w-full cursor-pointer"
-                  theme={selectThemeColors}
-                />
-              </div>
-            </div>
-
             <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
               <div className="sm:flex-[2_2_0%]">
                 <label
                   className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="email"
+                  htmlFor="harga_satuan"
                 >
-                  Standar Rawat Non Inap :
+                  Standard :
                 </label>
               </div>
               <div className="sm:flex-[5_5_0%]">
-                <Select
-                  name="standar_nonrawat_inap"
-                  options={SelectOptions}
-                  value={selectedNonStandar}
-                  onChange={handleSelectChange}
-                  placeholder="Standar Non Rawat Inap"
-                  className="w-full cursor-pointer"
-                  theme={selectThemeColors}
+                <input
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  "border-red-500" 
+               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                  id="harga_satuan"
+                  value={formData.harga_satuan}
+                  onChange={handleChange}
+                  type="text"
+                  required
+                  placeholder="Harga Satuan"
                 />
               </div>
-            </div> */}
+            </div>
+
 
             <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
               <div className="sm:flex-[2_2_0%]">
@@ -273,7 +254,7 @@ const TambahBarang = () => {
                   className="block text-[#728294] text-base font-normal mb-2"
                   htmlFor="merk"
                 >
-                  Merk :
+                  Kriteria :
                 </label>
               </div>
               <div className="sm:flex-[5_5_0%]">
@@ -286,34 +267,12 @@ const TambahBarang = () => {
                   onChange={handleChange}
                   type="text"
                   required
-                  placeholder="Merk"
+                  placeholder="Kriteria"
                 />
               </div>
             </div>
 
-            {/* <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="tipe"
-                >
-                  Tipe :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="tipe"
-                  value={formData.tipe}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Tipe"
-                />
-              </div>
-            </div> */}
+
 
             <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
               <div className="sm:flex-[2_2_0%]">
@@ -321,7 +280,7 @@ const TambahBarang = () => {
                   className="block text-[#728294] text-base font-normal mb-2"
                   htmlFor="satuan"
                 >
-                  Satuan :
+                  Link Image :
                 </label>
               </div>
               <div className="sm:flex-[5_5_0%]">
@@ -339,29 +298,7 @@ const TambahBarang = () => {
               </div>
             </div>
 
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="harga_satuan"
-                >
-                  Harga Satuan :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="harga_satuan"
-                  value={formData.harga_satuan}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Harga Satuan"
-                />
-              </div>
-            </div>
+          
 
             <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
               <div className="sm:flex-[2_2_0%]">
@@ -391,43 +328,10 @@ const TambahBarang = () => {
               value={formData.penyedia}
               onChange={handleChange}
               type="text"
-              placeholder={"Nama Penyedia Barang"}
-              label="Nama Penyedia Barang :"
+              placeholder={"Periode"}
+              label="Periode :"
               required
             />
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="contractFile"
-                >
-                  Upload Bukti Kontrak Pengadaan:
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%] flex flex-col items-start gap-1">
-                <div className="flex items-center">
-                  <label className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded cursor-pointer inline-flex items-center">
-                    <input
-                      className="hidden"
-                      id="contractFile"
-                      onChange={handleChange}
-                      type="file"
-                      accept="application/pdf"
-                    />
-                    Upload File
-                  </label>
-                  {formData.contractFileName && (
-                    <p className="text-gray-500 text-xs ml-4">
-                      File: {formData.contractFileName}
-                    </p>
-                  )}
-                </div>
-                <p className="text-gray-500 text-xs mt-1">
-                  Max file size: 100MB, Type: PDF
-                </p>
-              </div>
-            </div>
 
             <div className="flex items-center justify-center mt-6 sm:mt-12 sm:gap-8">
               <div className="div sm:flex-[2_2_0%]"></div>

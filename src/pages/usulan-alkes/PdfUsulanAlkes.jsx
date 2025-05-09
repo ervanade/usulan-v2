@@ -605,7 +605,7 @@ const PdfUsulanAlkes = () => {
         // width: "100px",
       },
       {
-        name: <div className="text-wrap">Download</div>,
+        name: <div className="text-wrap">Download Proposal</div>,
         cell: (row) => (
           <div className="flex items-center space-x-2">
             {/* <button
@@ -625,7 +625,7 @@ const PdfUsulanAlkes = () => {
               className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-22 rounded-md font-medium text-xs"
               onClick={() => handleDownload(row.id)} // Tambahkan handler download di sini
             >
-              Buka <br /> Download
+              Download <br /> Proposal
             </button>
           </div>
         ),
@@ -650,7 +650,7 @@ const PdfUsulanAlkes = () => {
         // width: "100px",
       },
       {
-        name: <div className="text-wrap">Upload</div>,
+        name: <div className="text-wrap">Upload Proposal</div>,
         selector: (row) => (row?.tgl_upload && row?.file_upload ? "1" : "0"),
         sortable: true,
         cell: (row) => (

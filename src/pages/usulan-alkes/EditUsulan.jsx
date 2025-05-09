@@ -1106,6 +1106,135 @@ const EditUsulan = () => {
                 </div>
               </div>
             </div>
+            <div className="gap-3 gap-y-4 grid grid-cols-2 lg:grid-cols-4 mt-4 lg:mt-4">
+            <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="email"
+                  >
+                    Dokter Umum :
+                  </label>
+                </div>
+                <div className="">
+                  <Select
+                    options={SelectOptions}
+                    value={selectedListrik}
+                    onChange={handleListrikChange}
+                    placeholder="Dokter Umum"
+                    className="w-full text-sm"
+                    isDisabled={user?.role == "5" || isDisabled}
+                    theme={selectThemeColors}
+                  />
+                </div>
+              </div>
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="email"
+                  >
+                    Dokter Gigi / Terapis Gigi Mulut :
+                  </label>
+                </div>
+                <div className="">
+                  <Select
+                    options={SelectOptions}
+                    value={selectedInternet}
+                    onChange={handleInternetChange}
+                    placeholder="Dokter Gigi / Terapis Gigi Mulut"
+                    className="w-full text-sm"
+                    isDisabled={user?.role == "5" || isDisabled}
+                    theme={selectThemeColors}
+                  />
+                </div>
+              </div>
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="email"
+                  >
+                   ALTM :
+                  </label>
+                </div>
+                <div className="">
+                  <Select
+                    options={SelectOptions}
+                    value={selectedListrik}
+                    onChange={handleListrikChange}
+                    placeholder="Ketersediaan Listrik"
+                    className="w-full text-sm"
+                    isDisabled={user?.role == "5" || isDisabled}
+                    theme={selectThemeColors}
+                  />
+                </div>
+              </div>
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="email"
+                  >
+                    Bidan :
+                  </label>
+                </div>
+                <div className="">
+                  <Select
+                    options={SelectOptions}
+                    value={selectedInternet}
+                    onChange={handleInternetChange}
+                    placeholder="Bidan"
+                    className="w-full text-sm"
+                    isDisabled={user?.role == "5" || isDisabled}
+                    theme={selectThemeColors}
+                  />
+                </div>
+              </div>
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="email"
+                  >
+                    Perawat :
+                  </label>
+                </div>
+                <div className="">
+                  <Select
+                    options={SelectOptions}
+                    value={selectedInternet}
+                    onChange={handleInternetChange}
+                    placeholder="Bidan"
+                    className="w-full text-sm"
+                    isDisabled={user?.role == "5" || isDisabled}
+                    theme={selectThemeColors}
+                  />
+                </div>
+              </div>
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="email"
+                  >
+                    Kesehatan Lingkungan :
+                  </label>
+                </div>
+                <div className="">
+                  <Select
+                    options={SelectOptions}
+                    value={selectedInternet}
+                    onChange={handleInternetChange}
+                    placeholder="Bidan"
+                    className="w-full text-sm"
+                    isDisabled={user?.role == "5" || isDisabled}
+                    theme={selectThemeColors}
+                  />
+                </div>
+              </div>
+            </div>
+
           </form>
           <div className="rounded-md flex flex-col gap-4 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="flex justify-between items-center">
