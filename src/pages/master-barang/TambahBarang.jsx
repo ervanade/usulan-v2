@@ -40,6 +40,8 @@ const TambahBarang = () => {
 
   const [selectedStandar, setSelectedStandar] = useState(null);
   const [selectedNonStandar, setSelectedNonStandar] = useState(null);
+  const [setuju, setSetuju] = useState(false);
+
 
   const handleSelectChange = (selectedOption, actionMeta) => {
     const { name } = actionMeta;
@@ -332,6 +334,25 @@ const TambahBarang = () => {
               label="Periode :"
               required
             />
+
+<div className="mb-8 flex flex-col sm:flex-row sm:gap-8 sm:items-center">
+                    <div className="sm:flex-[2_2_0%]"></div>
+                    <div className="sm:flex-[5_5_0%] flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="persetujuan"
+                        checked={setuju}
+                        onChange={() => setSetuju(!setuju)}
+                        className="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        htmlFor="persetujuan"
+                        className="ms-2 text-sm md:text-lg  text-[#728294] dark:text-gray-300 cursor-pointer"
+                      >
+                        Terapkan ke semua puskesmas
+                      </label>
+                    </div>
+                  </div>
 
             <div className="flex items-center justify-center mt-6 sm:mt-12 sm:gap-8">
               <div className="div sm:flex-[2_2_0%]"></div>
