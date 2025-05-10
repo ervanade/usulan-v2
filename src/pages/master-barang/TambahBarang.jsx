@@ -20,7 +20,7 @@ import { validateFileFormat, validateForm } from "../../data/validationUtils";
 const TambahBarang = () => {
   const [formData, setFormData] = useState({
     nama_alkes: "",
-    // standar_rawat_inap: "",
+    standar_rawat_inap: "",
     // standar_nonrawat_inap: "",
     merk: "",
     // tipe: "",
@@ -30,6 +30,8 @@ const TambahBarang = () => {
     contractFile: null,
     contractFileName: "",
     penyedia: "",
+    kriteria: [],
+    periode: null,
   });
 
   const navigate = useNavigate();
@@ -37,11 +39,72 @@ const TambahBarang = () => {
 
   const [listKota, setListKota] = useState([]);
   const [listKecamatan, setListKecamatan] = useState([]);
+  const [dataKriteria, setDataKriteria] = useState([]);
+  const [dataPeriode, setDataPeriode] = useState([]);
+  const isDisabled = false;
 
+  const [selectedProvinsi, setSelectedProvinsi] = useState(null);
+  const [selectedKota, setSelectedKota] = useState(null);
+  const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+  const [selectedPuskesmas, setSelectedPuskesmas] = useState(null);
+  const [selectedPelayanan, setSelectedPelayanan] = useState(null);
+  const [selectedDaya, setSelectedDaya] = useState(null);
+  const [selectedKriteria, setSelectedKriteria] = useState(null);
+  const [selectedPeriode, setSelectedPeriode] = useState(null);
+  const [selectedInternet, setSelectedInternet] = useState(null);
   const [selectedStandar, setSelectedStandar] = useState(null);
   const [selectedNonStandar, setSelectedNonStandar] = useState(null);
   const [setuju, setSetuju] = useState(false);
 
+  const fetchKriteria = async () => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/kriteria`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setDataKriteria([
+        { value: "all", label: "Pilih Semua" },
+        ...response.data.data.map((item) => ({
+          label: item.kriteria,
+          value: item.id,
+        })),
+      ]);
+    } catch (error) {
+      setError(true);
+      setDataKriteria([]);
+    }
+  };
+
+  const fetchPeriode = async () => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/periode`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setDataPeriode([
+        ...response.data.data.map((item) => ({
+          label: item.periode_name,
+          value: item.id,
+        })),
+      ]);
+    } catch (error) {
+      setError(true);
+      setDataPeriode([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchKriteria();
+    fetchPeriode();
+  }, []);
 
   const handleSelectChange = (selectedOption, actionMeta) => {
     const { name } = actionMeta;
@@ -60,6 +123,14 @@ const TambahBarang = () => {
       default:
         break;
     }
+  };
+
+  const handlePeriodeChange = (selectedOption) => {
+    setSelectedPeriode(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      periode: selectedOption ? selectedOption?.value?.toString() : "",
+    }));
   };
 
   const [error, setError] = useState("");
@@ -113,18 +184,69 @@ const TambahBarang = () => {
       };
       fileReader.readAsArrayBuffer(file); // Membaca header file
     } else {
-      if (id === "harga_satuan") {
+      if (id === "standar_rawat_inap") {
         const unformattedValue = value.replace(/\./g, ""); // Hapus semua titik
         if (!isNaN(unformattedValue)) {
           setFormData((prev) => ({
             ...prev,
-            harga_satuan: formatRupiah(unformattedValue),
+            standar_rawat_inap: formatRupiah(unformattedValue),
           }));
         }
       } else {
         setFormData((prev) => ({ ...prev, [id]: value }));
       }
     }
+  };
+  console.log(formData);
+  const handlePelayananChange = (selectedOption) => {
+    setSelectedPelayanan(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      pelayanan: selectedOption ? selectedOption.value.toString() : "",
+    }));
+  };
+
+  const handleDayaChange = (selectedOption) => {
+    setSelectedDaya(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      kapasitas_listrik: selectedOption ? selectedOption.value.toString() : "",
+    }));
+  };
+
+  const handleKriteriaChange = (selectedOptions) => {
+    setSelectedKriteria(selectedOptions);
+
+    if (!selectedOptions) {
+      setFormData((prev) => ({ ...prev, kriteria: [] }));
+      return;
+    }
+
+    const allOption = dataKriteria.find((option) => option.value === "all");
+
+    if (selectedOptions.some((option) => option.value === "all")) {
+      // Jika "Pilih Semua" dipilih, pilih semua opsi lainnya
+      const allKriteriaValues = dataKriteria
+        .filter((option) => option.value !== "all")
+        .map((option) => option.value);
+
+      setSelectedKriteria(
+        dataKriteria.filter((option) => option.value !== "all")
+      );
+      setFormData((prev) => ({ ...prev, kriteria: allKriteriaValues }));
+    } else {
+      // Jika "Pilih Semua" tidak dipilih, ambil nilai dari opsi yang dipilih
+      const kriteriaValues = selectedOptions.map((option) => option.value);
+      setFormData((prev) => ({ ...prev, kriteria: kriteriaValues }));
+    }
+  };
+
+  const handleInternetChange = (selectedOption) => {
+    setSelectedInternet(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      internet: selectedOption ? selectedOption.value.toString() : "",
+    }));
   };
 
   const tambahBarang = async () => {
@@ -199,111 +321,134 @@ const TambahBarang = () => {
             </Link>
           </div>
         </div>
-        <div className="w-full 2xl:w-4/5 ">
+        <div className="w-full">
           <form className="mt-5" onSubmit={handleSimpan}>
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="nama_alkes"
-                >
-                  Nama Alkes :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+            <div className="gap-3 gap-y-4 grid grid-cols-2 md:grid-cols-3 mb-4">
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="nama_alkes"
+                  >
+                    Nama Alkes :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
                   "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="nama_alkes"
-                  value={formData.nama_alkes}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Nama Barang"
-                />
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="nama_alkes"
+                    value={formData.nama_alkes}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Nama Alkes"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="standar_rawat_inap"
+                  >
+                    Standar :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="standar_rawat_inap"
+                    value={formData.standar_rawat_inap}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Standard"
+                  />
+                </div>
+              </div>
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="email"
+                  >
+                    Kriteria SDM :
+                  </label>
+                </div>
+                <div className="">
+                  <Select
+                    options={dataKriteria}
+                    value={selectedKriteria}
+                    onChange={handleKriteriaChange}
+                    placeholder="Kriteria SDM"
+                    isMulti
+                    className="w-full text-sm"
+                    isDisabled={user?.role == "5" || isDisabled}
+                    theme={selectThemeColors}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="harga_satuan"
-                >
-                  Standard :
-                </label>
+            <div className="gap-3 gap-y-4 grid grid-cols-2 lg:grid-cols-3 mt-4 lg:mt-4">
+              <div className="flex-col gap-2 flex">
+                <div className="flex">
+                  {" "}
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="satuan"
+                  >
+                    Input Usulan:
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="persetujuan"
+                    checked={setuju}
+                    onChange={() => setSetuju(!setuju)}
+                    className="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label
+                    htmlFor="persetujuan"
+                    className="ms-2 text-sm md:text-lg  text-[#728294] dark:text-gray-300 cursor-pointer"
+                  >
+                    Input usulan detail puskesmas
+                  </label>
+                </div>
               </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="harga_satuan"
-                  value={formData.harga_satuan}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Harga Satuan"
-                />
-              </div>
+              {setuju && (
+                <div className="flex-col gap-2 flex">
+                  <div className="">
+                    <label
+                      className="block text-[#728294] text-sm font-semibold mb-1"
+                      htmlFor="nama_alkes"
+                    >
+                      Periode :
+                    </label>
+                  </div>
+                  <div className="">
+                    <Select
+                      options={dataPeriode}
+                      value={selectedPeriode}
+                      onChange={handlePeriodeChange}
+                      placeholder="Periode"
+                      className="w-full text-sm"
+                      isDisabled={user?.role == "5" || isDisabled}
+                      theme={selectThemeColors}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="merk"
-                >
-                  Kriteria :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="merk"
-                  value={formData.merk}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Kriteria"
-                />
-              </div>
-            </div>
-
-
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="satuan"
-                >
-                  Link Image :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="satuan"
-                  value={formData.satuan}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Satuan"
-                />
-              </div>
-            </div>
-
-          
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
+            <div className="mb-8 mt-8 flex-col sm:gap-2 flex">
+              <div className="">
                 <label
                   className="block text-[#728294] text-base font-normal mb-2"
                   htmlFor="keterangan"
@@ -311,7 +456,7 @@ const TambahBarang = () => {
                   Keterangan :
                 </label>
               </div>
-              <div className="sm:flex-[5_5_0%]">
+              <div className="">
                 <textarea
                   id="keterangan"
                   rows="4"
@@ -320,12 +465,12 @@ const TambahBarang = () => {
                   className={` bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
                     "border-red-500" 
                  rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  placeholder="Keterangan Barang"
+                  placeholder="Keterangan Alkes"
                 ></textarea>
               </div>
             </div>
 
-            <FormInput
+            {/* <FormInput
               id="penyedia"
               value={formData.penyedia}
               onChange={handleChange}
@@ -333,26 +478,7 @@ const TambahBarang = () => {
               placeholder={"Periode"}
               label="Periode :"
               required
-            />
-
-<div className="mb-8 flex flex-col sm:flex-row sm:gap-8 sm:items-center">
-                    <div className="sm:flex-[2_2_0%]"></div>
-                    <div className="sm:flex-[5_5_0%] flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        id="persetujuan"
-                        checked={setuju}
-                        onChange={() => setSetuju(!setuju)}
-                        className="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                      />
-                      <label
-                        htmlFor="persetujuan"
-                        className="ms-2 text-sm md:text-lg  text-[#728294] dark:text-gray-300 cursor-pointer"
-                      >
-                        Terapkan ke semua puskesmas
-                      </label>
-                    </div>
-                  </div>
+            /> */}
 
             <div className="flex items-center justify-center mt-6 sm:mt-12 sm:gap-8">
               <div className="div sm:flex-[2_2_0%]"></div>

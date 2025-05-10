@@ -59,7 +59,7 @@ const DataBarang = () => {
     try {
       const response = await axios({
         method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/barang`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/alkes`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -139,8 +139,8 @@ const DataBarang = () => {
       //   sortable: true,
       // },
       {
-        name: "Merk",
-        selector: (row) => row.merk || "",
+        name: "Standard",
+        selector: (row) => row.standar_rawat_inap || "",
         sortable: true,
       },
       // {
@@ -150,33 +150,11 @@ const DataBarang = () => {
       //   width: "100px",
       // },
       {
-        name: "Satuan",
-        selector: (row) => row.satuan || "",
-        sortable: true,
-        width: "100px",
-      },
-      {
-        name: <div className="text-wrap">Harga Satuan</div>,
-        cell: (row) => (
-          <div className="text-wrap py-2">{formatRupiah(row.harga_satuan)}</div>
-        ),
-        selector: (row) => row.harga_satuan || "",
-        sortable: true,
-        width: "150px",
-      },
-      {
-        name: <div className="text-wrap">Penyedia Barang</div>,
-        cell: (row) => <div className="text-wrap py-2">{row.penyedia}</div>,
-        selector: (row) => row.penyedia || "",
-        sortable: true,
-        width: "100px",
-      },
-      {
         name: <div className="text-wrap">Keterangan</div>,
         cell: (row) => <div className="text-wrap py-2">{row.keterangan}</div>,
         selector: (row) => row.keterangan || "",
         sortable: true,
-        width: "100px",
+        width: "200px",
       },
       {
         name: "Aksi",

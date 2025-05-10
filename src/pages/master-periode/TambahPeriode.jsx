@@ -20,16 +20,9 @@ import { validateFileFormat, validateForm } from "../../data/validationUtils";
 const TambahPeriode = () => {
   const [formData, setFormData] = useState({
     periode_name: "",
-    // standar_rawat_inap: "",
-    // standar_nonrawat_inap: "",
-    merk: "",
-    // tipe: "",
-    satuan: "",
-    harga_satuan: "",
-    keterangan: "",
-    contractFile: null,
-    contractFileName: "",
-    penyedia: "",
+    stat: 0,
+    periode_start: "",
+    periode_end: "",
   });
 
   const navigate = useNavigate();
@@ -218,7 +211,7 @@ const TambahPeriode = () => {
                   onChange={handleChange}
                   type="text"
                   required
-                  placeholder="Nama Barang"
+                  placeholder="Nama Periode"
                 />
               </div>
             </div>
@@ -271,9 +264,9 @@ const TambahPeriode = () => {
               <div className="sm:flex-[2_2_0%]">
                 <label
                   className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="merk"
+                  htmlFor="periode_start"
                 >
-                  Merk :
+                  Tanggal Periode Mulai :
                 </label>
               </div>
               <div className="sm:flex-[5_5_0%]">
@@ -281,12 +274,35 @@ const TambahPeriode = () => {
                   className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
                   "border-red-500" 
                rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="merk"
-                  value={formData.merk}
+                  id="periode_start"
+                  value={formData.periode_start}
                   onChange={handleChange}
-                  type="text"
+                  type="date"
                   required
-                  placeholder="Merk"
+                  placeholder="Tanggal BAST"
+                />
+              </div>
+            </div>
+            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
+              <div className="sm:flex-[2_2_0%]">
+                <label
+                  className="block text-[#728294] text-base font-normal mb-2"
+                  htmlFor="periode_end"
+                >
+                  Tanggal Periode Selesai :
+                </label>
+              </div>
+              <div className="sm:flex-[5_5_0%]">
+                <input
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  "border-red-500" 
+               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                  id="periode_end"
+                  value={formData.periode_end}
+                  onChange={handleChange}
+                  type="date"
+                  required
+                  placeholder="Tanggal BAST"
                 />
               </div>
             </div>
@@ -321,7 +337,7 @@ const TambahPeriode = () => {
                   className="block text-[#728294] text-base font-normal mb-2"
                   htmlFor="satuan"
                 >
-                  Satuan :
+                  Status :
                 </label>
               </div>
               <div className="sm:flex-[5_5_0%]">
@@ -334,98 +350,8 @@ const TambahPeriode = () => {
                   onChange={handleChange}
                   type="text"
                   required
-                  placeholder="Satuan"
+                  placeholder="Status"
                 />
-              </div>
-            </div>
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="harga_satuan"
-                >
-                  Harga Satuan :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="harga_satuan"
-                  value={formData.harga_satuan}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Harga Satuan"
-                />
-              </div>
-            </div>
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="keterangan"
-                >
-                  Keterangan :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <textarea
-                  id="keterangan"
-                  rows="4"
-                  value={formData.keterangan}
-                  onChange={handleChange}
-                  className={` bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                    "border-red-500" 
-                 rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  placeholder="Keterangan Barang"
-                ></textarea>
-              </div>
-            </div>
-
-            <FormInput
-              id="penyedia"
-              value={formData.penyedia}
-              onChange={handleChange}
-              type="text"
-              placeholder={"Nama Penyedia Barang"}
-              label="Nama Penyedia Barang :"
-              required
-            />
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="contractFile"
-                >
-                  Upload Bukti Kontrak Pengadaan:
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%] flex flex-col items-start gap-1">
-                <div className="flex items-center">
-                  <label className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded cursor-pointer inline-flex items-center">
-                    <input
-                      className="hidden"
-                      id="contractFile"
-                      onChange={handleChange}
-                      type="file"
-                      accept="application/pdf"
-                    />
-                    Upload File
-                  </label>
-                  {formData.contractFileName && (
-                    <p className="text-gray-500 text-xs ml-4">
-                      File: {formData.contractFileName}
-                    </p>
-                  )}
-                </div>
-                <p className="text-gray-500 text-xs mt-1">
-                  Max file size: 100MB, Type: PDF
-                </p>
               </div>
             </div>
 

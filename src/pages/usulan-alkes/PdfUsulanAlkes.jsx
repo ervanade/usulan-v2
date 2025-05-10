@@ -591,7 +591,7 @@ const PdfUsulanAlkes = () => {
         sortable: true,
       },
       {
-        name: <div className="text-wrap">Tanggal Download</div>,
+        name: <div className="text-wrap">Tanggal Download Proposal</div>,
         selector: (row) =>
           row.tgl_download?.substring(0, 10) || "Belum Download",
         cell: (row) => (
@@ -635,7 +635,7 @@ const PdfUsulanAlkes = () => {
         minWidth: "100px",
       },
       {
-        name: <div className="text-wrap">Tanggal Upload</div>,
+        name: <div className="text-wrap">Tanggal Upload Proposal</div>,
         selector: (row) => row.tgl_upload?.substring(0, 10) || "Belum Upload",
         cell: (row) => (
           <div className="text-wrap py-4">
