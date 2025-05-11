@@ -259,11 +259,11 @@ const EditKriteria = () => {
 
   return (
     <div>
-      <Breadcrumb pageName="Form Edit Data Barang" />
+      <Breadcrumb pageName="Form Edit Data Kriteria" />
       <Card>
         <div className="card-header flex justify-between">
           <h1 className="mb-12 font-medium font-antic text-xl lg:text-[28px] tracking-tight text-left text-bodydark1">
-            {user.role == "1" ? "Form Edit Data Barang" : ""}
+            {user.role == "1" ? "Form Edit Data Kriteria" : ""}
           </h1>
           <div>
             <Link

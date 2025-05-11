@@ -95,7 +95,7 @@ const DataPeriode = () => {
   const handleConfirmDeleteBarang = async (id) => {
     return Swal.fire({
       title: "Are you sure?",
-      text: "You will Delete This Barang!",
+      text: "You will Delete This Periode!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
@@ -106,7 +106,7 @@ const DataPeriode = () => {
         Swal.fire({
           icon: "success",
           title: "Deleted!",
-          text: "Your Barang has been deleted.",
+          text: "Your Periode has been deleted.",
         });
       }
     });

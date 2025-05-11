@@ -232,6 +232,7 @@ const EditUsulan = () => {
         internet: data.internet || "",
         tgl_upload: data.usulan_alkes[0].tgl_upload || null,
         usulan: data.usulan || [],
+        id_kriteria: data.id_kriteria || [],
       });
       setData(data?.usulan || []);
       setFilteredData(data?.usulan || []);
@@ -488,6 +489,7 @@ const EditUsulan = () => {
             : null;
         })
         .filter(Boolean); // Filter out null jika ID tidak ditemukan di dataKriteria
+      console.log(initialSelectedKriteria);
       setSelectedKriteria(initialSelectedKriteria);
     }
   }, [
