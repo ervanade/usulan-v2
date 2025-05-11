@@ -33,15 +33,14 @@ const DataBarang = () => {
     const filtered = data.filter((item) => {
       return (
         (item?.nama_alkes && item.nama_alkes.toLowerCase().includes(value)) ||
-        (item?.standar_rawat_inap &&
-          item.standar_rawat_inap.toLowerCase().includes(value)) ||
-        (item?.standar_nonrawat_inap &&
-          item.standar_nonrawat_inap.toLowerCase().includes(value)) ||
-        (item?.merk && item.merk.toLowerCase().includes(value)) ||
-        (item?.tipe && item.tipe.toLowerCase().includes(value)) ||
+        (item?.standard_rawat_inap &&
+          item.standard_rawat_inap.toLowerCase().includes(value)) ||
+        (item?.standard_non_inap &&
+          item.standard_non_inap.toLowerCase().includes(value)) ||
+        (item?.jenis_alkes && item.jenis_alkes.toLowerCase().includes(value)) ||
+        (item?.kategori && item.kategori.toLowerCase().includes(value)) ||
         (item?.satuan && item.satuan.toLowerCase().includes(value)) ||
-        (item?.harga_satuan &&
-          item.harga_satuan.toString().toLowerCase().includes(value)) ||
+        (item?.harga && item.harga.toString().toLowerCase().includes(value)) ||
         (item?.keterangan && item.keterangan.toLowerCase().includes(value))
       );
     });
@@ -82,7 +81,7 @@ const DataBarang = () => {
   const deleteBarang = async (id) => {
     await axios({
       method: "delete",
-      url: `${import.meta.env.VITE_APP_API_URL}/api/barang/${id}`,
+      url: `${import.meta.env.VITE_APP_API_URL}/api/alkes/${id}`,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user?.token}`,

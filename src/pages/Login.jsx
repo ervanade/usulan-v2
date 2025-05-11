@@ -86,7 +86,7 @@ const Login = () => {
     setFormData((prev) => ({ ...prev, tanggal: event.target.value }));
   };
   return (
-    <div className="w-full !dark:bg-boxdark-2 flex justify-center items-center min-h-[calc(100vh-0px)] bg-transparent object-cover bg-center py-6 !bg-[#28B3A9]">
+    <div className="w-full !dark:bg-boxdark-2 flex justify-center items-center min-h-[calc(100vh-0px)] bg-transparent object-cover bg-center py-6 bg-gradient-to-r from-emerald-600 to-teal-500">
       <div className="w-full max-w-lg bg-[#edfdf8] shadow-md rounded-md  pt-8 pb-12 mb-4 mx-6">
         <div className="px-5 sm:px-8">
           {/* <div className="logo w-full flex items-center justify-center mb-6">
@@ -208,7 +208,7 @@ const Login = () => {
             </div> */}
             <div className="flex items-center justify-center mt-6">
               <button
-                className="w-full bg-[#28B3A9]  text-white font-bold py-4 px-6 rounded focus:outline-none focus:shadow-outline"
+                className="w-full bg-gradient-to-r from-emerald-600 to-teal-500  text-white font-bold py-4 px-6 rounded focus:outline-none focus:shadow-outline"
                 type="submit"
                 disabled={loading}
               >

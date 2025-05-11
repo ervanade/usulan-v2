@@ -216,7 +216,6 @@ const TambahBarang = () => {
       }
     }
   };
-  console.log(formData);
   const handlePelayananChange = (selectedOption) => {
     setSelectedPelayanan(selectedOption);
     setFormData((prev) => ({
@@ -306,9 +305,9 @@ const TambahBarang = () => {
     // formDataToSend.append("keterangan", formData.keterangan);
     await axios({
       method: "post",
-      url: `${import.meta.env.VITE_APP_API_URL}/api/alkesa`,
+      url: `${import.meta.env.VITE_APP_API_URL}/api/alkes`,
       headers: {
-        // "Content-Type": "application/json",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${user?.token}`,
       },
       data: JSON.stringify(updatedFormData), // Pastikan formData sudah diupdate

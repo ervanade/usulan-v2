@@ -103,7 +103,7 @@ const EditKriteria = () => {
 
         setFormData({
           kriteria: data?.kriteria || "",
-          stat: data?.stat || "",
+          stat: data?.stat || 0,
         });
         setGetLoading(false);
       });
@@ -205,6 +205,7 @@ const EditKriteria = () => {
       }/api/kriteria/${encodeURIComponent(decryptId(id))}`,
       headers: {
         Authorization: `Bearer ${user?.token}`,
+        "Content-Type": "application/json",
       },
       data: JSON.stringify(updatedFormData), // Pastikan formData sudah diupdate
     })
@@ -228,7 +229,7 @@ const EditKriteria = () => {
   }, []);
 
   useEffect(() => {
-    if (formData.stat) {
+    if (formData?.stat || formData.stat == 0) {
       const initialOption = StatusOptions.find(
         (data) => data.value == formData.stat
       );

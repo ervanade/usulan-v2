@@ -31,13 +31,7 @@ const DataKriteria = () => {
     setSearch(value);
 
     const filtered = data.filter((item) => {
-      return (
-        (item?.periode_name &&
-          item.periode_name.toLowerCase().includes(value)) ||
-        (item?.periode_start &&
-          item.periode_start.toLowerCase().includes(value)) ||
-        (item?.periode_end && item.periode_end.toLowerCase().includes(value))
-      );
+      return item?.kriteria && item.kriteria.toLowerCase().includes(value);
     });
 
     setFilteredData(filtered);

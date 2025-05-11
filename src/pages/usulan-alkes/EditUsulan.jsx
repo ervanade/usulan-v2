@@ -49,6 +49,7 @@ const EditUsulan = () => {
     kapasitas_listrik: "",
     internet: "",
     tgl_upload: null,
+    id_kriteria: [],
     usulan: [],
   });
   const [data, setData] = useState([]);
@@ -56,13 +57,15 @@ const EditUsulan = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [getLoading, setGetLoading] = useState(false);
-  const isDisabled = true;
+  const isDisabled = false;
+  console.log(formData);
 
   const [dataUser, setDataUser] = useState([]);
   const [dataProvinsi, setDataProvinsi] = useState([]);
   const [dataKota, setDataKota] = useState([]);
   const [dataKecamatan, setDataKecamatan] = useState([]);
   const [dataPuskesmas, setDataPuskesmas] = useState([]);
+  const [dataKriteria, setDataKriteria] = useState([]);
   const [dataPeriode, setDataPeriode] = useState([]);
 
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
@@ -70,11 +73,36 @@ const EditUsulan = () => {
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
   const [selectedPuskesmas, setSelectedPuskesmas] = useState(null);
   const [selectedPelayanan, setSelectedPelayanan] = useState(null);
+  const [selectedKriteria, setSelectedKriteria] = useState(null);
+
   const [selectedDaya, setSelectedDaya] = useState(null);
   const [selectedListrik, setSelectedListrik] = useState(null);
   const [selectedInternet, setSelectedInternet] = useState(null);
 
   const navigate = useNavigate();
+
+  const fetchKriteria = async () => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/kriteria`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setDataKriteria([
+        { value: "all", label: "Pilih Semua" },
+        ...response.data.data.map((item) => ({
+          label: item.kriteria,
+          value: item.id,
+        })),
+      ]);
+    } catch (error) {
+      setError(true);
+      setDataKriteria([]);
+    }
+  };
 
   const fetchPeriodeData = async () => {
     setLoading(true);
@@ -255,30 +283,9 @@ const EditUsulan = () => {
   useEffect(() => {
     fetchDistribusiData();
     fetchPeriodeData();
+    fetchKriteria();
     // fetchProvinsi();
   }, []);
-
-  const handleChange = (event) => {
-    const { id, value, files } = event.target;
-    if (files) {
-      const file = files[0];
-      if (file.type !== "application/pdf") {
-        Swal.fire("Error", "File type harus PDF", "error");
-        return;
-      }
-      if (file.size > 100 * 1024 * 1024) {
-        Swal.fire("Error", "File size harus dibawah 100 MB", "error");
-        return;
-      }
-      setFormData((prev) => ({
-        ...prev,
-        [id]: file,
-        contractFileName: file.name,
-      }));
-    } else {
-      setFormData((prev) => ({ ...prev, [id]: value }));
-    }
-  };
 
   const handleProvinsiChange = (selectedOption) => {
     setSelectedProvinsi(selectedOption);
@@ -469,7 +476,28 @@ const EditUsulan = () => {
         });
       }
     }
-  }, [formData, dataProvinsi, dataKecamatan, dataKota, dataPuskesmas]);
+
+    if (formData.id_kriteria && dataKriteria.length > 0) {
+      const initialSelectedKriteria = formData.id_kriteria
+        .map((kriteriaId) => {
+          const foundKriteria = dataKriteria.find(
+            (kriteria) => kriteria.value == kriteriaId
+          );
+          return foundKriteria
+            ? { value: foundKriteria.value, label: foundKriteria.label }
+            : null;
+        })
+        .filter(Boolean); // Filter out null jika ID tidak ditemukan di dataKriteria
+      setSelectedKriteria(initialSelectedKriteria);
+    }
+  }, [
+    formData,
+    dataProvinsi,
+    dataKecamatan,
+    dataKota,
+    dataPuskesmas,
+    dataKriteria,
+  ]);
   // useEffect(() => {
   //   if (formData.id_provinsi) {
   //     fetchKota(formData.id_provinsi);
@@ -484,6 +512,33 @@ const EditUsulan = () => {
 
   const [editedData, setEditedData] = useState({});
   const [errors, setErrors] = useState({}); // State untuk menyimpan pesan error
+
+  const handleKriteriaChange = (selectedOptions) => {
+    setSelectedKriteria(selectedOptions);
+
+    if (!selectedOptions) {
+      setFormData((prev) => ({ ...prev, id_kriteria: [] }));
+      return;
+    }
+
+    const allOption = dataKriteria.find((option) => option.value === "all");
+
+    if (selectedOptions.some((option) => option.value === "all")) {
+      // Jika "Pilih Semua" dipilih, pilih semua opsi lainnya
+      const allKriteriaValues = dataKriteria
+        .filter((option) => option.value !== "all")
+        .map((option) => option.value);
+
+      setSelectedKriteria(
+        dataKriteria.filter((option) => option.value !== "all")
+      );
+      setFormData((prev) => ({ ...prev, id_kriteria: allKriteriaValues }));
+    } else {
+      // Jika "Pilih Semua" tidak dipilih, ambil nilai dari opsi yang dipilih
+      const kriteriaValues = selectedOptions.map((option) => option.value);
+      setFormData((prev) => ({ ...prev, id_kriteria: kriteriaValues }));
+    }
+  };
 
   const handleInputChange = (rowId, columnName, value) => {
     const newValue = parseInt(value, 10); // Konversi ke number, termasuk 0
@@ -1107,126 +1162,22 @@ const EditUsulan = () => {
               </div>
             </div>
             <div className="gap-3 gap-y-4 grid grid-cols-2 lg:grid-cols-4 mt-4 lg:mt-4">
-            <div className="flex-col gap-2 flex">
-                <div className="">
-                  <label
-                    className="block text-[#728294] text-sm font-semibold mb-1"
-                    htmlFor="email"
-                  >
-                    Dokter Umum :
-                  </label>
-                </div>
-                <div className="">
-                  <Select
-                    options={SelectOptions}
-                    value={selectedListrik}
-                    onChange={handleListrikChange}
-                    placeholder="Dokter Umum"
-                    className="w-full text-sm"
-                    isDisabled={user?.role == "5" || isDisabled}
-                    theme={selectThemeColors}
-                  />
-                </div>
-              </div>
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
                     className="block text-[#728294] text-sm font-semibold mb-1"
                     htmlFor="email"
                   >
-                    Dokter Gigi / Terapis Gigi Mulut :
+                    SDM Tersedia :
                   </label>
                 </div>
                 <div className="">
                   <Select
-                    options={SelectOptions}
-                    value={selectedInternet}
-                    onChange={handleInternetChange}
-                    placeholder="Dokter Gigi / Terapis Gigi Mulut"
-                    className="w-full text-sm"
-                    isDisabled={user?.role == "5" || isDisabled}
-                    theme={selectThemeColors}
-                  />
-                </div>
-              </div>
-              <div className="flex-col gap-2 flex">
-                <div className="">
-                  <label
-                    className="block text-[#728294] text-sm font-semibold mb-1"
-                    htmlFor="email"
-                  >
-                   ALTM :
-                  </label>
-                </div>
-                <div className="">
-                  <Select
-                    options={SelectOptions}
-                    value={selectedListrik}
-                    onChange={handleListrikChange}
-                    placeholder="Ketersediaan Listrik"
-                    className="w-full text-sm"
-                    isDisabled={user?.role == "5" || isDisabled}
-                    theme={selectThemeColors}
-                  />
-                </div>
-              </div>
-              <div className="flex-col gap-2 flex">
-                <div className="">
-                  <label
-                    className="block text-[#728294] text-sm font-semibold mb-1"
-                    htmlFor="email"
-                  >
-                    Bidan :
-                  </label>
-                </div>
-                <div className="">
-                  <Select
-                    options={SelectOptions}
-                    value={selectedInternet}
-                    onChange={handleInternetChange}
-                    placeholder="Bidan"
-                    className="w-full text-sm"
-                    isDisabled={user?.role == "5" || isDisabled}
-                    theme={selectThemeColors}
-                  />
-                </div>
-              </div>
-              <div className="flex-col gap-2 flex">
-                <div className="">
-                  <label
-                    className="block text-[#728294] text-sm font-semibold mb-1"
-                    htmlFor="email"
-                  >
-                    Perawat :
-                  </label>
-                </div>
-                <div className="">
-                  <Select
-                    options={SelectOptions}
-                    value={selectedInternet}
-                    onChange={handleInternetChange}
-                    placeholder="Bidan"
-                    className="w-full text-sm"
-                    isDisabled={user?.role == "5" || isDisabled}
-                    theme={selectThemeColors}
-                  />
-                </div>
-              </div>
-              <div className="flex-col gap-2 flex">
-                <div className="">
-                  <label
-                    className="block text-[#728294] text-sm font-semibold mb-1"
-                    htmlFor="email"
-                  >
-                    Kesehatan Lingkungan :
-                  </label>
-                </div>
-                <div className="">
-                  <Select
-                    options={SelectOptions}
-                    value={selectedInternet}
-                    onChange={handleInternetChange}
-                    placeholder="Bidan"
+                    options={dataKriteria}
+                    value={selectedKriteria}
+                    onChange={handleKriteriaChange}
+                    placeholder="SDM Tersedia"
+                    isMulti
                     className="w-full text-sm"
                     isDisabled={user?.role == "5" || isDisabled}
                     theme={selectThemeColors}
@@ -1234,7 +1185,6 @@ const EditUsulan = () => {
                 </div>
               </div>
             </div>
-
           </form>
           <div className="rounded-md flex flex-col gap-4 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="flex justify-between items-center">

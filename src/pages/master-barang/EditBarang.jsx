@@ -262,6 +262,7 @@ const EditBarang = () => {
           jenis_alkes: data?.jenis_alkes || "",
           kategori: data?.kategori || "",
           satuan: data?.satuan || "",
+          stat: data?.stat || 0,
           harga: formatRupiah(data?.harga?.toString()) || "", // Format harga
           keterangan: data?.keterangan || "",
           input_usulan: data?.input_usulan || false,

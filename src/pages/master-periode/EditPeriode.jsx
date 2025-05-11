@@ -108,7 +108,7 @@ const EditPeriode = () => {
         const end = data?.periode_end ? new Date(data?.periode_end) : null;
         setFormData({
           periode_name: data?.periode_name || "",
-          stat: data?.stat || "",
+          stat: data?.stat || 0,
           periode_start: data?.periode_start || "",
           periode_end: data?.periode_end || "",
         });
@@ -128,6 +128,7 @@ const EditPeriode = () => {
     if (!value) return "";
     return parseInt(value, 10).toLocaleString("id-ID");
   };
+  console.log(formData);
 
   // Fungsi untuk mendapatkan nilai asli (tanpa format)
   const getRawValue = (formattedValue) => {
@@ -214,6 +215,7 @@ const EditPeriode = () => {
       }/api/periode/${encodeURIComponent(decryptId(id))}`,
       headers: {
         Authorization: `Bearer ${user?.token}`,
+        "Content-Type": "application/json",
       },
       data: JSON.stringify(updatedFormData), // Pastikan formData sudah diupdate
     })
@@ -245,7 +247,7 @@ const EditPeriode = () => {
   }, []);
 
   useEffect(() => {
-    if (formData.stat) {
+    if (formData.stat || formData.stat == 0) {
       const initialOption = StatusOptions.find(
         (data) => data.value == formData.stat
       );
@@ -262,7 +264,7 @@ const EditPeriode = () => {
         setSelectedNonStandar(initialOption);
       }
     }
-  }, [formData.standar_rawat_inap, formData.standar_nonrawat_inap, formData]);
+  }, [formData.stat, formData.standar_nonrawat_inap, formData]);
 
   if (getLoading) {
     return (
@@ -275,11 +277,11 @@ const EditPeriode = () => {
 
   return (
     <div>
-      <Breadcrumb pageName="Form Edit Data Barang" />
+      <Breadcrumb pageName="Form Edit Data Periode" />
       <Card>
         <div className="card-header flex justify-between">
           <h1 className="mb-12 font-medium font-antic text-xl lg:text-[28px] tracking-tight text-left text-bodydark1">
-            {user.role == "1" ? "Form Edit Data Barang" : ""}
+            {user.role == "1" ? "Form Edit Data Periode" : ""}
           </h1>
           <div>
             <Link
