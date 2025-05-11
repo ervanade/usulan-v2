@@ -8,6 +8,7 @@ import {
   dataPuskesmas,
   roleOptions,
   SelectOptions,
+  StatusOptions,
 } from "../../data/data";
 import { decryptId, selectThemeColors } from "../../data/utils";
 import Select from "react-select";
@@ -16,6 +17,8 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import FormInput from "../../components/Form/FormInput";
 import { validateFileFormat, validateForm } from "../../data/validationUtils";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const TambahPeriode = () => {
   const [formData, setFormData] = useState({
@@ -24,6 +27,30 @@ const TambahPeriode = () => {
     periode_start: "",
     periode_end: "",
   });
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const handleStartDateChange = (date) => {
+    setStartDate(date);
+    const formattedDate = date ? formatDateWithTime(date) : null;
+    setFormData((prev) => ({ ...prev, periode_start: formattedDate }));
+  };
+
+  const handleEndDateChange = (date) => {
+    setEndDate(date);
+    const formattedDate = date ? formatDateWithTime(date) : null;
+    setFormData((prev) => ({ ...prev, periode_end: formattedDate }));
+  };
+
+  const formatDateWithTime = (date) => {
+    if (!date) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
 
   const navigate = useNavigate();
   const user = useSelector((a) => a.auth.user);
@@ -31,7 +58,7 @@ const TambahPeriode = () => {
   const [listKota, setListKota] = useState([]);
   const [listKecamatan, setListKecamatan] = useState([]);
 
-  const [selectedStandar, setSelectedStandar] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
   const [selectedNonStandar, setSelectedNonStandar] = useState(null);
 
   const handleSelectChange = (selectedOption, actionMeta) => {
@@ -42,8 +69,8 @@ const TambahPeriode = () => {
     }));
 
     switch (name) {
-      case "standar_rawat_inap":
-        setSelectedStandar(selectedOption);
+      case "stat":
+        setSelectedStatus(selectedOption);
         break;
       case "standar_nonrawat_inap":
         setSelectedNonStandar(selectedOption);
@@ -112,6 +139,22 @@ const TambahPeriode = () => {
             harga_satuan: formatRupiah(unformattedValue),
           }));
         }
+      } else if (event.target.type === "date") {
+        // Penanganan khusus untuk input bertipe date
+        if (value) {
+          const date = new Date(value);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          const hours = String(date.getHours()).padStart(2, "0");
+          const minutes = String(date.getMinutes()).padStart(2, "0");
+          const seconds = String(date.getSeconds()).padStart(2, "0");
+
+          const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+          setFormData((prev) => ({ ...prev, [id]: formattedDateTime }));
+        } else {
+          setFormData((prev) => ({ ...prev, [id]: value })); // Jika tidak ada nilai, simpan apa adanya
+        }
       } else {
         setFormData((prev) => ({ ...prev, [id]: value }));
       }
@@ -119,24 +162,14 @@ const TambahPeriode = () => {
   };
 
   const tambahBarang = async () => {
-    if (!formData.contractFile) {
-      Swal.fire("Error", "File Kontrak Masih Kosong", "error");
-      setLoading(false);
-      return;
-    }
     const formDataToSend = new FormData();
-    formDataToSend.append("nama_alkes", formData.nama_alkes);
-    formDataToSend.append("merk", formData.merk);
-    formDataToSend.append("satuan", formData.satuan);
-    formDataToSend.append("harga_satuan", getRawValue(formData.harga_satuan));
-    formDataToSend.append("keterangan", formData.keterangan);
-    formDataToSend.append("penyedia", formData.penyedia);
-    if (formData.contractFile) {
-      formDataToSend.append("file_kontrak", formData.contractFile);
-    }
+    formDataToSend.append("periode_name", formData.periode_name);
+    formDataToSend.append("periode_start", formData.periode_start);
+    formDataToSend.append("periode_end", formData.periode_end);
+    formDataToSend.append("stat", parseInt(formData.stat));
     await axios({
       method: "post",
-      url: `${import.meta.env.VITE_APP_API_URL}/api/barang`,
+      url: `${import.meta.env.VITE_APP_API_URL}/api/periode`,
       headers: {
         // "Content-Type": "application/json",
         Authorization: `Bearer ${user?.token}`,
@@ -156,17 +189,11 @@ const TambahPeriode = () => {
     e.preventDefault();
     if (
       !validateForm(formData, [
-        "nama_alkes",
-        "merk",
-        "satuan",
-        "harga_satuan",
-        "keterangan",
-        "penyedia",
+        "periode_name",
+        "periode_start",
+        "periode_end",
+        "stat",
       ])
-    )
-      return;
-    if (
-      !validateFileFormat(formData.contractFile, ["pdf"], 100, "File Kontrak")
     )
       return;
     setLoading(true);
@@ -216,50 +243,6 @@ const TambahPeriode = () => {
               </div>
             </div>
 
-            {/* <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="email"
-                >
-                  Standar Rawat Inap :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <Select
-                  name="standar_rawat_inap"
-                  options={SelectOptions}
-                  value={selectedStandar}
-                  onChange={handleSelectChange}
-                  placeholder="Standar Rawat Inap"
-                  className="w-full cursor-pointer"
-                  theme={selectThemeColors}
-                />
-              </div>
-            </div>
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="email"
-                >
-                  Standar Rawat Non Inap :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <Select
-                  name="standar_nonrawat_inap"
-                  options={SelectOptions}
-                  value={selectedNonStandar}
-                  onChange={handleSelectChange}
-                  placeholder="Standar Non Rawat Inap"
-                  className="w-full cursor-pointer"
-                  theme={selectThemeColors}
-                />
-              </div>
-            </div> */}
-
             <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
               <div className="sm:flex-[2_2_0%]">
                 <label
@@ -270,16 +253,15 @@ const TambahPeriode = () => {
                 </label>
               </div>
               <div className="sm:flex-[5_5_0%]">
-                <input
+                <DatePicker
+                  selected={startDate}
+                  onChange={handleStartDateChange}
+                  showTimeSelect
+                  dateFormat="yyyy-MM-dd HH:mm:ss"
                   className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+              rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
                   id="periode_start"
-                  value={formData.periode_start}
-                  onChange={handleChange}
-                  type="date"
-                  required
-                  placeholder="Tanggal BAST"
+                  placeholderText="Periode Mulai"
                 />
               </div>
             </div>
@@ -293,64 +275,37 @@ const TambahPeriode = () => {
                 </label>
               </div>
               <div className="sm:flex-[5_5_0%]">
-                <input
+                <DatePicker
+                  selected={endDate}
+                  onChange={handleEndDateChange}
+                  showTimeSelect
+                  dateFormat="yyyy-MM-dd HH:mm:ss"
                   className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+              rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
                   id="periode_end"
-                  value={formData.periode_end}
-                  onChange={handleChange}
-                  type="date"
-                  required
-                  placeholder="Tanggal BAST"
+                  placeholderText="Periode Selesai"
                 />
               </div>
             </div>
-
-            {/* <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="tipe"
-                >
-                  Tipe :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="tipe"
-                  value={formData.tipe}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Tipe"
-                />
-              </div>
-            </div> */}
 
             <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
               <div className="sm:flex-[2_2_0%]">
                 <label
                   className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="satuan"
+                  htmlFor="stat"
                 >
                   Status :
                 </label>
               </div>
               <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="satuan"
-                  value={formData.satuan}
-                  onChange={handleChange}
-                  type="text"
-                  required
+                <Select
+                  name="stat"
+                  options={StatusOptions}
+                  value={selectedStatus}
+                  onChange={handleSelectChange}
                   placeholder="Status"
+                  className="w-full cursor-pointer"
+                  theme={selectThemeColors}
                 />
               </div>
             </div>

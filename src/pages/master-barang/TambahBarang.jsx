@@ -8,6 +8,7 @@ import {
   dataPuskesmas,
   roleOptions,
   SelectOptions,
+  StatusOptions,
 } from "../../data/data";
 import { decryptId, selectThemeColors } from "../../data/utils";
 import Select from "react-select";
@@ -20,18 +21,18 @@ import { validateFileFormat, validateForm } from "../../data/validationUtils";
 const TambahBarang = () => {
   const [formData, setFormData] = useState({
     nama_alkes: "",
-    standar_rawat_inap: "",
-    // standar_nonrawat_inap: "",
-    merk: "",
-    // tipe: "",
+    standard_rawat_inap: "",
+    standard_non_inap: "",
+    jenis_alkes: "",
+    kategori: "",
     satuan: "",
-    harga_satuan: "",
+    tahun: "",
+    harga: "",
     keterangan: "",
-    contractFile: null,
-    contractFileName: "",
-    penyedia: "",
-    kriteria: [],
-    periode: null,
+    stat: 0,
+    id_kriteria: [],
+    input_usulan: false,
+    periode_id: null,
   });
 
   const navigate = useNavigate();
@@ -51,6 +52,8 @@ const TambahBarang = () => {
   const [selectedDaya, setSelectedDaya] = useState(null);
   const [selectedKriteria, setSelectedKriteria] = useState(null);
   const [selectedPeriode, setSelectedPeriode] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+
   const [selectedInternet, setSelectedInternet] = useState(null);
   const [selectedStandar, setSelectedStandar] = useState(null);
   const [selectedNonStandar, setSelectedNonStandar] = useState(null);
@@ -114,8 +117,8 @@ const TambahBarang = () => {
     }));
 
     switch (name) {
-      case "standar_rawat_inap":
-        setSelectedStandar(selectedOption);
+      case "stat":
+        setSelectedStatus(selectedOption);
         break;
       case "standar_nonrawat_inap":
         setSelectedNonStandar(selectedOption);
@@ -129,7 +132,7 @@ const TambahBarang = () => {
     setSelectedPeriode(selectedOption);
     setFormData((prev) => ({
       ...prev,
-      periode: selectedOption ? selectedOption?.value?.toString() : "",
+      periode_id: selectedOption ? selectedOption?.value?.toString() : "",
     }));
   };
 
@@ -184,12 +187,28 @@ const TambahBarang = () => {
       };
       fileReader.readAsArrayBuffer(file); // Membaca header file
     } else {
-      if (id === "standar_rawat_inap") {
+      if (id === "standard_rawat_inap") {
         const unformattedValue = value.replace(/\./g, ""); // Hapus semua titik
         if (!isNaN(unformattedValue)) {
           setFormData((prev) => ({
             ...prev,
-            standar_rawat_inap: formatRupiah(unformattedValue),
+            standard_rawat_inap: formatRupiah(unformattedValue),
+          }));
+        }
+      } else if (id === "harga") {
+        const unformattedValue = value.replace(/\./g, ""); // Hapus semua titik
+        if (!isNaN(unformattedValue)) {
+          setFormData((prev) => ({
+            ...prev,
+            harga: formatRupiah(unformattedValue),
+          }));
+        }
+      } else if (id === "standard_non_inap") {
+        const unformattedValue = value.replace(/\./g, ""); // Hapus semua titik
+        if (!isNaN(unformattedValue)) {
+          setFormData((prev) => ({
+            ...prev,
+            standard_non_inap: formatRupiah(unformattedValue),
           }));
         }
       } else {
@@ -218,7 +237,7 @@ const TambahBarang = () => {
     setSelectedKriteria(selectedOptions);
 
     if (!selectedOptions) {
-      setFormData((prev) => ({ ...prev, kriteria: [] }));
+      setFormData((prev) => ({ ...prev, id_kriteria: [] }));
       return;
     }
 
@@ -233,11 +252,11 @@ const TambahBarang = () => {
       setSelectedKriteria(
         dataKriteria.filter((option) => option.value !== "all")
       );
-      setFormData((prev) => ({ ...prev, kriteria: allKriteriaValues }));
+      setFormData((prev) => ({ ...prev, id_kriteria: allKriteriaValues }));
     } else {
       // Jika "Pilih Semua" tidak dipilih, ambil nilai dari opsi yang dipilih
       const kriteriaValues = selectedOptions.map((option) => option.value);
-      setFormData((prev) => ({ ...prev, kriteria: kriteriaValues }));
+      setFormData((prev) => ({ ...prev, id_kriteria: kriteriaValues }));
     }
   };
 
@@ -250,29 +269,49 @@ const TambahBarang = () => {
   };
 
   const tambahBarang = async () => {
-    if (!formData.contractFile) {
-      Swal.fire("Error", "File Kontrak Masih Kosong", "error");
-      setLoading(false);
-      return;
-    }
-    const formDataToSend = new FormData();
-    formDataToSend.append("nama_alkes", formData.nama_alkes);
-    formDataToSend.append("merk", formData.merk);
-    formDataToSend.append("satuan", formData.satuan);
-    formDataToSend.append("harga_satuan", getRawValue(formData.harga_satuan));
-    formDataToSend.append("keterangan", formData.keterangan);
-    formDataToSend.append("penyedia", formData.penyedia);
-    if (formData.contractFile) {
-      formDataToSend.append("file_kontrak", formData.contractFile);
-    }
+    Swal.fire({
+      title: "Menambah Data...",
+      text: "Tunggu Sebentar Data sedang di Input...",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    const updatedFormData = {
+      ...formData,
+      stat: parseInt(formData?.stat), // Pastikan usulan di formData sudah diupdate
+      standard_rawat_inap: parseInt(getRawValue(formData.standard_rawat_inap)),
+      standard_non_inap: parseInt(getRawValue(formData.standard_non_inap)),
+      harga: getRawValue(formData.harga),
+    };
+    // const formDataToSend = new FormData();
+    // formDataToSend.append("nama_alkes", formData.nama_alkes);
+    // formDataToSend.append("jenis_alkes", formData.jenis_alkes);
+    // formDataToSend.append("kategori", formData.kategori);
+    // formDataToSend.append(
+    //   "standard_rawat_inap",
+    //   parseInt(getRawValue(formData.standard_rawat_inap))
+    // );
+    // formDataToSend.append(
+    //   "standard_non_inap",
+    //   parseInt(getRawValue(formData.standard_non_inap))
+    // );
+    // formDataToSend.append("tahun", formData.tahun);
+    // formDataToSend.append("satuan", formData.satuan);
+    // formDataToSend.append("harga", getRawValue(formData.harga));
+    // formDataToSend.append("stat", parseInt(formData.stat));
+    // formDataToSend.append("input_usulan", formData.input_usulan);
+    // formDataToSend.append("keterangan", formData.keterangan);
     await axios({
       method: "post",
-      url: `${import.meta.env.VITE_APP_API_URL}/api/barang`,
+      url: `${import.meta.env.VITE_APP_API_URL}/api/alkesa`,
       headers: {
         // "Content-Type": "application/json",
         Authorization: `Bearer ${user?.token}`,
       },
-      data: formDataToSend,
+      data: JSON.stringify(updatedFormData), // Pastikan formData sudah diupdate
     })
       .then(function (response) {
         Swal.fire("Data Berhasil di Input!", "", "success");
@@ -281,6 +320,7 @@ const TambahBarang = () => {
       .catch((error) => {
         setLoading(false);
         console.log(error);
+        Swal.fire("Gagal Input Data", "", "error");
       });
   };
   const handleSimpan = async (e) => {
@@ -288,16 +328,15 @@ const TambahBarang = () => {
     if (
       !validateForm(formData, [
         "nama_alkes",
-        "merk",
+        "jenis_alkes",
+        "kategori",
+        "standard_rawat_inap",
+        "standard_non_inap",
         "satuan",
-        "harga_satuan",
-        "keterangan",
-        "penyedia",
+        "harga",
+        "tahun",
+        "stat",
       ])
-    )
-      return;
-    if (
-      !validateFileFormat(formData.contractFile, ["pdf"], 100, "File Kontrak")
     )
       return;
     setLoading(true);
@@ -352,9 +391,9 @@ const TambahBarang = () => {
                 <div className="">
                   <label
                     className="block text-[#728294] text-sm font-semibold mb-1"
-                    htmlFor="standar_rawat_inap"
+                    htmlFor="jenis_alkes"
                   >
-                    Standar :
+                    Jenis Alkes :
                   </label>
                 </div>
                 <div className="">
@@ -362,12 +401,178 @@ const TambahBarang = () => {
                     className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
                   "border-red-500" 
                rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                    id="standar_rawat_inap"
-                    value={formData.standar_rawat_inap}
+                    id="jenis_alkes"
+                    value={formData.jenis_alkes}
                     onChange={handleChange}
                     type="text"
                     required
-                    placeholder="Standard"
+                    placeholder="Jenis Alkes"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="kategori"
+                  >
+                    Kategori :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="kategori"
+                    value={formData.kategori}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Kategori"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="standard_rawat_inap"
+                  >
+                    Standar Ranap :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="standard_rawat_inap"
+                    value={formData.standard_rawat_inap}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Standar"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="standard_rawat_inap"
+                  >
+                    Standar Non Ranap :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="standard_non_inap"
+                    value={formData.standard_non_inap}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Standar Non Rawat Inap"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="satuan"
+                  >
+                    Satuan :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="satuan"
+                    value={formData.satuan}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Satuan"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="kategori"
+                  >
+                    Harga :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="harga"
+                    value={formData.harga}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Harga"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="tahun"
+                  >
+                    Tahun :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="tahun"
+                    value={formData.tahun}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Tahun"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="email"
+                  >
+                    Status :
+                  </label>
+                </div>
+                <div className="">
+                  <Select
+                    name="stat"
+                    options={StatusOptions}
+                    value={selectedStatus}
+                    onChange={handleSelectChange}
+                    placeholder="Status"
+                    className="w-full cursor-pointer"
+                    theme={selectThemeColors}
                   />
                 </div>
               </div>
@@ -393,9 +598,7 @@ const TambahBarang = () => {
                   />
                 </div>
               </div>
-            </div>
 
-            <div className="gap-3 gap-y-4 grid grid-cols-2 lg:grid-cols-3 mt-4 lg:mt-4">
               <div className="flex-col gap-2 flex">
                 <div className="flex">
                   {" "}
@@ -410,8 +613,13 @@ const TambahBarang = () => {
                   <input
                     type="checkbox"
                     id="persetujuan"
-                    checked={setuju}
-                    onChange={() => setSetuju(!setuju)}
+                    checked={formData.input_usulan}
+                    onChange={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        input_usulan: !prev.input_usulan,
+                      }))
+                    }
                     className="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
@@ -422,7 +630,7 @@ const TambahBarang = () => {
                   </label>
                 </div>
               </div>
-              {setuju && (
+              {formData.input_usulan && (
                 <div className="flex-col gap-2 flex">
                   <div className="">
                     <label
@@ -447,6 +655,8 @@ const TambahBarang = () => {
               )}
             </div>
 
+            <div className="gap-3 gap-y-4 grid grid-cols-2 lg:grid-cols-3 mt-4 lg:mt-4"></div>
+
             <div className="mb-8 mt-8 flex-col sm:gap-2 flex">
               <div className="">
                 <label
@@ -469,16 +679,6 @@ const TambahBarang = () => {
                 ></textarea>
               </div>
             </div>
-
-            {/* <FormInput
-              id="penyedia"
-              value={formData.penyedia}
-              onChange={handleChange}
-              type="text"
-              placeholder={"Periode"}
-              label="Periode :"
-              required
-            /> */}
 
             <div className="flex items-center justify-center mt-6 sm:mt-12 sm:gap-8">
               <div className="div sm:flex-[2_2_0%]"></div>

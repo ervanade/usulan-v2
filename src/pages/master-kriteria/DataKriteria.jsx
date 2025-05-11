@@ -17,7 +17,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { CgSpinner } from "react-icons/cg";
 
-const DataPeriode = () => {
+const DataKriteria = () => {
   const user = useSelector((a) => a.auth.user);
 
   const [search, setSearch] = useState(""); // Initialize search state with an empty string
@@ -53,7 +53,7 @@ const DataPeriode = () => {
     try {
       const response = await axios({
         method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/periode`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/kriteria`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -76,7 +76,7 @@ const DataPeriode = () => {
   const deleteBarang = async (id) => {
     await axios({
       method: "delete",
-      url: `${import.meta.env.VITE_APP_API_URL}/api/periode/${id}`,
+      url: `${import.meta.env.VITE_APP_API_URL}/api/kriteria/${id}`,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user?.token}`,
@@ -115,22 +115,12 @@ const DataPeriode = () => {
   const columns = useMemo(
     () => [
       {
-        name: <div className="text-wrap">Nama Periode</div>,
-        selector: (row) => row.periode_name,
-        cell: (row) => <div className="text-wrap py-2">{row.periode_name}</div>,
+        name: <div className="text-wrap">Nama Kriteria</div>,
+        selector: (row) => row.kriteria,
+        cell: (row) => <div className="text-wrap py-2">{row.kriteria}</div>,
 
         sortable: true,
-        width: "200px",
-      },
-      {
-        name: "Periode Start",
-        selector: (row) => row.periode_start || "",
-        sortable: true,
-      },
-      {
-        name: "Periode End",
-        selector: (row) => row.periode_end || "",
-        sortable: true,
+        // width: "200px",
       },
       {
         name: <div className="text-wrap">Status</div>,
@@ -149,7 +139,7 @@ const DataPeriode = () => {
           <div className="flex items-center space-x-2">
             <button title="Edit" className="text-[#16B3AC] hover:text-cyan-500">
               <Link
-                to={`/master-data-periode/edit/${encodeURIComponent(
+                to={`/master-data-kriteria/edit/${encodeURIComponent(
                   encryptId(row.id)
                 )}`}
               >
@@ -179,7 +169,7 @@ const DataPeriode = () => {
 
   return (
     <div>
-      <Breadcrumb pageName="Data Periode" title="Data Periode" />
+      <Breadcrumb pageName="Data Kriteria" title="Data Kriteria" />
       <div className="rounded-md flex flex-col gap-4 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex justify-between mb-4 items-center">
           <div className="relative">
@@ -217,7 +207,7 @@ const DataPeriode = () => {
           </div>
           <div className="div flex gap-2 flex-row">
             <button
-              title="Export Data Periode"
+              title="Export Data Kriteria"
               className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
               onClick={handleExport}
             >
@@ -226,15 +216,15 @@ const DataPeriode = () => {
             </button>
             {user.role == "1" ? (
               <button
-                title="Tambah Data Periode"
+                title="Tambah Data Kriteria"
                 className="flex items-center gap-2 cursor-pointer text-base text-white  bg-primary rounded-md tracking-tight"
               >
                 <Link
-                  to="/master-data-periode/add"
+                  to="/master-data-kriteria/add"
                   className="flex items-center gap-2 px-4 py-2"
                 >
                   <FaPlus size={16} />
-                  <span className="hidden sm:block">Tambah Data Periode</span>
+                  <span className="hidden sm:block">Tambah Data Kriteria</span>
                 </Link>
               </button>
             ) : (
@@ -291,4 +281,4 @@ const DataPeriode = () => {
     </div>
   );
 };
-export default DataPeriode;
+export default DataKriteria;

@@ -56,5 +56,5 @@ export const decryptId = (encryptedId) => {
 };
 
 export const formatRupiah = (price) => {
-    return `${price?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+    return `${price?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ".") || 0}`;
 };

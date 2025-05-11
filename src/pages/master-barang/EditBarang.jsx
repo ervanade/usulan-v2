@@ -8,40 +8,134 @@ import {
   dataPuskesmas,
   roleOptions,
   SelectOptions,
+  StatusOptions,
 } from "../../data/data";
 import { decryptId, selectThemeColors } from "../../data/utils";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { CgSpinner } from "react-icons/cg";
 import FormInput from "../../components/Form/FormInput";
 import { validateFileFormat, validateForm } from "../../data/validationUtils";
+import { CgSpinner } from "react-icons/cg";
 
 const EditBarang = () => {
   const [formData, setFormData] = useState({
     nama_alkes: "",
-    // standar_rawat_inap: "",
-    // standar_nonrawat_inap: "",
-    merk: "",
-    // tipe: "",
+    standard_rawat_inap: "",
+    standard_non_inap: "",
+    jenis_alkes: "",
+    kategori: "",
     satuan: "",
-    harga_satuan: "",
+    tahun: "",
+    harga: "",
     keterangan: "",
-    contractFile: null,
-    contractFileName: "",
-    contractFileLink: "",
-    penyedia: "",
+    stat: 0,
+    id_kriteria: [],
+    input_usulan: false,
+    periode_id: null,
   });
 
   const navigate = useNavigate();
   const user = useSelector((a) => a.auth.user);
-  const [getLoading, setGetLoading] = useState(false);
+
   const [listKota, setListKota] = useState([]);
   const [listKecamatan, setListKecamatan] = useState([]);
+  const [dataKriteria, setDataKriteria] = useState([]);
+  const [dataPeriode, setDataPeriode] = useState([]);
+  const isDisabled = false;
 
+  const [selectedProvinsi, setSelectedProvinsi] = useState(null);
+  const [getLoading, setGetLoading] = useState(false);
+  const [selectedKota, setSelectedKota] = useState(null);
+  const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+  const [selectedPuskesmas, setSelectedPuskesmas] = useState(null);
+  const [selectedPelayanan, setSelectedPelayanan] = useState(null);
+  const [selectedDaya, setSelectedDaya] = useState(null);
+  const [selectedKriteria, setSelectedKriteria] = useState(null);
+  const [selectedPeriode, setSelectedPeriode] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+
+  const [selectedInternet, setSelectedInternet] = useState(null);
   const [selectedStandar, setSelectedStandar] = useState(null);
   const [selectedNonStandar, setSelectedNonStandar] = useState(null);
+  const [setuju, setSetuju] = useState(false);
+
+  const fetchKriteria = async () => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/kriteria`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setDataKriteria([
+        { value: "all", label: "Pilih Semua" },
+        ...response.data.data.map((item) => ({
+          label: item.kriteria,
+          value: item.id,
+        })),
+      ]);
+    } catch (error) {
+      setError(true);
+      setDataKriteria([]);
+    }
+  };
+
+  const fetchPeriode = async () => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/periode`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setDataPeriode([
+        ...response.data.data.map((item) => ({
+          label: item.periode_name,
+          value: item.id,
+        })),
+      ]);
+    } catch (error) {
+      setError(true);
+      setDataPeriode([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchKriteria();
+    fetchPeriode();
+  }, []);
+  const handleKriteriaChange = (selectedOptions) => {
+    setSelectedKriteria(selectedOptions);
+
+    if (!selectedOptions) {
+      setFormData((prev) => ({ ...prev, id_kriteria: [] }));
+      return;
+    }
+
+    const allOption = dataKriteria.find((option) => option.value === "all");
+
+    if (selectedOptions.some((option) => option.value === "all")) {
+      // Jika "Pilih Semua" dipilih, pilih semua opsi lainnya
+      const allKriteriaValues = dataKriteria
+        .filter((option) => option.value !== "all")
+        .map((option) => option.value);
+
+      setSelectedKriteria(
+        dataKriteria.filter((option) => option.value !== "all")
+      );
+      setFormData((prev) => ({ ...prev, id_kriteria: allKriteriaValues }));
+    } else {
+      // Jika "Pilih Semua" tidak dipilih, ambil nilai dari opsi yang dipilih
+      const kriteriaValues = selectedOptions.map((option) => option.value);
+      setFormData((prev) => ({ ...prev, id_kriteria: kriteriaValues }));
+    }
+  };
 
   const handleSelectChange = (selectedOption, actionMeta) => {
     const { name } = actionMeta;
@@ -51,8 +145,8 @@ const EditBarang = () => {
     }));
 
     switch (name) {
-      case "standar_rawat_inap":
-        setSelectedStandar(selectedOption);
+      case "stat":
+        setSelectedStatus(selectedOption);
         break;
       case "standar_nonrawat_inap":
         setSelectedNonStandar(selectedOption);
@@ -62,63 +156,12 @@ const EditBarang = () => {
     }
   };
 
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { id } = useParams();
-
-  const fetchBarangData = async () => {
-    setGetLoading(true);
-    try {
-      // eslint-disable-next-line
-      const responseUser = await axios({
-        method: "get",
-        url: `${
-          import.meta.env.VITE_APP_API_URL
-        }/api/barang/${encodeURIComponent(decryptId(id))}`,
-        headers: {
-          "Content-Type": "application/json",
-          //eslint-disable-next-line
-          Authorization: `Bearer ${user?.token}`,
-        },
-      }).then(function (response) {
-        // handle success
-        // console.log(response)
-        const data = response.data.data;
-        setFormData({
-          nama_alkes: data.nama_alkes || "",
-          standar_rawat_inap: data.standar_rawat_inap || "",
-          standar_nonrawat_inap: data.standar_nonrawat_inap || "",
-          merk: data.merk || "",
-          tipe: data.tipe || "",
-          satuan: data.satuan || "",
-          harga_satuan: formatRupiah(data.harga_satuan.toString()) || "", // Format harga_satuan
-          keterangan: data.keterangan || "",
-          contractFileName: data.contractFileName || "",
-          contractFileLink: data.file_kontrak || "",
-          contractFile: null,
-          penyedia: data.penyedia || "",
-          jml_eksisting: data.jml_eksisting || "",
-          jml_usulan: data.jml_usulan || "",
-          jml_verifikasi: data.jml_verifikasi || "",
-        });
-        setGetLoading(false);
-      });
-    } catch (error) {
-      if (error?.response?.status == 404) {
-        navigate("/not-found");
-      }
-      console.log(error);
-    }
-  };
-
-  const formatRupiah = (value) => {
-    if (!value) return "";
-    return parseInt(value, 10).toLocaleString("id-ID");
-  };
-
-  // Fungsi untuk mendapatkan nilai asli (tanpa format)
-  const getRawValue = (formattedValue) => {
-    return formattedValue.replace(/\./g, "");
+  const handlePeriodeChange = (selectedOption) => {
+    setSelectedPeriode(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      periode_id: selectedOption ? selectedOption?.value?.toString() : "",
+    }));
   };
 
   const handleChange = (event) => {
@@ -158,12 +201,28 @@ const EditBarang = () => {
       };
       fileReader.readAsArrayBuffer(file); // Membaca header file
     } else {
-      if (id === "harga_satuan") {
+      if (id === "standard_rawat_inap") {
         const unformattedValue = value.replace(/\./g, ""); // Hapus semua titik
         if (!isNaN(unformattedValue)) {
           setFormData((prev) => ({
             ...prev,
-            harga_satuan: formatRupiah(unformattedValue),
+            standard_rawat_inap: formatRupiah(unformattedValue),
+          }));
+        }
+      } else if (id === "harga") {
+        const unformattedValue = value.replace(/\./g, ""); // Hapus semua titik
+        if (!isNaN(unformattedValue)) {
+          setFormData((prev) => ({
+            ...prev,
+            harga: formatRupiah(unformattedValue),
+          }));
+        }
+      } else if (id === "standard_non_inap") {
+        const unformattedValue = value.replace(/\./g, ""); // Hapus semua titik
+        if (!isNaN(unformattedValue)) {
+          setFormData((prev) => ({
+            ...prev,
+            standard_non_inap: formatRupiah(unformattedValue),
           }));
         }
       } else {
@@ -172,35 +231,87 @@ const EditBarang = () => {
     }
   };
 
-  const updateBarang = async () => {
-    if (!formData.contractFile && !formData.contractFileLink) {
-      Swal.fire("Error", "File Kontrak Masih Kosong", "error");
-      setLoading(false);
-      return;
-    }
-    const formDataToSend = new FormData();
-    formDataToSend.append("nama_alkes", formData.nama_alkes);
-    formDataToSend.append("merk", formData.merk);
-    formDataToSend.append("satuan", formData.satuan);
-    formDataToSend.append("harga_satuan", getRawValue(formData.harga_satuan));
-    formDataToSend.append("keterangan", formData.keterangan);
-    formDataToSend.append("penyedia", formData.penyedia);
-    if (formData.contractFile) {
-      formDataToSend.append("file_kontrak", formData.contractFile);
-    }
-    if (!formData.contractFile && formData.contractFileLink) {
-      formDataToSend.append("file_kontrak", formData.contractFileLink);
-    }
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { id } = useParams();
 
+  const fetchBarangData = async () => {
+    setGetLoading(true);
+    try {
+      // eslint-disable-next-line
+      const responseUser = await axios({
+        method: "get",
+        url: `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/alkes/${encodeURIComponent(decryptId(id))}`,
+        headers: {
+          "Content-Type": "application/json",
+          //eslint-disable-next-line
+          Authorization: `Bearer ${user?.token}`,
+        },
+      }).then(function (response) {
+        // handle success
+        // console.log(response)
+        const data = response.data.data;
+        setFormData({
+          nama_alkes: data?.nama_alkes || "",
+          standard_rawat_inap:
+            formatRupiah(data?.standard_rawat_inap?.toString()) || "",
+          standard_non_inap:
+            formatRupiah(data?.standard_non_inap?.toString()) || "",
+          jenis_alkes: data?.jenis_alkes || "",
+          kategori: data?.kategori || "",
+          satuan: data?.satuan || "",
+          harga: formatRupiah(data?.harga?.toString()) || "", // Format harga
+          keterangan: data?.keterangan || "",
+          input_usulan: data?.input_usulan || false,
+        });
+        setGetLoading(false);
+      });
+    } catch (error) {
+      if (error?.response?.status == 404) {
+        navigate("/not-found");
+      }
+      console.log(error);
+    }
+  };
+
+  const formatRupiah = (value) => {
+    if (!value) return "";
+    return parseInt(value, 10).toLocaleString("id-ID");
+  };
+
+  // Fungsi untuk mendapatkan nilai asli (tanpa format)
+  const getRawValue = (formattedValue) => {
+    return formattedValue.replace(/\./g, "");
+  };
+  const updateBarang = async () => {
+    Swal.fire({
+      title: "Mengupdate Data...",
+      text: "Tunggu Sebentar Data sedang di Update...",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    const updatedFormData = {
+      ...formData,
+      stat: parseInt(formData?.stat), // Pastikan usulan di formData sudah diupdate
+      standard_rawat_inap: parseInt(getRawValue(formData.standard_rawat_inap)),
+      standard_non_inap: parseInt(getRawValue(formData.standard_non_inap)),
+      harga: getRawValue(formData.harga),
+    };
     await axios({
-      method: "post",
+      method: "put",
       url: `${
         import.meta.env.VITE_APP_API_URL
       }/api/update/barang/${encodeURIComponent(decryptId(id))}`,
       headers: {
         Authorization: `Bearer ${user?.token}`,
       },
-      data: formDataToSend,
+      data: JSON.stringify(updatedFormData), // Pastikan formData sudah diupdate
     })
       .then(function (response) {
         Swal.fire("Data Berhasil di Update!", "", "success");
@@ -216,11 +327,14 @@ const EditBarang = () => {
     if (
       !validateForm(formData, [
         "nama_alkes",
-        "merk",
+        "jenis_alkes",
+        "kategori",
+        "standard_rawat_inap",
+        "standard_non_inap",
         "satuan",
-        "harga_satuan",
-        "keterangan",
-        "penyedia",
+        "harga",
+        "tahun",
+        "stat",
       ])
     )
       return;
@@ -242,24 +356,24 @@ const EditBarang = () => {
   }, []);
 
   useEffect(() => {
-    if (formData.standar_rawat_inap) {
-      const initialOption = SelectOptions.find(
-        (data) => data.value == formData.standar_rawat_inap
+    if (formData.stat) {
+      const initialOption = StatusOptions.find(
+        (data) => data.value == formData.stat
       );
       if (initialOption) {
-        setSelectedStandar(initialOption);
+        setSelectedStatus(initialOption);
       }
     }
 
-    if (formData.standar_nonrawat_inap) {
-      const initialOption = SelectOptions.find(
-        (data) => data.value == formData.standar_nonrawat_inap
+    if (formData.id_kriteria) {
+      const initialOption = dataKriteria.find(
+        (data) => data.value == formData.id_kriteria
       );
       if (initialOption) {
-        setSelectedNonStandar(initialOption);
+        setSelectedKriteria(initialOption);
       }
     }
-  }, [formData.standar_rawat_inap, formData.standar_nonrawat_inap, formData]);
+  }, [formData.stat, formData.id_kriteria, formData]);
 
   if (getLoading) {
     return (
@@ -287,174 +401,305 @@ const EditBarang = () => {
             </Link>
           </div>
         </div>
-        <div className="w-full 2xl:w-4/5 ">
+        <div className="w-full">
           <form className="mt-5" onSubmit={handleSimpan}>
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="nama_alkes"
-                >
-                  Nama Barang :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+            <div className="gap-3 gap-y-4 grid grid-cols-2 md:grid-cols-3 mb-4">
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="nama_alkes"
+                  >
+                    Nama Alkes :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
                   "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="nama_alkes"
-                  value={formData.nama_alkes}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Nama Barang"
-                />
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="nama_alkes"
+                    value={formData.nama_alkes}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Nama Alkes"
+                  />
+                </div>
               </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="jenis_alkes"
+                  >
+                    Jenis Alkes :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="jenis_alkes"
+                    value={formData.jenis_alkes}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Jenis Alkes"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="kategori"
+                  >
+                    Kategori :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="kategori"
+                    value={formData.kategori}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Kategori"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="standard_rawat_inap"
+                  >
+                    Standar Ranap :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="standard_rawat_inap"
+                    value={formData.standard_rawat_inap}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Standar"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="standard_rawat_inap"
+                  >
+                    Standar Non Ranap :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="standard_non_inap"
+                    value={formData.standard_non_inap}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Standar Non Rawat Inap"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="satuan"
+                  >
+                    Satuan :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="satuan"
+                    value={formData.satuan}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Satuan"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="kategori"
+                  >
+                    Harga :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="harga"
+                    value={formData.harga}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Harga"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="tahun"
+                  >
+                    Tahun :
+                  </label>
+                </div>
+                <div className="">
+                  <input
+                    className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                  "border-red-500" 
+               rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                    id="tahun"
+                    value={formData.tahun}
+                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Tahun"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="email"
+                  >
+                    Status :
+                  </label>
+                </div>
+                <div className="">
+                  <Select
+                    name="stat"
+                    options={StatusOptions}
+                    value={selectedStatus}
+                    onChange={handleSelectChange}
+                    placeholder="Status"
+                    className="w-full cursor-pointer"
+                    theme={selectThemeColors}
+                  />
+                </div>
+              </div>
+              <div className="flex-col gap-2 flex">
+                <div className="">
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="email"
+                  >
+                    Kriteria SDM :
+                  </label>
+                </div>
+                <div className="">
+                  <Select
+                    options={dataKriteria}
+                    value={selectedKriteria}
+                    onChange={handleKriteriaChange}
+                    placeholder="Kriteria SDM"
+                    isMulti
+                    className="w-full text-sm"
+                    isDisabled={user?.role == "5" || isDisabled}
+                    theme={selectThemeColors}
+                  />
+                </div>
+              </div>
+
+              <div className="flex-col gap-2 flex">
+                <div className="flex">
+                  {" "}
+                  <label
+                    className="block text-[#728294] text-sm font-semibold mb-1"
+                    htmlFor="satuan"
+                  >
+                    Input Usulan:
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="persetujuan"
+                    checked={formData.input_usulan}
+                    onChange={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        input_usulan: !prev.input_usulan,
+                      }))
+                    }
+                    className="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label
+                    htmlFor="persetujuan"
+                    className="ms-2 text-sm md:text-lg  text-[#728294] dark:text-gray-300 cursor-pointer"
+                  >
+                    Input usulan detail puskesmas
+                  </label>
+                </div>
+              </div>
+              {formData.input_usulan && (
+                <div className="flex-col gap-2 flex">
+                  <div className="">
+                    <label
+                      className="block text-[#728294] text-sm font-semibold mb-1"
+                      htmlFor="nama_alkes"
+                    >
+                      Periode :
+                    </label>
+                  </div>
+                  <div className="">
+                    <Select
+                      options={dataPeriode}
+                      value={selectedPeriode}
+                      onChange={handlePeriodeChange}
+                      placeholder="Periode"
+                      className="w-full text-sm"
+                      isDisabled={user?.role == "5" || isDisabled}
+                      theme={selectThemeColors}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="email"
-                >
-                  Standar Rawat Inap :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <Select
-                  name="standar_rawat_inap"
-                  options={SelectOptions}
-                  value={selectedStandar}
-                  onChange={handleSelectChange}
-                  placeholder="Standar Rawat Inap"
-                  className="w-full cursor-pointer"
-                  theme={selectThemeColors}
-                />
-              </div>
-            </div>
+            <div className="gap-3 gap-y-4 grid grid-cols-2 lg:grid-cols-3 mt-4 lg:mt-4"></div>
 
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="email"
-                >
-                  Standar Rawat Non Inap :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <Select
-                  name="standar_nonrawat_inap"
-                  options={SelectOptions}
-                  value={selectedNonStandar}
-                  onChange={handleSelectChange}
-                  placeholder="Standar Non Rawat Inap"
-                  className="w-full cursor-pointer"
-                  theme={selectThemeColors}
-                />
-              </div>
-            </div> */}
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="merk"
-                >
-                  Merk :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="merk"
-                  value={formData.merk}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Merk"
-                />
-              </div>
-            </div>
-
-            {/* <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="tipe"
-                >
-                  Tipe :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="tipe"
-                  value={formData.tipe}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Tipe"
-                />
-              </div>
-            </div> */}
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="satuan"
-                >
-                  Satuan :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="satuan"
-                  value={formData.satuan}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Satuan"
-                />
-              </div>
-            </div>
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="harga_satuan"
-                >
-                  Harga Satuan :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="harga_satuan"
-                  value={formData.harga_satuan}
-                  onChange={handleChange}
-                  type="text"
-                  required
-                  placeholder="Harga Satuan"
-                />
-              </div>
-            </div>
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
+            <div className="mb-8 mt-8 flex-col sm:gap-2 flex">
+              <div className="">
                 <label
                   className="block text-[#728294] text-base font-normal mb-2"
                   htmlFor="keterangan"
@@ -462,7 +707,7 @@ const EditBarang = () => {
                   Keterangan :
                 </label>
               </div>
-              <div className="sm:flex-[5_5_0%]">
+              <div className="">
                 <textarea
                   id="keterangan"
                   rows="4"
@@ -471,68 +716,8 @@ const EditBarang = () => {
                   className={` bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
                     "border-red-500" 
                  rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  placeholder="Keterangan Barang"
+                  placeholder="Keterangan Alkes"
                 ></textarea>
-              </div>
-            </div>
-
-            <FormInput
-              id="penyedia"
-              value={formData.penyedia}
-              onChange={handleChange}
-              type="text"
-              placeholder={"Nama Penyedia Barang"}
-              label="Nama Penyedia Barang :"
-              required
-            />
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="contractFile"
-                >
-                  Upload Bukti Kontrak Pengadaan:
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%] flex flex-col items-start gap-1">
-                <div className="flex items-center">
-                  <label className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded cursor-pointer inline-flex items-center">
-                    <input
-                      className="hidden"
-                      id="contractFile"
-                      onChange={handleChange}
-                      type="file"
-                      accept="application/pdf"
-                    />
-                    Upload File
-                  </label>
-                  {formData.contractFileName && (
-                    <p className="text-gray-500 text-xs mx-4">
-                      File: {formData.contractFileName}
-                    </p>
-                  )}
-                  {formData.contractFileLink && !formData.contractFile ? (
-                    <a
-                      href={formData.contractFileLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ml-1 px-4 py-2 bg-blue-500 text-white rounded-md"
-                    >
-                      File Kontrak Anda
-                    </a>
-                  ) : !formData.contractFileLink && !formData.contractFile ? (
-                    <p className="text-gray-500 text-xs ml-1">
-                      Anda Belum Mengupload File Kontrak
-                    </p>
-                  ) : (
-                    ""
-                  )}
-                </div>
-
-                <p className="text-gray-500 text-xs mt-1">
-                  Max file size: 100MB, Type: PDF
-                </p>
               </div>
             </div>
 

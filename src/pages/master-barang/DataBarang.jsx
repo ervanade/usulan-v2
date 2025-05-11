@@ -128,33 +128,58 @@ const DataBarang = () => {
         sortable: true,
         width: "200px",
       },
-      // {
-      //   name: "Standar Rawat Inap",
-      //   selector: (row) => row.standar_rawat_inap,
-      //   sortable: true,
-      // },
-      // {
-      //   name: "Standar Non Rawat Inap",
-      //   selector: (row) => row.standar_nonrawat_inap,
-      //   sortable: true,
-      // },
       {
-        name: "Standard",
-        selector: (row) => row.standar_rawat_inap || "",
+        name: "Jenis Alkes",
+        selector: (row) => row.jenis_alkes || "",
+        cell: (row) => <div className="text-wrap py-2">{row.jenis_alkes}</div>,
+
         sortable: true,
+        width: "150px",
       },
-      // {
-      //   name: "Tipe",
-      //   selector: (row) => row.tipe || "",
-      //   sortable: true,
-      //   width: "100px",
-      // },
+      {
+        name: "Kategori",
+        selector: (row) => row.kategori || "",
+        cell: (row) => <div className="text-wrap py-2">{row.kategori}</div>,
+
+        sortable: true,
+        width: "150px",
+      },
+      {
+        name: <div className="text-wrap">Standar Ranap</div>,
+        selector: (row) => row.standard_rawat_inap || "",
+        sortable: true,
+        width: "100px",
+      },
+      {
+        name: <div className="text-wrap">Standar Non Ranap</div>,
+        selector: (row) => row.standard_non_inap || "",
+        sortable: true,
+        width: "100px",
+      },
+      {
+        name: <div className="text-wrap">Tahun</div>,
+        selector: (row) => row.tahun || "",
+        sortable: true,
+        width: "100px",
+      },
+      {
+        name: <div className="text-wrap">Harga</div>,
+        selector: (row) => row.harga || "",
+        cell: (row) => (
+          <div className="text-wrap py-2">
+            Rp. {formatRupiah(row.harga) || 0}
+          </div>
+        ),
+        sortable: true,
+        width: "150px",
+      },
+
       {
         name: <div className="text-wrap">Keterangan</div>,
         cell: (row) => <div className="text-wrap py-2">{row.keterangan}</div>,
         selector: (row) => row.keterangan || "",
         sortable: true,
-        width: "200px",
+        minWidth: "200px",
       },
       {
         name: "Aksi",

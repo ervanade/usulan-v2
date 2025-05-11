@@ -418,6 +418,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                                 Data Alkes
                               </NavLink>
                             </li>
+                            <li>
+                              <NavLink
+                                to="/master-data-kriteria"
+                                className={({ isActive }) =>
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
+                                }
+                              >
+                                Data Kriteria
+                              </NavLink>
+                            </li>
                             {/* <li>
                               <NavLink
                                 to="/master-data-provinsi"

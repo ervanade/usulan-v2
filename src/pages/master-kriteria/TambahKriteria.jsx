@@ -15,52 +15,26 @@ import Select from "react-select";
 import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { CgSpinner } from "react-icons/cg";
 import FormInput from "../../components/Form/FormInput";
 import { validateFileFormat, validateForm } from "../../data/validationUtils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-const EditPeriode = () => {
+
+const TambahKriteria = () => {
   const [formData, setFormData] = useState({
-    periode_name: "",
+    kriteria: "",
     stat: 0,
-    periode_start: "",
-    periode_end: "",
   });
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
-    const formattedDate = date ? formatDateWithTime(date) : null;
-    setFormData((prev) => ({ ...prev, periode_start: formattedDate }));
-  };
-
-  const handleEndDateChange = (date) => {
-    setEndDate(date);
-    const formattedDate = date ? formatDateWithTime(date) : null;
-    setFormData((prev) => ({ ...prev, periode_end: formattedDate }));
-  };
-
-  const formatDateWithTime = (date) => {
-    if (!date) return null;
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  };
 
   const navigate = useNavigate();
   const user = useSelector((a) => a.auth.user);
-  const [getLoading, setGetLoading] = useState(false);
+
   const [listKota, setListKota] = useState([]);
   const [listKecamatan, setListKecamatan] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState(null);
 
-  const [selectedStandar, setSelectedStandar] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
   const [selectedNonStandar, setSelectedNonStandar] = useState(null);
+
   const handleSelectChange = (selectedOption, actionMeta) => {
     const { name } = actionMeta;
     setFormData((prev) => ({
@@ -82,48 +56,8 @@ const EditPeriode = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { id } = useParams();
 
-  const fetchBarangData = async () => {
-    setGetLoading(true);
-    try {
-      // eslint-disable-next-line
-      const responseUser = await axios({
-        method: "get",
-        url: `${
-          import.meta.env.VITE_APP_API_URL
-        }/api/periode/${encodeURIComponent(decryptId(id))}`,
-        headers: {
-          "Content-Type": "application/json",
-          //eslint-disable-next-line
-          Authorization: `Bearer ${user?.token}`,
-        },
-      }).then(function (response) {
-        // handle success
-        // console.log(response)
-        const data = response.data.data;
-        const start = data?.periode_start
-          ? new Date(data?.periode_start)
-          : null;
-        const end = data?.periode_end ? new Date(data?.periode_end) : null;
-        setFormData({
-          periode_name: data?.periode_name || "",
-          stat: data?.stat || "",
-          periode_start: data?.periode_start || "",
-          periode_end: data?.periode_end || "",
-        });
-        setStartDate(start);
-        setEndDate(end);
-        setGetLoading(false);
-      });
-    } catch (error) {
-      if (error?.response?.status == 404) {
-        navigate("/not-found");
-      }
-      console.log(error);
-    }
-  };
-
+  // Fungsi untuk memformat angka ke format rupiah
   const formatRupiah = (value) => {
     if (!value) return "";
     return parseInt(value, 10).toLocaleString("id-ID");
@@ -201,25 +135,22 @@ const EditPeriode = () => {
     }
   };
 
-  const updateBarang = async () => {
-    const updatedFormData = {
-      ...formData,
-      stat: parseInt(formData?.stat), // Pastikan usulan di formData sudah diupdate
-    };
-
+  const tambahBarang = async () => {
+    const formDataToSend = new FormData();
+    formDataToSend.append("kriteria", formData.kriteria);
+    formDataToSend.append("stat", parseInt(formData.stat));
     await axios({
-      method: "put",
-      url: `${
-        import.meta.env.VITE_APP_API_URL
-      }/api/periode/${encodeURIComponent(decryptId(id))}`,
+      method: "post",
+      url: `${import.meta.env.VITE_APP_API_URL}/api/kriteria`,
       headers: {
+        // "Content-Type": "application/json",
         Authorization: `Bearer ${user?.token}`,
       },
-      data: JSON.stringify(updatedFormData), // Pastikan formData sudah diupdate
+      data: formDataToSend,
     })
       .then(function (response) {
-        Swal.fire("Data Berhasil di Update!", "", "success");
-        navigate("/master-data-periode");
+        Swal.fire("Data Berhasil di Input!", "", "success");
+        navigate("/master-data-kriteria");
       })
       .catch((error) => {
         setLoading(false);
@@ -228,62 +159,22 @@ const EditPeriode = () => {
   };
   const handleSimpan = async (e) => {
     e.preventDefault();
-    if (
-      !validateForm(formData, [
-        "periode_name",
-        "periode_start",
-        "periode_end",
-        "stat",
-      ])
-    )
-      return;
+    if (!validateForm(formData, ["kriteria", "stat"])) return;
     setLoading(true);
-    updateBarang();
+    tambahBarang();
   };
-  useEffect(() => {
-    fetchBarangData();
-  }, []);
-
-  useEffect(() => {
-    if (formData.stat) {
-      const initialOption = StatusOptions.find(
-        (data) => data.value == formData.stat
-      );
-      if (initialOption) {
-        setSelectedStatus(initialOption);
-      }
-    }
-
-    if (formData.standar_nonrawat_inap) {
-      const initialOption = SelectOptions.find(
-        (data) => data.value == formData.standar_nonrawat_inap
-      );
-      if (initialOption) {
-        setSelectedNonStandar(initialOption);
-      }
-    }
-  }, [formData.standar_rawat_inap, formData.standar_nonrawat_inap, formData]);
-
-  if (getLoading) {
-    return (
-      <div className="flex justify-center items-center">
-        <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
-        <span className="ml-2">Loading...</span>
-      </div>
-    );
-  }
 
   return (
     <div>
-      <Breadcrumb pageName="Form Edit Data Barang" />
+      <Breadcrumb pageName="Form Tambah Data Periode" />
       <Card>
         <div className="card-header flex justify-between">
           <h1 className="mb-12 font-medium font-antic text-xl lg:text-[28px] tracking-tight text-left text-bodydark1">
-            {user.role == "1" ? "Form Edit Data Barang" : ""}
+            {user.role == "1" ? "Form Tambah Data Periode" : ""}
           </h1>
           <div>
             <Link
-              to="/master-data-periode"
+              to="/master-data-kriteria"
               className="flex items-center px-4 py-2 bg-primary text-white rounded-md font-semibold"
             >
               Back
@@ -298,7 +189,7 @@ const EditPeriode = () => {
                   className="block text-[#728294] text-base font-normal mb-2"
                   htmlFor="nama_alkes"
                 >
-                  Nama Periode :
+                  Nama Kriteria :
                 </label>
               </div>
               <div className="sm:flex-[5_5_0%]">
@@ -306,57 +197,12 @@ const EditPeriode = () => {
                   className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
                   "border-red-500" 
                rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="periode_name"
-                  value={formData.periode_name}
+                  id="kriteria"
+                  value={formData.kriteria}
                   onChange={handleChange}
                   type="text"
                   required
-                  placeholder="Nama Periode"
-                />
-              </div>
-            </div>
-
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="periode_start"
-                >
-                  Tanggal Periode Mulai :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <DatePicker
-                  selected={startDate}
-                  onChange={handleStartDateChange}
-                  showTimeSelect
-                  dateFormat="yyyy-MM-dd HH:mm:ss"
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-              rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="periode_start"
-                  placeholderText="Periode Mulai"
-                />
-              </div>
-            </div>
-            <div className="mb-8 flex-col sm:flex-row sm:gap-8 flex sm:items-center">
-              <div className="sm:flex-[2_2_0%]">
-                <label
-                  className="block text-[#728294] text-base font-normal mb-2"
-                  htmlFor="periode_end"
-                >
-                  Tanggal Periode Selesai :
-                </label>
-              </div>
-              <div className="sm:flex-[5_5_0%]">
-                <DatePicker
-                  selected={endDate}
-                  onChange={handleEndDateChange}
-                  showTimeSelect
-                  dateFormat="yyyy-MM-dd HH:mm:ss"
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-              rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                  id="periode_end"
-                  placeholderText="Periode Selesai"
+                  placeholder="Nama Kriteria"
                 />
               </div>
             </div>
@@ -412,4 +258,4 @@ const EditPeriode = () => {
   );
 };
 
-export default EditPeriode;
+export default TambahKriteria;

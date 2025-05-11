@@ -54,6 +54,9 @@ import DataPeriode from "./pages/master-periode/DataPeriode.jsx";
 import TambahPeriode from "./pages/master-periode/TambahPeriode.jsx";
 import EditPeriode from "./pages/master-periode/EditPeriode.jsx";
 import PreviewVerif from "./pages/ba-verif/PreviewVerif.jsx";
+import DataKriteria from "./pages/master-kriteria/DataKriteria.jsx";
+import TambahKriteria from "./pages/master-kriteria/TambahKriteria.jsx";
+import EditKriteria from "./pages/master-kriteria/EditKriteria.jsx";
 
 function App() {
   const { pathname } = useLocation();
@@ -158,6 +161,15 @@ function App() {
                 <Route
                   path="master-data-periode/edit/:id"
                   element={<EditPeriode />}
+                />
+                <Route path="master-data-kriteria" element={<DataKriteria />} />
+                <Route
+                  path="master-data-kriteria/add"
+                  element={<TambahKriteria />}
+                />
+                <Route
+                  path="master-data-kriteria/edit/:id"
+                  element={<EditKriteria />}
                 />
                 {/* <Route path="/logactivity" element={<LogActivity />} />
                 <Route

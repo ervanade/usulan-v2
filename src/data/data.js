@@ -291,6 +291,16 @@ export const SelectOptions = [
         "value": "TIDAK"
     }
 ]
+export const StatusOptions = [
+    {
+        "label": "Aktif",
+        "value": "1"
+    },
+    {
+        "label": "Tidak Aktif",
+        "value": "0"
+    }
+]
 
 export const dayaOptions = [
     {
