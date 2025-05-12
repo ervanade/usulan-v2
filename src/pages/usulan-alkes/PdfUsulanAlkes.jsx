@@ -1147,7 +1147,7 @@ const PdfUsulanAlkes = () => {
                 className="flex font-semibold items-center gap-2 cursor-pointer text-base text-white  bg-primary rounded-md tracking-tight"
               >
                 <Link
-                  to="/pdf-usulan-alkes/add"
+                  to="/master-data-barang/add"
                   className="flex items-center gap-2 px-4 py-2"
                 >
                   <FaPlus size={16} />
