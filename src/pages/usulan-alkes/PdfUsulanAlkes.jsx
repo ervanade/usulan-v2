@@ -803,7 +803,16 @@ const PdfUsulanAlkes = () => {
       {
         name: <div className="text-wrap">Download Proposal</div>,
         cell: (row) => (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
+            <Link
+              to={`/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
+                encryptId(row.id)
+              )}`} // Sesuaikan dengan path preview Anda
+              title="Lihat Preview"
+              className="text-white bg-teal-500 hover:bg-teal-700 py-1 px-3 rounded-md font-medium text-xs"
+            >
+              Preview
+            </Link>
             {/* <button
               title="Lihat"
               className="text-[#16B3AC] hover:text-cyan-500"
@@ -818,7 +827,7 @@ const PdfUsulanAlkes = () => {
             </button> */}
             <button
               title="Download"
-              className="text-white bg-blue-600 hover:bg-blue-700 py-1 w-22 rounded-md font-medium text-xs"
+              className="text-white bg-blue-600 hover:bg-blue-700 py-1 px-3 rounded-md font-medium text-xs"
               onClick={() => handleDownload(row.id)} // Tambahkan handler download di sini
             >
               Download <br /> Proposal
@@ -828,7 +837,7 @@ const PdfUsulanAlkes = () => {
         ignoreRowClick: true,
         allowOverflow: true,
         button: true,
-        minWidth: "100px",
+        minWidth: "170px",
       },
       {
         name: <div className="text-wrap">Tanggal Upload Proposal</div>,
@@ -986,39 +995,39 @@ const PdfUsulanAlkes = () => {
         button: true,
         minWidth: "120px",
       },
-      {
-        name: "Aksi",
-        cell: (row) => (
-          <div className="flex items-center space-x-2">
-            <button
-              title="Lihat"
-              className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
-              onClick={() => {
-                navigate(
-                  `/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
-                    encryptId(row.id)
-                  )}`,
-                  {
-                    replace: true,
-                  }
-                );
-              }}
-            >
-              <Link
-                className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
-                to={`/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
-                  encryptId(row.id)
-                )}`}
-              >
-                Preview
-              </Link>
-            </button>
-          </div>
-        ),
-        ignoreRowClick: true,
-        allowOverflow: true,
-        button: true,
-      },
+      // {
+      //   name: "Aksi",
+      //   cell: (row) => (
+      //     <div className="flex items-center space-x-2">
+      //       <button
+      //         title="Lihat"
+      //         className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
+      //         onClick={() => {
+      //           navigate(
+      //             `/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
+      //               encryptId(row.id)
+      //             )}`,
+      //             {
+      //               replace: true,
+      //             }
+      //           );
+      //         }}
+      //       >
+      //         <Link
+      //           className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
+      //           to={`/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
+      //             encryptId(row.id)
+      //           )}`}
+      //         >
+      //           Preview
+      //         </Link>
+      //       </button>
+      //     </div>
+      //   ),
+      //   ignoreRowClick: true,
+      //   allowOverflow: true,
+      //   button: true,
+      // },
     ],
     []
   );
