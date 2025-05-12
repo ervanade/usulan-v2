@@ -971,7 +971,7 @@ const PdfUsulanAlkes = () => {
                   }
                 >
                   Upload <br />
-                  Ba Verif
+                  BA Verif
                 </button>
                 <button
                   title="Buka Upload"
