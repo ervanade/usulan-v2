@@ -301,6 +301,24 @@ export const StatusOptions = [
         "value": "0"
     }
 ]
+export const AlasanOptions = [
+    {
+        "label": "Pengadaan Alat Berasal dari Sumber Pendanaan Lain",
+        "value": "Pengadaan Alat Berasal dari Sumber Pendanaan Lain"
+    },
+    {
+        "label": "Tidak Siap SDM",
+        "value": "Tidak Siap SDM"
+    },
+    {
+        "label": "Tidak Sarpras,",
+        "value": "Tidak Sarpras,"
+    },
+    {
+        "label": "lainnya,",
+        "value": "lainnya,"
+    }
+]
 
 export const dayaOptions = [
     {

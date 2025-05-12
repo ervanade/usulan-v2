@@ -658,7 +658,7 @@ const UsulanAlkes = () => {
                 className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white  bg-primary rounded-md tracking-tight"
               >
                 <Link
-                  to="/data-distribusi/add"
+                  to="/master-data-barang/add"
                   className="flex items-center gap-2 px-4 py-2"
                 >
                   <FaPlus size={16} />

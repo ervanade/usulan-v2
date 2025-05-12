@@ -262,6 +262,7 @@ const EditBarang = () => {
           jenis_alkes: data?.jenis_alkes || "",
           kategori: data?.kategori || "",
           satuan: data?.satuan || "",
+          tahun: data?.tahun || "",
           stat: data?.stat || 0,
           harga: formatRupiah(data?.harga?.toString()) || "", // Format harga
           keterangan: data?.keterangan || "",
@@ -306,10 +307,11 @@ const EditBarang = () => {
     };
     await axios({
       method: "put",
-      url: `${
-        import.meta.env.VITE_APP_API_URL
-      }/api/update/barang/${encodeURIComponent(decryptId(id))}`,
+      url: `${import.meta.env.VITE_APP_API_URL}/api/alkes/${encodeURIComponent(
+        decryptId(id)
+      )}`,
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${user?.token}`,
       },
       data: JSON.stringify(updatedFormData), // Pastikan formData sudah diupdate
@@ -339,18 +341,19 @@ const EditBarang = () => {
       ])
     )
       return;
-    if (
-      !validateFileFormat(
-        formData.contractFile,
-        ["pdf"],
-        100,
-        "File Kontrak",
-        false
-      )
-    )
-      return;
-    setLoading(true);
-    updateBarang();
+    Swal.fire({
+      title: "Proses ini akan memakan waktu yang lama",
+      text: "Apakah anda yakin, dimohon menunggu sampai selesai?",
+      showCancelButton: true,
+      confirmButtonColor: "#16B3AC",
+      confirmButtonText: "Ya, Simpan Data",
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        setLoading(true);
+        updateBarang();
+      }
+    });
   };
   useEffect(() => {
     fetchBarangData();

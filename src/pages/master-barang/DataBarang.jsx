@@ -125,7 +125,7 @@ const DataBarang = () => {
         cell: (row) => <div className="text-wrap py-2">{row.nama_alkes}</div>,
 
         sortable: true,
-        width: "200px",
+        minWidth: "200px",
       },
       {
         name: "Jenis Alkes",
@@ -173,13 +173,13 @@ const DataBarang = () => {
         width: "150px",
       },
 
-      {
-        name: <div className="text-wrap">Keterangan</div>,
-        cell: (row) => <div className="text-wrap py-2">{row.keterangan}</div>,
-        selector: (row) => row.keterangan || "",
-        sortable: true,
-        minWidth: "200px",
-      },
+      // {
+      //   name: <div className="text-wrap">Keterangan</div>,
+      //   cell: (row) => <div className="text-wrap py-2">{row.keterangan}</div>,
+      //   selector: (row) => row.keterangan || "",
+      //   sortable: true,
+      //   minWidth: "200px",
+      // },
       {
         name: "Aksi",
         cell: (row) => (

@@ -67,12 +67,15 @@ const EditUsulan = () => {
   const [dataPuskesmas, setDataPuskesmas] = useState([]);
   const [dataKriteria, setDataKriteria] = useState([]);
   const [dataPeriode, setDataPeriode] = useState([]);
+  const [idPeriode, setIdPeriode] = useState(null);
 
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
   const [selectedKota, setSelectedKota] = useState(null);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
   const [selectedPuskesmas, setSelectedPuskesmas] = useState(null);
   const [selectedPelayanan, setSelectedPelayanan] = useState(null);
+  const [selectedPeriode, setSelectedPeriode] = useState(null);
+
   const [selectedKriteria, setSelectedKriteria] = useState(null);
 
   const [selectedDaya, setSelectedDaya] = useState(null);
@@ -116,7 +119,13 @@ const EditUsulan = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      setDataPeriode(response.data.data);
+      setDataPeriode([
+        ...response.data.data.map((item) => ({
+          label: item.periode_name,
+          value: item.id,
+          stat: item.stat,
+        })),
+      ]);
     } catch (error) {
       setError(true);
     } finally {
@@ -189,73 +198,97 @@ const EditUsulan = () => {
       setDataKecamatan([]);
     }
   };
+
+  const handlePeriodeChange = (selectedOption) => {
+    setSelectedPeriode(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      periode_id: selectedOption ? selectedOption?.value?.toString() : "",
+    }));
+    // Panggil fetch data dengan periode ID yang baru
+    if (selectedOption?.value) {
+      fetchDistribusiData(selectedOption.value);
+    } else {
+      // Jika periode di-clear, fetch data tanpa periode ID (kembali ke default)
+      fetchDistribusiData();
+    }
+  };
   const isSwalShown = useRef(false);
   // Fetch distribution data
-  const fetchDistribusiData = useCallback(async () => {
-    setLoading(true);
-    setGetLoading(true);
+  const fetchDistribusiData = useCallback(
+    async (periodeId = null) => {
+      setLoading(true);
+      setGetLoading(true);
 
-    setError(false);
-    const decryptedId = decryptId(id);
-    if (!decryptedId) {
-      // Jika decryptId gagal (mengembalikan null atau nilai falsy lainnya)
-      navigate("/not-found"); // Arahkan ke halaman "not found"
-      return; // Hentikan eksekusi fungsi
-    }
-    try {
-      const response = await axios({
-        method: "get",
-        url: `${
-          import.meta.env.VITE_APP_API_URL
-        }/api/usulan/detail/${encodeURIComponent(decryptId(id))}`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      const data = response.data.data;
+      setError(false);
+      const decryptedId = decryptId(id);
+      if (!decryptedId) {
+        // Jika decryptId gagal (mengembalikan null atau nilai falsy lainnya)
+        navigate("/not-found"); // Arahkan ke halaman "not found"
+        return; // Hentikan eksekusi fungsi
+      }
+      let url = `${
+        import.meta.env.VITE_APP_API_URL
+      }/api/usulan/detail/${encodeURIComponent(decryptedId)}`;
+      if (periodeId) {
+        url += `/${periodeId}`;
+      }
+      try {
+        const response = await axios({
+          method: "get",
+          url: url,
 
-      setFormData({
-        id_provinsi: data.id_provinsi || "",
-        id_kabupaten: data.id_kabupaten || "",
-        id_kecamatan: data.id_kecamatan || "",
-        provinsi: data.provinsi || "",
-        kabupaten: data.kabupaten || "",
-        kecamatan: data.kecamatan || "",
-        nama_puskesmas: data.nama_puskesmas || "",
-        kode_pusdatin_baru: data.kode_pusdatin_baru || "",
-        id: data.id || "",
-        tahun_lokus: "2025",
-        pelayanan: data.pelayanan || "",
-        ketersediaan_listrik: data.ketersediaan_listrik || "",
-        kapasitas_listrik: data.kapasitas_listrik || "",
-        internet: data.internet || "",
-        tgl_upload: data.usulan_alkes[0].tgl_upload || null,
-        usulan: data.usulan || [],
-        id_kriteria: data.id_kriteria || [],
-      });
-      setData(data?.usulan || []);
-      setFilteredData(data?.usulan || []);
-      // if (
-      //   data?.usulan_alkes[0]?.tgl_upload &&
-      //   data?.usulan_alkes[0]?.file_upload &&
-      //   !isSwalShown.current
-      // ) {
-      //   Swal.fire(
-      //     "Warning",
-      //     "Data tidak bisa diubah karena daerah sudah mengupload dokumen usulan!",
-      //     "warning"
-      //   );
-      //   isSwalShown.current = true;
-      // }
-    } catch (error) {
-      setError(true);
-      setFilteredData([]);
-    } finally {
-      setLoading(false);
-      setGetLoading(false);
-    }
-  }, [user?.token]);
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+        });
+        const data = response.data.data;
+
+        setFormData({
+          id_provinsi: data.id_provinsi || "",
+          id_kabupaten: data.id_kabupaten || "",
+          id_kecamatan: data.id_kecamatan || "",
+          provinsi: data.provinsi || "",
+          kabupaten: data.kabupaten || "",
+          kecamatan: data.kecamatan || "",
+          nama_puskesmas: data.nama_puskesmas || "",
+          kode_pusdatin_baru: data.kode_pusdatin_baru || "",
+          id: data.id || "",
+          tahun_lokus: "2025",
+          pelayanan: data.pelayanan || "",
+          ketersediaan_listrik: data.ketersediaan_listrik || "",
+          kapasitas_listrik: data.kapasitas_listrik || "",
+          internet: data.internet || "",
+          tgl_upload: data.usulan_alkes[0].tgl_upload || null,
+          usulan: data.usulan || [],
+          id_kriteria: data.id_kriteria || [],
+        });
+        setData(data?.usulan || []);
+        setFilteredData(data?.usulan || []);
+        setIdPeriode(data.usulan_alkes[0].periode_id);
+        // if (
+        //   data?.usulan_alkes[0]?.tgl_upload &&
+        //   data?.usulan_alkes[0]?.file_upload &&
+        //   !isSwalShown.current
+        // ) {
+        //   Swal.fire(
+        //     "Warning",
+        //     "Data tidak bisa diubah karena daerah sudah mengupload dokumen usulan!",
+        //     "warning"
+        //   );
+        //   isSwalShown.current = true;
+        // }
+      } catch (error) {
+        setError(true);
+        setFilteredData([]);
+      } finally {
+        setLoading(false);
+        setGetLoading(false);
+      }
+    },
+    [user?.token]
+  );
 
   const fetchPuskesmas = async (idKecamatan) => {
     try {
@@ -492,6 +525,18 @@ const EditUsulan = () => {
       console.log(initialSelectedKriteria);
       setSelectedKriteria(initialSelectedKriteria);
     }
+
+    if (idPeriode && dataPeriode.length > 0) {
+      const initialOption = dataPeriode.find((kec) => kec.value == idPeriode);
+
+      if (initialOption) {
+        setSelectedPeriode({
+          label: initialOption.label,
+          value: initialOption.value,
+          stat: initialOption.stat,
+        });
+      }
+    }
   }, [
     formData,
     dataProvinsi,
@@ -499,6 +544,7 @@ const EditUsulan = () => {
     dataKota,
     dataPuskesmas,
     dataKriteria,
+    dataPeriode,
   ]);
   // useEffect(() => {
   //   if (formData.id_provinsi) {
@@ -687,16 +733,52 @@ const EditUsulan = () => {
   };
 
   const handleShowKeterangan = (keterangan, nama_alkes) => {
-    // Format keterangan menjadi daftar barang
-    const daftarBarang = keterangan
-      .split("|") // Pisahkan berdasarkan tanda |
-      .map((item, index) => `${index + 1}. ${item.trim()}`) // Tambahkan nomor urut
-      .join("\n"); // Gabungkan dengan newline
+    const linkMatch = keterangan.match(
+      /\[(https:\/\/drive\.google\.com[^\]]*)\]/
+    );
+    const imageUrl = linkMatch ? linkMatch[1] : null;
+    const detailString = keterangan.replace(
+      linkMatch ? `[${imageUrl}]` : "",
+      ""
+    );
+    const detailList = detailString
+      .split("|")
+      .map((item) => item.trim())
+      .filter((item) => item !== "");
 
-    // Tampilkan popup SweetAlert2
+    let htmlContent = "";
+
+    if (imageUrl) {
+      htmlContent += `
+        <div style="margin-bottom: 10px; text-align: center;">
+          <button
+            style="background-color: #0FAD91; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;"
+            onclick="window.open('${imageUrl}', '_blank', 'noopener,noreferrer')"
+          >
+            Lihat Gambar Alkes
+          </button>
+        </div>
+      `;
+    }
+
+    if (detailList.length > 0) {
+      const daftarBarang = detailList
+        .map((item, index) => `${index + 1}. ${item}`)
+        .join("<br>");
+      htmlContent += `
+        <div style="text-align: left; max-height: 300px; overflow-y: auto; margin-top: 10px;">
+          <strong>Detail Alkes:</strong><br>
+          ${daftarBarang}
+        </div>
+      `;
+    } else if (!imageUrl) {
+      // Jika tidak ada gambar dan tidak ada detail yang dipisahkan, tampilkan seluruh keterangan awal
+      htmlContent += `<div style="text-align: left; max-height: 300px; overflow-y: auto;">${keterangan}</div>`;
+    }
+
     Swal.fire({
-      title: `Daftar List Detail ${nama_alkes || ""}`,
-      html: `<pre style="text-align: left; max-height: 300px; overflow-y: auto;">${daftarBarang}</pre>`,
+      title: `Detail ${nama_alkes || ""}`,
+      html: htmlContent,
       showConfirmButton: true,
       confirmButtonText: "Tutup",
       width: "600px",
@@ -763,7 +845,9 @@ const EditUsulan = () => {
                 handleInputChange(row.id, "berfungsi", e.target.value)
               }
               className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none focus:ring-0"
-              disabled={user?.role == "5" || isDisabled}
+              disabled={
+                user?.role == "5" || isDisabled || selectedPeriode?.stat == 0
+              }
               min={0} // Pastikan tidak bisa minus
             />
           );
@@ -805,7 +889,10 @@ const EditUsulan = () => {
                 min={0} // Pastikan tidak bisa minus
                 max={standard === null ? undefined : maxUsulan} // Batasi usulan jika standard tidak null
                 disabled={
-                  masihBerfungsi >= standard || user?.role == "5" || isDisabled
+                  masihBerfungsi >= standard ||
+                  user?.role == "5" ||
+                  isDisabled ||
+                  selectedPeriode?.stat == 0
                 } // Nonaktifkan input jika masih_berfungsi >= standard
               />
               {errors[row.id] && (
@@ -1163,7 +1250,7 @@ const EditUsulan = () => {
                 </div>
               </div>
             </div>
-            <div className="gap-3 gap-y-4 grid grid-cols-2 lg:grid-cols-4 mt-4 lg:mt-4">
+            <div className="gap-3 gap-y-4 grid grid-cols-2 lg:grid-cols-2 mt-4 lg:mt-4">
               <div className="flex-col gap-2 flex">
                 <div className="">
                   <label
@@ -1194,10 +1281,29 @@ const EditUsulan = () => {
                 Form Usulan Alkes
               </h2>
               <h2 className="font-medium text-bodydark1 text-sm mt-2">
-                Periode : Periode Telah Berakhir
-                {/* {dataPeriode?.length > 0
-                  ? `${dataPeriode[0]?.periode_name} (Aktif)`
-                  : "Periode Telah Berakhir"} */}
+                {dataPeriode?.length > 0 && (
+                  <div className="flex-col gap-2 flex">
+                    <div className="">
+                      <label
+                        className="block text-[#728294] text-sm font-semibold mb-1"
+                        htmlFor="nama_alkes"
+                      >
+                        Periode :
+                      </label>
+                    </div>
+                    <div className="">
+                      <Select
+                        options={dataPeriode}
+                        value={selectedPeriode}
+                        onChange={handlePeriodeChange}
+                        placeholder="Periode   "
+                        className="w-full text-sm"
+                        isDisabled={user?.role == "5" || isDisabled}
+                        theme={selectThemeColors}
+                      />
+                    </div>
+                  </div>
+                )}
               </h2>
             </div>
             <div className="overflow-x-auto">

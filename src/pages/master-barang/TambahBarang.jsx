@@ -338,8 +338,20 @@ const TambahBarang = () => {
       ])
     )
       return;
-    setLoading(true);
-    tambahBarang();
+
+    Swal.fire({
+      title: "Proses ini akan memakan waktu yang lama",
+      text: "Apakah anda yakin, dimohon menunggu sampai selesai?",
+      showCancelButton: true,
+      confirmButtonColor: "#16B3AC",
+      confirmButtonText: "Ya, Simpan Data",
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        setLoading(true);
+        tambahBarang();
+      }
+    });
   };
 
   return (

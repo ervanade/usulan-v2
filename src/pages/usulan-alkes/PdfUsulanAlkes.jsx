@@ -44,11 +44,13 @@ const PdfUsulanAlkes = () => {
   const [dataProvinsi, setDataProvinsi] = useState([]);
   const [dataKota, setDataKota] = useState([]);
   const [dataKecamatan, setDataKecamatan] = useState([]);
+  const [dataPeriode, setDataPeriode] = useState([]);
 
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
   const [selectedKota, setSelectedKota] = useState(null);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedPeriode, setSelectedPeriode] = useState(null);
 
   const [showModal, setShowModal] = useState(false);
   const [showModalUpload, setShowModalUpload] = useState(false);
@@ -218,9 +220,33 @@ const PdfUsulanAlkes = () => {
     },
     [dataKecamatan.length, selectedKota?.value, user?.token]
   );
+
+  const fetchPeriode = async () => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/periode`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setDataPeriode([
+        ...response.data.data.map((item) => ({
+          label: item.periode_name,
+          value: item.id,
+          stat: item.stat,
+        })),
+      ]);
+    } catch (error) {
+      setError(true);
+      setDataPeriode([]);
+    }
+  };
   useEffect(() => {
     fetchProvinsi();
     fetchUserData();
+    fetchPeriode();
   }, []);
 
   const handleProvinsiChange = (selectedOption) => {
@@ -241,6 +267,10 @@ const PdfUsulanAlkes = () => {
     if (selectedOption && selectedOption.value !== "") {
       fetchKecamatan(selectedOption.value);
     }
+  };
+
+  const handlePeriodeChange = (selectedOption) => {
+    setSelectedPeriode(selectedOption);
   };
 
   const handleKecamatanChange = (selectedOption) => {
@@ -591,15 +621,93 @@ const PdfUsulanAlkes = () => {
         sortable: true,
       },
       {
+        name: <div className="text-wrap px-1">Upload CHR</div>,
+        selector: (row) =>
+          row?.tgl_upload && row?.file_upload ? "Sudah" : "Belum",
+        sortable: true,
+        cell: (row) => (
+          <div className="flex flex-col items-center space-y-1">
+            {!row?.tgl_upload || !row?.file_upload ? (
+              <button
+                title="Upload Dokumen"
+                className="text-white py-1 px-2 bg-primary rounded-md text-xs"
+                onClick={(e) =>
+                  handleModalDokumen(e, row.id, row.nama_dokumen, row.kabupaten)
+                }
+              >
+                Upload
+              </button>
+            ) : (
+              <div className="flex space-x-1">
+                <button
+                  title="Upload Dokumen Baru"
+                  className="text-white py-1 px-2 bg-blue-500 hover:bg-blue-700 rounded-md text-xs"
+                  onClick={(e) =>
+                    handleModalDokumen(
+                      e,
+                      row.id,
+                      row.nama_dokumen,
+                      row.kabupaten
+                    )
+                  }
+                >
+                  Upload
+                </button>
+                <button
+                  title="Buka Upload"
+                  className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
+                  onClick={() => handleBukaUpload(row.id)}
+                >
+                  Buka
+                </button>
+              </div>
+            )}
+            {/* Menampilkan status upload (opsional) */}
+            {row?.tgl_upload && row?.file_upload && (
+              <div className="text-green-500 text-xs">Sudah Upload</div>
+            )}
+            {(!row?.tgl_upload || !row?.file_upload) && (
+              <div className="text-red-500 text-xs">Belum Upload</div>
+            )}
+          </div>
+        ),
+        ignoreRowClick: true,
+        button: true,
+        minWidth: "120px",
+      },
+      // {
+      //   name: <div className="text-wrap px-1">Download CHR</div>,
+      //   cell: (row) => (
+      //     <div className="flex items-center justify-center">
+      //       {" "}
+      //       {/* Menggunakan justify-center agar tombol berada di tengah */}
+      //       <button
+      //         title="Download"
+      //         className="text-white bg-green-600 hover:bg-green-700 py-1 px-3 rounded-md font-medium text-xs"
+      //         onClick={() => handleDownload(row.id)} // Pastikan handleDownload terdefinisi
+      //       >
+      //         Download
+      //         <br />
+      //         CHR
+      //       </button>
+      //     </div>
+      //   ),
+      //   ignoreRowClick: true,
+      //   allowOverflow: true,
+      //   button: true,
+      //   minWidth: "100px",
+      // },
+
+      {
         name: <div className="text-wrap">Tanggal Download Proposal</div>,
         selector: (row) =>
           row.tgl_download?.substring(0, 10) || "Belum Download",
         cell: (row) => (
-          <div className="text-wrap py-4">
+          <div className="text-wrap py-4 text-xs">
             {row.tgl_download?.substring(0, 10) || "Belum Download"}
           </div>
         ),
-        width: "165px",
+        width: "100px",
         sortable: true,
 
         // width: "100px",
@@ -638,19 +746,19 @@ const PdfUsulanAlkes = () => {
         name: <div className="text-wrap">Tanggal Upload Proposal</div>,
         selector: (row) => row.tgl_upload?.substring(0, 10) || "Belum Upload",
         cell: (row) => (
-          <div className="text-wrap py-4">
+          <div className="text-wrap py-4 text-xs">
             {row.tgl_upload?.substring(0, 10) || (
               <span className="text-red-500">Belum Upload</span>
             )}
           </div>
         ),
-        width: "150px",
+        width: "100px",
         sortable: true,
 
         // width: "100px",
       },
       {
-        name: <div className="text-wrap">Upload Proposal</div>,
+        name: <div className="text-wrap px-1">Upload Proposal</div>,
         selector: (row) => (row?.tgl_upload && row?.file_upload ? "1" : "0"),
         sortable: true,
         cell: (row) => (
@@ -678,7 +786,7 @@ const PdfUsulanAlkes = () => {
             {row?.tgl_upload && row?.file_upload ? (
               <button
                 title="Download"
-                className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-22 rounded-md font-medium text-xs"
+                className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-20 rounded-md font-medium text-xs"
                 onClick={() => handleBukaUpload(row.id)} // Tambahkan handler download di sini
               >
                 Buka
@@ -708,9 +816,85 @@ const PdfUsulanAlkes = () => {
         ),
         ignoreRowClick: true,
         button: true,
-        minWidth: "200px",
+        minWidth: "100px",
       },
-
+      {
+        name: <div className="text-wrap px-1">Download BA Verif</div>,
+        cell: (row) => (
+          <div className="flex items-center justify-center">
+            {" "}
+            {/* Menggunakan justify-center agar tombol berada di tengah */}
+            <button
+              title="Download"
+              className="text-white bg-cyan-600 hover:bg-cyan-700 py-1 px-3 rounded-md font-medium text-xs"
+              onClick={() => handleDownload(row.id)} // Pastikan handleDownload terdefinisi
+            >
+              Download
+              <br />
+              BA Verif
+            </button>
+          </div>
+        ),
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
+        minWidth: "100px",
+      },
+      {
+        name: <div className="text-wrap px-1">Upload BA Verif</div>,
+        selector: (row) =>
+          row?.tgl_upload && row?.file_upload ? "Sudah" : "Belum",
+        sortable: true,
+        cell: (row) => (
+          <div className="flex flex-col items-center space-y-1">
+            {!row?.tgl_upload || !row?.file_upload ? (
+              <button
+                title="Upload Dokumen"
+                className="text-white py-1 px-2 bg-primary rounded-md text-xs"
+                onClick={(e) =>
+                  handleModalDokumen(e, row.id, row.nama_dokumen, row.kabupaten)
+                }
+              >
+                Upload
+              </button>
+            ) : (
+              <div className="flex space-x-1">
+                <button
+                  title="Upload Dokumen Baru"
+                  className="text-white py-1 px-2 bg-cyan-500 hover:bg-cyan-700 rounded-md text-xs"
+                  onClick={(e) =>
+                    handleModalDokumen(
+                      e,
+                      row.id,
+                      row.nama_dokumen,
+                      row.kabupaten
+                    )
+                  }
+                >
+                  Upload
+                </button>
+                <button
+                  title="Buka Upload"
+                  className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
+                  onClick={() => handleBukaUpload(row.id)}
+                >
+                  Buka
+                </button>
+              </div>
+            )}
+            {/* Menampilkan status upload (opsional) */}
+            {row?.tgl_upload && row?.file_upload && (
+              <div className="text-green-500 text-xs">Sudah Upload</div>
+            )}
+            {(!row?.tgl_upload || !row?.file_upload) && (
+              <div className="text-red-500 text-xs">Belum Upload</div>
+            )}
+          </div>
+        ),
+        ignoreRowClick: true,
+        button: true,
+        minWidth: "120px",
+      },
       {
         name: "Aksi",
         cell: (row) => (
@@ -855,6 +1039,29 @@ const PdfUsulanAlkes = () => {
                     ? "Pilih Kab / Kota"
                     : "Pilih Provinsi Dahulu"
                 }
+              />
+            </div>
+            <div>
+              <label
+                className="block text-[#728294] text-base font-normal mb-2"
+                htmlFor="kota"
+              >
+                Periode
+              </label>
+              <Select
+                options={dataPeriode}
+                value={selectedPeriode}
+                onChange={handlePeriodeChange}
+                placeholder="Pilih Periode"
+                className="w-64 sm:w-32 xl:w-60"
+                theme={(theme) => ({
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    primary25: "lightgrey",
+                    primary: "grey",
+                  },
+                })}
               />
             </div>
           </div>
