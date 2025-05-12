@@ -861,7 +861,7 @@ const PdfUsulanAlkes = () => {
               <div className="flex space-x-1">
                 <button
                   title="Upload Dokumen Baru"
-                  className="text-white py-1 px-2 bg-cyan-500 hover:bg-cyan-700 rounded-md text-xs"
+                  className="text-white py-1 px-2 bg-cyan-600 hover:bg-cyan-700 rounded-md text-xs"
                   onClick={(e) =>
                     handleModalDokumen(
                       e,
