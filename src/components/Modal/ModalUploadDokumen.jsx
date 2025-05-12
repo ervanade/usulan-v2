@@ -18,10 +18,13 @@ const ModalUploadDokumen = ({
   editIndex,
   jsonData,
   user,
+  uploadType,
 }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [setuju, setSetuju] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [uploadApiUrl, setUploadApiUrl] = useState("");
 
   const [formData, setFormData] = useState({
     email: "",
@@ -52,25 +55,13 @@ const ModalUploadDokumen = ({
       },
     });
 
-    // if (!user.ttd || !user.name || !user.nip) {
-    //   Swal.fire("Error", "Anda Belum Input TTE / Nama / NIP", "error");
-    //   navigate("/profile");
-    //   setLoading(false);
-    //   return;
-    // }
-
     const formDataToSend = new FormData();
-    // formDataToSend.append("email", formData.email);
-    // formDataToSend.append("password", formData.password);
-    // formDataToSend.append("id_dokumen", formData.id_dokumen);
     if (formData.fileDokumen) {
       formDataToSend.append("file_upload", formData.fileDokumen);
     }
     await axios({
       method: "post",
-      url: `${import.meta.env.VITE_APP_API_URL}/api/usulan/upload/${
-        formData.id_dokumen
-      }`,
+      url: uploadApiUrl, // Gunakan apiUrl yang dinamis
       headers: {
         Authorization: `Bearer ${user?.token}`,
       },
@@ -78,15 +69,14 @@ const ModalUploadDokumen = ({
     })
       .then(function (response) {
         Swal.fire("Dokumen Berhasil diUpload!", "", "success");
-        navigate("/pdf-usulan-alkes");
+        // Anda mungkin perlu memanggil fungsi untuk memperbarui data di tabel parent
+        onClose(); // Tutup modal setelah berhasil upload
       })
       .catch((error) => {
         Swal.fire("Gagal Upload Dokumen!", "", "error");
         setLoading(false);
         setSetuju(false);
         setFormData({
-          email: "",
-          password: "",
           id_dokumen: jsonData?.id || "",
           fileDokumen: null,
           fileDokumenName: "",
@@ -147,6 +137,30 @@ const ModalUploadDokumen = ({
   useEffect(() => {
     setFormData((prev) => ({ ...prev, id_dokumen: jsonData?.id }));
   }, [jsonData]);
+  useEffect(() => {
+    if (uploadType === "chr") {
+      setModalTitle(`Upload Dokumen CHR ${jsonData?.kabupaten}`);
+      setUploadApiUrl(
+        `${import.meta.env.VITE_APP_API_URL}/api/usulan/upload/chr/${
+          formData.id_dokumen
+        }`
+      );
+    } else if (uploadType === "baverif") {
+      setModalTitle(`Upload BA Verifikasi ${jsonData?.kabupaten}`);
+      setUploadApiUrl(
+        `${import.meta.env.VITE_APP_API_URL}/api/usulan/upload/baverif/${
+          formData.id_dokumen
+        }`
+      );
+    } else {
+      setModalTitle(`Upload Dokumen ${jsonData?.kabupaten}`);
+      setUploadApiUrl(
+        `${import.meta.env.VITE_APP_API_URL}/api/usulan/upload/${
+          formData.id_dokumen
+        }`
+      );
+    }
+  }, [uploadType, formData.id_dokumen, jsonData?.kabupaten]);
 
   // const updateDownload = async (id) => {
   //   setLoading(true);
@@ -249,11 +263,7 @@ const ModalUploadDokumen = ({
       <div className="relative my-6 mx-auto w-[85%] max-h-[90%] overflow-auto sm:w-3/4 xl:w-1/2 z-1">
         <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
           <div className="flex items-start justify-between p-5 border-b border-solid border-black/20 rounded-t ">
-            <h3 className="text-xl font-bold text-primary">
-              {editIndex !== null
-                ? `Upload Dokumen ${jsonData?.kabupaten}`
-                : `Upload Dokumen ${jsonData?.kabupaten}`}
-            </h3>
+            <h3 className="text-xl font-bold text-primary">{modalTitle}</h3>
             <button
               className="bg-transparent border-0 text-black float-right"
               onClick={onClose}
@@ -331,64 +341,6 @@ const ModalUploadDokumen = ({
                   </div>
                 </div>
               </div>
-              {/* 
-              <div className="mb-4 flex-col  sm:gap-2 w-full flex ">
-                <div className="">
-                  <label
-                    className=" block text-[#728294] text-base font-semibold mb-2"
-                    htmlFor="email"
-                  >
-                    Email :
-                  </label>
-                </div>
-                <div className="">
-                  <input
-                    className={` bg-white disabled:bg-[#F2F2F2] appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                    id="jumlah_barang_dikirim"
-                    type="email"
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        email: e.target.value,
-                      }))
-                    }
-                    value={formData.email}
-                    placeholder="Email"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="mb-4 flex-col  sm:gap-2 w-full flex ">
-                <div className="">
-                  <label
-                    className="block text-[#728294] text-sm font-semibold mb-2"
-                    htmlFor="password"
-                  >
-                    Password :
-                  </label>
-                </div>
-                <div className="">
-                  <input
-                    className={` bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
-                  "border-red-500" 
-               rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
-                    id="password"
-                    type="password"
-                    required
-                    value={formData.password}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        password: e.target.value,
-                      }))
-                    }
-                    placeholder="*******"
-                  />
-                </div>
-              </div> */}
 
               <div className="mt-8 mb-4 flex flex-col sm:flex-row sm:gap-8 sm:items-center">
                 <div className="sm:flex-[5_5_0%] flex items-center gap-3">
@@ -410,10 +362,10 @@ const ModalUploadDokumen = ({
               </div>
               <p className="text-center text-bodydark2 font-bold">
                 Upload Dokumen Ini Sebagai{" "}
-                {user?.role == "3" ? "User Daerah" : "Direktur"}
+                {user?.role == "3" ? "User Daerah" : "Admin Pusat"}
               </p>
             </div>
-            <div className="hidden flex items-center justify-end p-6 border-t gap-2 border-solid border-black/20 rounded-b">
+            <div className=" flex items-center justify-end p-6 border-t gap-2 border-solid border-black/20 rounded-b">
               <button
                 className="text-red-500 border-red-500 border background-transparent rounded-md font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
                 type="button"

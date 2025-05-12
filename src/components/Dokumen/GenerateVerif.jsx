@@ -319,8 +319,9 @@ const GenerateVerif = async (jsonData, preview) => {
                   textAlign: "center",
                 }}
               >
-                BERITA ACARA VERIFIKASI {"\n"} DINAS KESEHATAN
-                ..........................{"\n"}
+                BERITA ACARA VERIFIKASI {"\n"} DINAS KESEHATAN{" "}
+                {jsonData?.kabupaten}
+                {"\n"}
                 PROPOSAL USULAN ALAT OFTALMOSKOP, OTOSKOP, GARPU TALA, SPRAY{" "}
                 {"\n"}
                 CAN, CO ANALYZER, SANITARIAN KIT, DAN THERMAL ABLATION DI {"\n"}
@@ -340,13 +341,13 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text>
                 Berkaitan dengan usulan proposal pengadaan alat (terlampir) yang
-                diajukan oleh Kepala Dinas Kesehatan ............. pada proyek
-                Strengthening Of Primary Health Care in Indonesia (SOPHI), kami
-                sampaikan bahwa telah dilakukan verifikasi terkait kondisi SDM,
-                Sarana Prasarana, dan Alat Kesehatan, serta kesiapan penggunaan
-                alat – alat tersebut dalam pelaksanaan kegiatan di Puskesmas.
-                Dalam rangka mendukung ini, Dinas Kesehatan juga berkomitmen
-                untuk:{" "}
+                diajukan oleh Kepala Dinas Kesehatan {jsonData?.kabupaten} pada
+                proyek Strengthening Of Primary Health Care in Indonesia
+                (SOPHI), kami sampaikan bahwa telah dilakukan verifikasi terkait
+                kondisi SDM, Sarana Prasarana, dan Alat Kesehatan, serta
+                kesiapan penggunaan alat – alat tersebut dalam pelaksanaan
+                kegiatan di Puskesmas. Dalam rangka mendukung ini, Dinas
+                Kesehatan juga berkomitmen untuk:{" "}
               </Text>
             </View>
           </View>
@@ -550,10 +551,10 @@ const GenerateVerif = async (jsonData, preview) => {
               >
                 Catatan hasil verifikasi:{"\n"}
               </Text>
-              Dari total …… Puskesmas di Kab/Kota ……….., Dinas Kesehatan
-              mengajukan usulan proposal pengadaan alat untuk ........ Puskesmas
-              untuk pemenuhan standar alat dalam penguatan pelayanan kesehatan
-              primer di Puskesmas.
+              Dari total …… Puskesmas di Kab/Kota {jsonData?.kabupaten}, Dinas
+              Kesehatan mengajukan usulan proposal pengadaan alat untuk ........
+              Puskesmas untuk pemenuhan standar alat dalam penguatan pelayanan
+              kesehatan primer di Puskesmas.
             </Text>
           </View>
           <View

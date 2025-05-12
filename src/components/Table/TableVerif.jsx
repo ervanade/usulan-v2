@@ -8,6 +8,7 @@ import {
   PDFViewer,
   Font,
 } from "@react-pdf/renderer";
+import { alkesDokumen } from "../../data/data";
 
 const defaultImage =
   "https://media.istockphoto.com/id/1472819341/photo/background-white-light-grey-total-grunge-abstract-concrete-cement-wall-paper-texture-platinum.webp?b=1&s=170667a&w=0&k=20&c=yoY1jUAKlKVdakeUsRRsNEZdCx2RPIEgaIxSwQ0lS1k=";
@@ -305,7 +306,7 @@ const getAllDetailDistribusi = (distribusi) => {
 };
 
 export const RenderVerifPages = (jsonData, preview) => {
-  const dataBarang = getAllDetailDistribusi(jsonData?.alkes || []);
+  const dataBarang = getAllDetailDistribusi(alkesDokumen || []);
   const pages = [];
   const totalItems = dataBarang?.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);

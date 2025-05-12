@@ -22,6 +22,7 @@ import ModalTTE from "../../components/Modal/ModalTTE.jsx";
 import GenerateDokumen from "../../components/Dokumen/GenerateDokumen.jsx";
 import ModalUploadDokumen from "../../components/Modal/ModalUploadDokumen.jsx";
 import ModalTTENew from "../../components/Modal/ModalTTENew.jsx";
+import GenerateVerif from "../../components/Dokumen/GenerateVerif.jsx";
 
 const PdfUsulanAlkes = () => {
   const user = useSelector((a) => a.auth.user);
@@ -53,6 +54,7 @@ const PdfUsulanAlkes = () => {
   const [selectedPeriode, setSelectedPeriode] = useState(null);
 
   const [showModal, setShowModal] = useState(false);
+  const [uploadTypeModal, setUploadTypeModal] = useState(null); // State untuk tipe upload modal
   const [showModalUpload, setShowModalUpload] = useState(false);
   const [jsonData, setJsonData] = useState({
     id: "",
@@ -76,7 +78,13 @@ const PdfUsulanAlkes = () => {
     });
   };
 
-  const handleModalDokumen = async (e, id, nama_dokumen, kabupaten) => {
+  const handleModalDokumen = async (
+    e,
+    id,
+    nama_dokumen,
+    kabupaten,
+    type = null
+  ) => {
     e.preventDefault();
     setShowModalUpload(true);
     setJsonData({
@@ -84,6 +92,7 @@ const PdfUsulanAlkes = () => {
       nama_dokumen: nama_dokumen,
       kabupaten: kabupaten,
     });
+    setUploadTypeModal(type); // Set tipe upload saat modal dibuka
   };
 
   const fetchDokumenData = async () => {
@@ -517,6 +526,77 @@ const PdfUsulanAlkes = () => {
     }
   };
 
+  const handleBaVerif = async (id) => {
+    const confirmResult = await Swal.fire({
+      title: "Apakah Anda Yakin?",
+      text: "Anda ingin mendownload ba verifikasi. Lanjutkan?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, Download",
+      cancelButtonText: "Batal",
+    });
+
+    // Jika pengguna memilih "Batal", hentikan proses
+    if (!confirmResult.isConfirmed) {
+      return;
+    }
+    try {
+      Swal.fire({
+        title: "Generate dokumen...",
+        text: "Tunggu Sebentar Dokumen Disiapkan...",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const response = await axios({
+        method: "get",
+        url: `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/usulan/${encodeURIComponent(id)}`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+
+      const data = response.data.data;
+      // Lakukan proses generate dokumen berdasarkan data JSON yang diterima
+      let dataJson = {
+        id: data.id,
+        tgl_download: data.tgl_download || defaultDate,
+        tgl_upload: data.tgl_upload || defaultDate,
+        provinsi: data.provinsi || "",
+        kabupaten: data.kabupaten || "",
+        user_download: data.user_download || "",
+        user_upload: data.user_upload || "",
+        distribusi: data.usulan_detail || [],
+        total_alkes: data.total_alkes || [],
+      };
+      const pdfBlob = await GenerateVerif(dataJson, false); // GenerateDokumen harus mengembalikan Blob PDF
+
+      saveAs(pdfBlob, `BA Verifikasi ${dataJson.kabupaten}.pdf`);
+
+      Swal.fire({
+        icon: "success",
+        title: "Download Complete",
+        text: "Dokumen Sukses Di Download",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Download Gagal",
+        text: "Silahkan Coba Beberapa Saat Lagi",
+      });
+      console.log(error);
+    }
+  };
+
   const handleBukaUpload = async (id) => {
     try {
       Swal.fire({
@@ -632,7 +712,13 @@ const PdfUsulanAlkes = () => {
                 title="Upload Dokumen"
                 className="text-white py-1 px-2 bg-primary rounded-md text-xs"
                 onClick={(e) =>
-                  handleModalDokumen(e, row.id, row.nama_dokumen, row.kabupaten)
+                  handleModalDokumen(
+                    e,
+                    row.id,
+                    `Dokumen CHR ${row.kabupaten}`, // Bisa disesuaikan
+                    row.kabupaten,
+                    "chr" // Tambahkan uploadType "chr"
+                  )
                 }
               >
                 Upload
@@ -646,12 +732,14 @@ const PdfUsulanAlkes = () => {
                     handleModalDokumen(
                       e,
                       row.id,
-                      row.nama_dokumen,
-                      row.kabupaten
+                      `Dokumen CHR ${row.kabupaten}`, // Bisa disesuaikan
+                      row.kabupaten,
+                      "chr" // Tambahkan uploadType "chr"
                     )
                   }
                 >
-                  Upload
+                  Upload <br />
+                  CHR
                 </button>
                 <button
                   title="Buka Upload"
@@ -730,7 +818,7 @@ const PdfUsulanAlkes = () => {
             </button> */}
             <button
               title="Download"
-              className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-22 rounded-md font-medium text-xs"
+              className="text-white bg-blue-600 hover:bg-blue-700 py-1 w-22 rounded-md font-medium text-xs"
               onClick={() => handleDownload(row.id)} // Tambahkan handler download di sini
             >
               Download <br /> Proposal
@@ -762,61 +850,62 @@ const PdfUsulanAlkes = () => {
         selector: (row) => (row?.tgl_upload && row?.file_upload ? "1" : "0"),
         sortable: true,
         cell: (row) => (
-          <div className="flex items-center space-x-2">
-            {/* <button
-              title="Input"
-              className="text-green-500 hover:text-green-700"
-            >
-              <Link to="/data-verifikasi/form-distribusi">
-                <FaPlus />
-              </Link>
-            </button> */}
-            {/* <button
-              title="Lihat"
-              className="text-[#16B3AC] hover:text-cyan-500"
-            >
-              <Link
-                to={`/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
-                  encryptId(row.id)
-                )}`}
-              >
-                <FaEye size={20} />
-              </Link>
-            </button> */}
-            {row?.tgl_upload && row?.file_upload ? (
+          <div className="flex flex-col items-center space-y-1">
+            {!row?.tgl_upload || !row?.file_upload ? (
               <button
-                title="Download"
-                className="text-white bg-blue-600 hover:bg-blue-700 py-2 w-20 rounded-md font-medium text-xs"
-                onClick={() => handleBukaUpload(row.id)} // Tambahkan handler download di sini
-              >
-                Buka
-                <br /> Upload
-              </button>
-            ) : (
-              ""
-            )}
-            {/* {user.role == "3" ? (
-              <button
-                title="Upload Dokumen"
-                className="text-white py-2 w-20 bg-primary rounded-md"
+                title="Upload Dokumen Baru"
+                className="text-white py-1 px-2 bg-cyan-600 hover:bg-cyan-700 rounded-md text-xs"
                 onClick={(e) =>
-                  handleModalDokumen(e, row.id, row.nama_dokumen, row.kabupaten)
+                  handleModalDokumen(
+                    e,
+                    row.id,
+                    `Dokumen Proposal ${row.kabupaten}`, // Bisa disesuaikan
+                    row.kabupaten,
+                    "proposal" // Tambahkan uploadType "chr"
+                  )
                 }
               >
-                Upload <br />
-                Dokumen
+                Upload
               </button>
-            ) : (!row.tgl_upload || !row.file_upload) &&
-              (user.role == "1" || user.role == "5") ? (
-              "Belum Upload"
             ) : (
-              ""
-            )} */}
+              <div className="flex space-x-1">
+                <button
+                  title="Upload Dokumen Baru"
+                  className="text-white py-1 px-2 bg-blue-600 hover:bg-blue-700 rounded-md text-xs"
+                  onClick={(e) =>
+                    handleModalDokumen(
+                      e,
+                      row.id,
+                      `Dokumen Proposal ${row.kabupaten}`, // Bisa disesuaikan
+                      row.kabupaten,
+                      "proposal" // Tambahkan uploadType "chr"
+                    )
+                  }
+                >
+                  Upload <br />
+                  Proposal
+                </button>
+                <button
+                  title="Buka Upload"
+                  className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
+                  onClick={() => handleBukaUpload(row.id)}
+                >
+                  Buka
+                </button>
+              </div>
+            )}
+            {/* Menampilkan status upload (opsional) */}
+            {row?.tgl_upload && row?.file_upload && (
+              <div className="text-green-500 text-xs">Sudah Upload</div>
+            )}
+            {(!row?.tgl_upload || !row?.file_upload) && (
+              <div className="text-red-500 text-xs">Belum Upload</div>
+            )}
           </div>
         ),
         ignoreRowClick: true,
         button: true,
-        minWidth: "100px",
+        minWidth: "120px",
       },
       {
         name: <div className="text-wrap px-1">Download BA Verif</div>,
@@ -827,7 +916,7 @@ const PdfUsulanAlkes = () => {
             <button
               title="Download"
               className="text-white bg-cyan-600 hover:bg-cyan-700 py-1 px-3 rounded-md font-medium text-xs"
-              onClick={() => handleDownload(row.id)} // Pastikan handleDownload terdefinisi
+              onClick={() => handleBaVerif(row.id)} // Pastikan handleDownload terdefinisi
             >
               Download
               <br />
@@ -866,12 +955,14 @@ const PdfUsulanAlkes = () => {
                     handleModalDokumen(
                       e,
                       row.id,
-                      row.nama_dokumen,
-                      row.kabupaten
+                      `Dokumen BA Verif ${row.kabupaten}`, // Bisa disesuaikan
+                      row.kabupaten,
+                      "baverif" // Tambahkan uploadType "chr"
                     )
                   }
                 >
-                  Upload
+                  Upload <br />
+                  Ba Verif
                 </button>
                 <button
                   title="Buka Upload"
@@ -1096,6 +1187,7 @@ const PdfUsulanAlkes = () => {
         onClose={() => setShowModalUpload(false)}
         jsonData={jsonData}
         user={user}
+        uploadType={uploadTypeModal} // State untuk menyimpan tipe upload yang akan digunakan modal
       />
       <div className="rounded-md flex flex-col gap-2 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex justify-between mb-2 items-center">
