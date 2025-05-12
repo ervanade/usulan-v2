@@ -332,6 +332,879 @@ const GenerateDokumen = async (jsonData, preview) => {
           style={{
             paddingHorizontal: 16,
             paddingVertical: 16,
+            height: 850,
+          }}
+        >
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>1.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                Kerangka Proposal SOPHI
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+                marginVertical: 16,
+              }}
+            >
+              <Text style={{ ...styles.helvetica, textAlign: "center" }}>
+                OUTLINE PROPOSAL USULAN PEMENUHAN ALAT KESEHATAN {"\n"}
+                DI PUSKESMAS/ PUSKESMAS PEMBANTU/ POSYANDU {"\n"}
+                KABUPATEN/ KOTA ………
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>A.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                LATAR BELAKANG
+              </Text>
+            </View>
+            {/* <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Kementerian Kesehatan telah melakukan transformasi sistem
+                kesehatan melalui 6 pilar, dengan pilar pertama yaitu
+                transformasi layanan primer. Transformasi layanan primer
+                difokuskan untuk meningkatkan layanan promotif dan preventif,
+                termasuk upaya pencegahan, deteksi dini, promosi kesehatan,
+                membangun infrastruktur, melengkapi sarana, prasarana, SDM,
+                serta memperkuat manajemen di seluruh layanan primer.
+                Transformasi layanan kesehatan primer yang akan dijalankan
+                menerapkan konsep kewilayahan difokuskan pada pendekatan siklus
+                hidup serta mendekatkan layanan kesehatan melalui jejaring
+                hingga ke tingkat dusun.
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Menindaklanjuti usulan kami sebelumnya di tahun 2023 dan untuk
+                pelaksanaan Penyelenggaraan pelayanan kesehatan primer
+                dilaksanakan di Posyandu tingkat dusun/RT/RW, dan Puskesmas di
+                tingkat kecamatan. Kami melakukan perbaikan usulan terhadap
+                alat-alat kesehatan di Puskesmas, dan Posyandu yang sebelumnya
+                sudah diusulkan dan perlu penyesuain terhadap kondisi di tahun
+                2025 ini.
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Keterbatasan sumber daya dan pembiayaan terutama di sisi
+                pemerintah daerah mengakibatkan pemenuhan alat kesehatan belum
+                dapat dilakukan dalam kurun waktu cepat untuk mendukung
+                transformasi layanan primer. Atas dasar pertimbangan tersebut,
+                tahun 2025 ini kami mengajukan perbaikan usulan pemenuhan alat
+                kesehatan di puskesmas, pustu, dan posyandu kepada Kementerian
+                Kesehatan.
+              </Text>
+            </View> */}
+          </View>
+
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                marginBottom: 8,
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>B.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                TUJUAN
+              </Text>
+            </View>
+
+            {/* <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>1.</Text>
+              <Text>
+                Terpenuhinya jumlah dan jenis alat kesehatan di puskesmas sesuai
+                standar.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>2.</Text>
+              <Text>
+                Terpenuhinya jumlah dan jenis alat kesehatan di puskesmas
+                pembantu sesuai standar.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>3.</Text>
+              <Text>
+                Terpenuhinya jumlah dan jenis alat kesehatan di posyandu sesuai
+                standar.
+              </Text>
+            </View> */}
+          </View>
+
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                marginBottom: 8,
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>C.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                Data Usulan Alat Kesehatan
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>1.</Text>
+              <Text>Data usulan alat, jumlah dan peralatan pada puskesmas</Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>2.</Text>
+              <Text>
+                Data usulan alat, jumlah dan peralatan pada puskesmas pembantu
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>3.</Text>
+              <Text>Data usulan alat, jumlah dan peralatan pada posyandu</Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                marginBottom: 8,
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>D.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                Ketersediaan SDM Kesehatan
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>1.</Text>
+              <Text>Data ketersediaan SDM kesehatan pada puskesmas</Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>2.</Text>
+              <Text>
+                Data ketersediaan SDM kesehatan pada puskesmas pembantu
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>3.</Text>
+              <Text>Data ketersediaan SDM kesehatan pada posyandu</Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                marginBottom: 8,
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>E.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                Ketersediaan Sarpras Pendukung
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>1.</Text>
+              <Text>Data ketersediaan sarana dan prasarana pada puskesmas</Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>2.</Text>
+              <Text>
+                Data ketersediaan sarana dan prasarana pada puskesmas pembantu
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>3.</Text>
+              <Text>Data ketersediaan sarana dan prasarana pada posyandu</Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                marginBottom: 8,
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>F.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                Penutup
+              </Text>
+            </View>
+          </View>
+
+          {/* <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                marginBottom: 8,
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>C.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                Usulan Peralatan dan Ketersediaan SDM
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.helvetica,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>1.</Text>
+              <Text>
+                Data usulan alat, jumlah dan peralatan pada puskesmas.
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 40,
+                display: "flex",
+                marginTop: 4,
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text>
+                Usulan peralatan puskesmas dalam lampiran ini diusulkan dengan
+                memasukkan kriteria SDM di puskesmas lengkap yang terdiri dari
+                minimal 5 jenis tenaga kesehatan yaitu terdiri dari: Dokter,
+                Dokter Gigi, Bidan, Perawat dan ATLM (Ahli Teknisi Laboratorium
+                Medik). {"\n"}
+                <Text style={{ ...styles.helvetica }}>Nama alat terlampir</Text>
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.helvetica,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                marginTop: 8,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>2.</Text>
+              <Text>
+                Data usulan alat, jumlah dan peralatan pada puskesmas pembantu.
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 40,
+                display: "flex",
+                marginTop: 4,
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text>
+                Usulan peralatan puskesmas pembantu dalam lampiran ini diusulkan
+                dengan memasukkan kriteria SDM di puskesmas pembantu lengkap
+                sesuai data SISDMK per Juni 2025 yang terdiri dari minimal 2
+                jenis tenaga kesehatan yaitu terdiri dari Bidan, dan Perawat.{" "}
+                {"\n"}
+                <Text style={{ ...styles.helvetica }}>Nama alat terlampir</Text>
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.helvetica,
+                lineHeight: 1.7,
+                marginTop: 8,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>3.</Text>
+              <Text>Data usulan alat, jumlah dan peralatan pada posyandu.</Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 40,
+                display: "flex",
+                marginTop: 4,
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text>
+                Usulan peralatan posyandu dalam lampiran ini diusulkan dengan
+                memasukkan kriteria posyandu aktif (memiliki 5 orang kader).{" "}
+                {"\n"}
+                <Text style={{ ...styles.helvetica }}>Nama alat terlampir</Text>
+              </Text>
+            </View>
+          </View> */}
+
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                marginBottom: 8,
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>G.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                Lampiran
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 16,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Narahubung dari kegiatan ini adalah: {"\n"}
+                Nama:{"\n"}
+                No.HP :{"\n"}
+                Bagian:{"\n"}
+              </Text>
+            </View>
+          </View>
+
+          {/* <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>D.</Text>
+              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
+                PENUTUP
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Demikian proposal yang dapat kami usulkan dengan kondisi
+                sebenarnya. Besar harapan kami usulan alat kesehatan di
+                puskesmas, puskesmas pembantu dan posyandu ini dapat dipenuhi
+                oleh Kementerian Kesehatan. Terima kasih.
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 16,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Narahubung dari kegiatan ini adalah: {"\n"}
+                Nama:{"\n"}
+                Jabatan:{"\n"}
+                No.HP :{"\n"}
+              </Text>
+            </View>
+          </View> */}
+
+          <Text
+            style={{
+              ...styles.text,
+              textAlign: "right",
+              paddingRight: 92,
+              marginTop: 16,
+            }}
+          >
+            Tempat, ............................
+          </Text>
+
+          <View style={{ ...styles.ttdContainer, marginTop: 0 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ ...styles.helvetica, textAlign: "center" }}>
+                Direviu atau diverifikasi:
+              </Text>
+              <Text style={{ ...styles.text, textAlign: "center" }}>
+                Inspektur Daerah {"\n"} {jsonData?.kabupaten || ""}
+              </Text>
+              <View style={{ ...styles.imageTtd, marginVertical: 0 }}></View>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  marginTop: 12,
+                  fontSize: 8,
+                  paddingRight: 64,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                Nama
+              </Text>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  paddingRight: 70,
+                  fontSize: 8,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                NIP
+              </Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ ...styles.helvetica, textAlign: "center" }}>
+                Yang Mengajukan:
+              </Text>
+              <Text style={{ ...styles.text, textAlign: "center" }}>
+                Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
+              </Text>
+              <View style={{ ...styles.imageTtd, marginVertical: 0 }}></View>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  marginTop: 12,
+                  fontSize: 8,
+                  paddingRight: 64,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                Nama
+              </Text>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  paddingRight: 70,
+                  fontSize: 8,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                NIP
+              </Text>
+            </View>
+          </View>
+          <View style={styles.ttdContainer}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ ...styles.helvetica, textAlign: "center" }}>
+                Ditelaah:{" "}
+              </Text>
+              <Text style={{ ...styles.text, textAlign: "center" }}>
+                Kepala Bappeda {"\n"} {jsonData?.kabupaten || ""}
+              </Text>
+              <View style={{ ...styles.imageTtd, marginVertical: 0 }}></View>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  marginTop: 12,
+                  fontSize: 8,
+                  paddingRight: 64,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                Nama
+              </Text>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  paddingRight: 70,
+                  fontSize: 8,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                NIP
+              </Text>
+            </View>
+            <View style={{ flex: 1 }}></View>
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <Text>
+            Downloaded on {downloadDate}. [username ={" "}
+            {jsonData?.user_download || ""}]
+          </Text>
+        </View>
+      </Page>
+      {/* <Page size="FOLIO" style={styles.page}>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 16,
             height: 800,
           }}
         >
@@ -770,9 +1643,9 @@ const GenerateDokumen = async (jsonData, preview) => {
             {jsonData?.user_download || ""}]
           </Text>
         </View>
-      </Page>
+      </Page> */}
 
-      <Page size="FOLIO" style={styles.page}>
+      {/* <Page size="FOLIO" style={styles.page}>
         <Text style={{ ...styles.watermark, left: preview ? "25%" : "39%" }}>
           {preview ? "PREVIEW" : "FINAL"}
         </Text>
@@ -1092,7 +1965,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             {jsonData?.user_download || ""}]
           </Text>
         </View>
-      </Page>
+      </Page> */}
       {RenderAlkesPages(jsonData, preview)}
 
       <Page size="FOLIO" style={styles.page}>
