@@ -254,6 +254,7 @@ const UsulanAlkes = () => {
       });
 
       setFilteredData(response.data.data);
+      setData(response.data.data);
     } catch (error) {
       setError(true);
       setFilteredData([]);

@@ -151,7 +151,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   }`}
                 >
                   <TbReport size={20} />
-                  PDF Usulan Alkes
+                  Dokumen Usulan
                 </NavLink>
               </li>
               {/* <li>

@@ -9,6 +9,7 @@ import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.jsx";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
 import {
+  AlasanOptions,
   dayaOptions,
   pelayananOptions,
   SelectOptions,
@@ -289,6 +290,28 @@ const EditUsulan = () => {
     },
     [user?.token]
   );
+
+  const handleAlasanChange = (rowId, value) => {
+    setEditedData((prev) => ({
+      ...prev,
+      [rowId]: {
+        ...prev[rowId],
+        alasan: value,
+        // Reset catatan jika bukan "Lainnya"
+        ...(value !== "Lainnya" && { catatanAlasan: undefined }),
+      },
+    }));
+  };
+
+  const handleCatatanAlasanChange = (rowId, value) => {
+    setEditedData((prev) => ({
+      ...prev,
+      [rowId]: {
+        ...prev[rowId],
+        catatanAlasan: value,
+      },
+    }));
+  };
 
   const fetchPuskesmas = async (idKecamatan) => {
     try {
@@ -671,6 +694,10 @@ const EditUsulan = () => {
         editedData[row.id]?.usulan !== undefined
           ? editedData[row.id].usulan
           : row.usulan || 0,
+      alasan:
+        editedData[row.id]?.alasan === "Lainnya"
+          ? editedData[row.id]?.catatanAlasan
+          : editedData[row.id]?.alasan ?? null,
     }));
   };
 
@@ -718,6 +745,42 @@ const EditUsulan = () => {
   // Contoh penggunaan getResultData (misalnya, saat tombol "Simpan" ditekan)
   const handleSimpan = async (e) => {
     e.preventDefault();
+    const validationErrors = {};
+    let hasError = false;
+
+    filteredData.forEach((row) => {
+      const standard =
+        selectedPelayanan?.value === "Non Rawat Inap"
+          ? row.standard_non_inap
+          : row.standard_rawat_inap;
+
+      const masihBerfungsi =
+        editedData[row.id]?.berfungsi || row.berfungsi || 0;
+      const usulan = editedData[row.id]?.usulan || row.usulan || 0;
+
+      if (standard !== null && usulan < standard - masihBerfungsi) {
+        if (!editedData[row.id]?.alasan) {
+          validationErrors[row.id] = "Harap pilih alasan";
+          hasError = true;
+        } else if (
+          editedData[row.id]?.alasan === "Lainnya" &&
+          !editedData[row.id]?.catatanAlasan?.trim()
+        ) {
+          validationErrors[row.id] = "Harap isi alasan lainnya";
+          hasError = true;
+        }
+      }
+    });
+
+    if (hasError) {
+      setErrors(validationErrors);
+      Swal.fire({
+        icon: "warning",
+        title: "Perhatian",
+        text: "Harap lengkapi alasan untuk usulan yang kurang dari standar",
+      });
+      return;
+    }
     Swal.fire({
       title: "Perhatian",
       text: "Data yang diisi adalah sebenarnya dan dapat dipertanggungjawabkan?",
@@ -905,6 +968,57 @@ const EditUsulan = () => {
         },
         minWidth: "100px",
         maxWidth: "200px",
+      },
+      {
+        name: <div className="text-wrap">Alasan Tidak Mengusulkan</div>,
+        cell: (row) => {
+          const standard =
+            selectedPelayanan?.value === "Non Rawat Inap"
+              ? row.standard_non_inap
+              : row.standard_rawat_inap;
+
+          const masihBerfungsi =
+            editedData[row.id]?.berfungsi || row.berfungsi || 0;
+          const usulan = editedData[row.id]?.usulan || row.usulan || 0;
+          const showAlasan =
+            standard !== null && usulan < standard - masihBerfungsi;
+
+          if (!showAlasan)
+            return <div className="text-xs text-gray-400">-</div>;
+
+          return (
+            <div className="w-full">
+              <select
+                value={editedData[row.id]?.alasan || ""}
+                onChange={(e) => handleAlasanChange(row.id, e.target.value)}
+                className="border border-primary focus:border-primary rounded p-1 text-sm w-full focus-within:border-primary active:border-primary"
+              >
+                <option value="">Pilih Alasan</option>
+                {AlasanOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+
+              {editedData[row.id]?.alasan === "Lainnya" && (
+                <div className="mt-1">
+                  <input
+                    type="text"
+                    value={editedData[row.id]?.catatanAlasan || ""}
+                    onChange={(e) =>
+                      handleCatatanAlasanChange(row.id, e.target.value)
+                    }
+                    placeholder="Ketik alasan lainnya"
+                    className="border border-primary rounded p-1 text-sm w-full mt-1"
+                    required
+                  />
+                </div>
+              )}
+            </div>
+          );
+        },
+        width: "250px",
       },
     ],
     [editedData, errors, selectedPelayanan, filteredData]

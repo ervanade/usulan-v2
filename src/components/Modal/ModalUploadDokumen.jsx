@@ -18,6 +18,7 @@ const ModalUploadDokumen = ({
   editIndex,
   jsonData,
   user,
+  fetchDokumenData,
   uploadType,
 }) => {
   const [error, setError] = useState("");
@@ -57,7 +58,13 @@ const ModalUploadDokumen = ({
 
     const formDataToSend = new FormData();
     if (formData.fileDokumen) {
-      formDataToSend.append("file_upload", formData.fileDokumen);
+      if (uploadType == "chr") {
+        formDataToSend.append("file_chr", formData.fileDokumen);
+      } else if (uploadType == "baverif") {
+        formDataToSend.append("file_verifikasi", formData.fileDokumen);
+      } else {
+        formDataToSend.append("file_upload", formData.fileDokumen);
+      }
     }
     await axios({
       method: "post",
@@ -69,6 +76,7 @@ const ModalUploadDokumen = ({
     })
       .then(function (response) {
         Swal.fire("Dokumen Berhasil diUpload!", "", "success");
+        fetchDokumenData();
         // Anda mungkin perlu memanggil fungsi untuk memperbarui data di tabel parent
         onClose(); // Tutup modal setelah berhasil upload
       })
@@ -141,14 +149,14 @@ const ModalUploadDokumen = ({
     if (uploadType === "chr") {
       setModalTitle(`Upload Dokumen CHR ${jsonData?.kabupaten}`);
       setUploadApiUrl(
-        `${import.meta.env.VITE_APP_API_URL}/api/usulan/upload/chr/${
+        `${import.meta.env.VITE_APP_API_URL}/api/usulan/uploadchr/${
           formData.id_dokumen
         }`
       );
     } else if (uploadType === "baverif") {
       setModalTitle(`Upload BA Verifikasi ${jsonData?.kabupaten}`);
       setUploadApiUrl(
-        `${import.meta.env.VITE_APP_API_URL}/api/usulan/upload/baverif/${
+        `${import.meta.env.VITE_APP_API_URL}/api/usulan/uploadverif/${
           formData.id_dokumen
         }`
       );
