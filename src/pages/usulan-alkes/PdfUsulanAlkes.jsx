@@ -661,8 +661,8 @@ const PdfUsulanAlkes = () => {
 
           // Menentukan nama file
           const fileName = dataJson?.kabupaten
-            ? `Dokumen Upload Usulan ${dataJson.kabupaten}.pdf`
-            : "dokumen.pdf";
+            ? `${fileNamePrefix} ${dataJson.kabupaten}.pdf`
+            : `${fileNamePrefix}.pdf`;
 
           // Menggunakan file-saver untuk menyimpan file
           saveAs(blob, fileName);
