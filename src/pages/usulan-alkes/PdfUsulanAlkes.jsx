@@ -1122,11 +1122,15 @@ const PdfUsulanAlkes = () => {
 
   return (
     <div>
-      <Breadcrumb pageName="PDF Usulan Alkes" linkBack="/pdf-usulan-alkes" />
+      <Breadcrumb pageName="Dokumen Usulan" linkBack="/pdf-usulan-alkes" />
       <div className="flex flex-col items-center justify-center w-full tracking-tight mb-6">
         <h1 className="font-normal mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
-          PDF Usulan Alkes
+          Dokumen Usulan
         </h1>
+        <p className="text-sm text-red-500 italic mb-3 text-center font-medium">
+          Batas pengisian dan unggah: 20 Mei 2025. <br />
+          Lewat tanggal tersebut pengunggahan dokumen akan dikunci.
+        </p>
         <div className="flex items-center lg:items-end mt-3 gap-3 flex-col lg:flex-row">
           <div className="flex items-center gap-3 flex-col sm:flex-row">
             <div className="text-base">
@@ -1182,29 +1186,31 @@ const PdfUsulanAlkes = () => {
                 }
               />
             </div>
-            <div>
-              <label
-                className="block text-[#728294] text-base font-normal mb-2"
-                htmlFor="kota"
-              >
-                Periode
-              </label>
-              <Select
-                options={dataPeriode}
-                value={selectedPeriode}
-                onChange={handlePeriodeChange}
-                placeholder="Pilih Periode"
-                className="w-64 sm:w-32 xl:w-60"
-                theme={(theme) => ({
-                  ...theme,
-                  colors: {
-                    ...theme.colors,
-                    primary25: "lightgrey",
-                    primary: "grey",
-                  },
-                })}
-              />
-            </div>
+            {user?.role == "1" && (
+              <div>
+                <label
+                  className="block text-[#728294] text-base font-normal mb-2"
+                  htmlFor="kota"
+                >
+                  Periode
+                </label>
+                <Select
+                  options={dataPeriode}
+                  value={selectedPeriode}
+                  onChange={handlePeriodeChange}
+                  placeholder="Pilih Periode"
+                  className="w-64 sm:w-32 xl:w-60"
+                  theme={(theme) => ({
+                    ...theme,
+                    colors: {
+                      ...theme.colors,
+                      primary25: "lightgrey",
+                      primary: "grey",
+                    },
+                  })}
+                />
+              </div>
+            )}
           </div>
           <button
             onClick={handleSearchClick}

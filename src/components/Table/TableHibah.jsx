@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     verticalAlign: "middle",
   },
   tableCell: {
-    margin: 5,
+    margin: 3.5,
     fontSize: 8,
     lineHeight: 1,
     textAlign: "center",
@@ -318,7 +318,7 @@ export const RenderHibahPages = (jsonData, preview) => {
               style={{
                 paddingVertical: 0,
                 marginTop: 0,
-                height: 800,
+                height: 865,
               }}
             >
               <View

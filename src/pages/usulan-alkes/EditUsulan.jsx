@@ -296,7 +296,7 @@ const EditUsulan = () => {
       ...prev,
       [rowId]: {
         ...prev[rowId],
-        alasan: value,
+        keterangan_usulan: value,
         // Reset catatan jika bukan "Lainnya"
         ...(value !== "Lainnya" && { catatanAlasan: undefined }),
       },
@@ -435,140 +435,39 @@ const EditUsulan = () => {
   };
 
   useEffect(() => {
-    if (formData.id_provinsi && dataProvinsi.length > 0) {
-      const initialOption = dataProvinsi?.find(
-        (prov) => prov.value == formData.id_provinsi
-      );
-      if (initialOption) {
-        setSelectedProvinsi({
-          label: initialOption.label,
-          value: initialOption.value,
-        });
-      }
+    if (formData?.usulan) {
+      const initialEditedData = {};
+      formData.usulan.forEach((item) => {
+        const isStandardAlasan = AlasanOptions.some(
+          (opt) => opt.value === item.keterangan_usulan
+        );
+
+        initialEditedData[item.id] = {
+          berfungsi: item.berfungsi ?? 0,
+          usulan: item.usulan ?? 0,
+          keterangan_usulan: isStandardAlasan
+            ? item.keterangan_usulan
+            : item.keterangan_usulan === null ||
+              item.keterangan_usulan === false ||
+              item.keterangan_usulan === ""
+            ? ""
+            : "Lainnya",
+          catatanAlasan: isStandardAlasan
+            ? undefined
+            : item.keterangan_usulan === null ||
+              item.keterangan_usulan === false ||
+              item.keterangan_usulan === ""
+            ? undefined
+            : item.keterangan_usulan,
+        };
+        console.log(
+          `initialEditedData untuk ID ${item.id}:`,
+          initialEditedData[item.id]
+        );
+      });
+      setEditedData(initialEditedData);
     }
-    if (formData.id_kecamatan && dataKecamatan.length > 0) {
-      const initialOption = dataKecamatan.find(
-        (kec) => kec.value == formData.id_kecamatan
-      );
-      if (initialOption) {
-        setSelectedKecamatan({
-          label: initialOption.label,
-          value: initialOption.value,
-        });
-      }
-    }
-    if (formData.id_kabupaten && dataKota.length > 0) {
-      const initialOption = dataKota.find(
-        (kec) => kec.value == formData.id_kabupaten
-      );
-
-      if (initialOption) {
-        setSelectedKota({
-          label: initialOption.label,
-          value: initialOption.value,
-          provinsi: initialOption.provinsi,
-        });
-      }
-    }
-    if (formData.id && dataPuskesmas.length > 0) {
-      const initialOption = dataPuskesmas.find(
-        (kec) => kec.value == formData.id
-      );
-      if (initialOption) {
-        setSelectedPuskesmas({
-          label: initialOption.label,
-          value: initialOption.value,
-        });
-      }
-    }
-
-    if (formData.pelayanan) {
-      const initialOption = pelayananOptions.find(
-        (kec) => kec.value == formData.pelayanan
-      );
-
-      if (initialOption) {
-        setSelectedPelayanan({
-          label: initialOption.label,
-          value: initialOption.value,
-        });
-      }
-    }
-
-    if (formData.ketersediaan_listrik) {
-      const initialOption = SelectOptions.find(
-        (kec) => kec.value == formData.ketersediaan_listrik
-      );
-
-      if (initialOption) {
-        setSelectedListrik({
-          label: initialOption.label,
-          value: initialOption.value,
-        });
-      }
-    }
-
-    if (formData.kapasitas_listrik) {
-      const initialOption = dayaOptions.find(
-        (kec) => kec.value == formData.kapasitas_listrik
-      );
-
-      if (initialOption) {
-        setSelectedDaya({
-          label: initialOption.label,
-          value: initialOption.value,
-        });
-      }
-    }
-
-    if (formData.internet) {
-      const initialOption = SelectOptions.find(
-        (kec) => kec.value == formData.internet
-      );
-
-      if (initialOption) {
-        setSelectedInternet({
-          label: initialOption.label,
-          value: initialOption.value,
-        });
-      }
-    }
-
-    if (formData.id_kriteria && dataKriteria.length > 0) {
-      const initialSelectedKriteria = formData.id_kriteria
-        .map((kriteriaId) => {
-          const foundKriteria = dataKriteria.find(
-            (kriteria) => kriteria.value == kriteriaId
-          );
-          return foundKriteria
-            ? { value: foundKriteria.value, label: foundKriteria.label }
-            : null;
-        })
-        .filter(Boolean); // Filter out null jika ID tidak ditemukan di dataKriteria
-      console.log(initialSelectedKriteria);
-      setSelectedKriteria(initialSelectedKriteria);
-    }
-
-    if (idPeriode && dataPeriode.length > 0) {
-      const initialOption = dataPeriode.find((kec) => kec.value == idPeriode);
-
-      if (initialOption) {
-        setSelectedPeriode({
-          label: initialOption.label,
-          value: initialOption.value,
-          stat: initialOption.stat,
-        });
-      }
-    }
-  }, [
-    formData,
-    dataProvinsi,
-    dataKecamatan,
-    dataKota,
-    dataPuskesmas,
-    dataKriteria,
-    dataPeriode,
-  ]);
+  }, [formData, AlasanOptions]);
   // useEffect(() => {
   //   if (formData.id_provinsi) {
   //     fetchKota(formData.id_provinsi);
@@ -613,8 +512,6 @@ const EditUsulan = () => {
 
   const handleInputChange = (rowId, columnName, value) => {
     const newValue = parseInt(value, 10); // Konversi ke number, termasuk 0
-
-    // Jika newValue adalah NaN (misalnya, input kosong), set ke 0
     const finalValue = isNaN(newValue) ? 0 : newValue;
 
     // Ambil standard berdasarkan selectedPelayanan
@@ -635,53 +532,201 @@ const EditUsulan = () => {
         ...prevData,
         [rowId]: {
           ...prevData[rowId],
-          [columnName]: finalValue, // Gunakan finalValue, termasuk 0
+          [columnName]: finalValue,
         },
       }));
       setErrors((prevErrors) => ({
         ...prevErrors,
-        [rowId]: "", // Hapus pesan error jika standard null
+        [rowId]: "",
       }));
       return;
     }
 
     // Validasi untuk usulan
     if (columnName === "usulan") {
-      const maxUsulan = Math.max(0, standard - masihBerfungsi); // Hitung maksimal usulan
+      const maxUsulan = Math.max(0, standard - masihBerfungsi);
+
+      // Validasi nilai usulan
       if (finalValue > maxUsulan) {
         setErrors((prevErrors) => ({
           ...prevErrors,
           [rowId]: `Usulan tidak boleh melebihi ${maxUsulan}`,
         }));
-        return; // Hentikan proses jika usulan melebihi batas
+        return;
       } else {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          [rowId]: "", // Hapus pesan error jika valid
+          [rowId]: "",
         }));
+      }
+
+      // Logika keterangan_usulan ketika usulan kurang dari standar
+      const requiredUsulan = standard - masihBerfungsi;
+
+      // Jika usulan kurang dari standar dan belum ada keterangan_usulan
+      if (
+        finalValue < requiredUsulan &&
+        !editedData[rowId]?.keterangan_usulan
+      ) {
+        // Set state untuk men-trigger tampilan input keterangan_usulan
+        setEditedData((prev) => ({
+          ...prev,
+          [rowId]: {
+            ...prev[rowId],
+            [columnName]: finalValue,
+            needAlasan: true, // Flag untuk menunjukkan perlu keterangan_usulan
+          },
+        }));
+        return;
+      }
+
+      // Jika usulan memenuhi standar dan ada keterangan_usulan, hapus keterangan_usulan
+      if (
+        finalValue >= requiredUsulan &&
+        editedData[rowId]?.keterangan_usulan
+      ) {
+        setEditedData((prev) => ({
+          ...prev,
+          [rowId]: {
+            ...prev[rowId],
+            [columnName]: finalValue,
+            keterangan_usulan: undefined,
+            catatanAlasan: undefined,
+            needAlasan: false,
+          },
+        }));
+        return;
       }
     }
 
-    // Jika masih_berfungsi diubah dan sudah memenuhi atau melebihi standard, set usulan ke 0
+    // Jika masih_berfungsi diubah dan memenuhi standar
     if (columnName === "berfungsi" && finalValue >= standard) {
       setEditedData((prevData) => ({
         ...prevData,
         [rowId]: {
           ...prevData[rowId],
-          berfungsi: finalValue, // Gunakan finalValue, termasuk 0
-          usulan: 0, // Set usulan ke 0
+          berfungsi: finalValue,
+          usulan: 0,
+          ...(editedData[rowId]?.keterangan_usulan && {
+            keterangan_usulan: undefined,
+            catatanAlasan: undefined,
+          }),
         },
       }));
     } else {
+      // Update nilai biasa
       setEditedData((prevData) => ({
         ...prevData,
         [rowId]: {
           ...prevData[rowId],
-          [columnName]: finalValue, // Gunakan finalValue, termasuk 0
+          [columnName]: finalValue,
         },
       }));
     }
   };
+
+  [
+    {
+      id: 88451,
+      id_usulan: 2024,
+      id_puskesmas: 3,
+      id_alkes: 8,
+      berfungsi: 0,
+      usulan: 0,
+      periode_id: 2,
+      nama_alkes: "Elektrokardiograf (EKG)",
+      jenis_alkes: "EKG",
+      kategori: "EKG",
+      satuan: "unit",
+      tahun: "2025",
+      standard_rawat_inap: 1,
+      standard_non_inap: 1,
+      harga: 1000,
+      keterangan_alkes:
+        "[https://drive.google.com/file/d/1EizZI9-aUpkZQuJmzj9rYGZBAKhSwssR/view?usp=drive_link]",
+      keterangan_usulan: "",
+      kriteria_alkes: [
+        {
+          id_alkes: 8,
+          id: 1,
+          kriteria: "Dokter",
+          stat: 1,
+          created_at: "2025-05-10 05:00:29",
+          updated_at: null,
+        },
+        {
+          id_alkes: 8,
+          id: 3,
+          kriteria: "Bidan",
+          stat: 1,
+          created_at: "2025-05-10 05:00:53",
+          updated_at: null,
+        },
+        {
+          id_alkes: 8,
+          id: 2,
+          kriteria: "Perawat",
+          stat: 1,
+          created_at: "2025-05-10 05:00:44",
+          updated_at: null,
+        },
+      ],
+    },
+    {
+      id: 98719,
+      id_usulan: 2024,
+      id_puskesmas: 3,
+      id_alkes: 9,
+      berfungsi: 0,
+      usulan: 0,
+      periode_id: 2,
+      nama_alkes: "Chemistry Analyzer",
+      jenis_alkes: "Chemistry Analyzer",
+      kategori: "Chemistry Analyzer",
+      satuan: "1",
+      tahun: "2025",
+      standard_rawat_inap: 1,
+      standard_non_inap: 1,
+      harga: 0,
+      keterangan_alkes:
+        "[https://drive.google.com/file/d/1EizZI9-aUpkZQuJmzj9rYGZBAKhSwssR/view?usp=sharing]",
+      keterangan_usulan: "",
+      kriteria_alkes: [
+        {
+          id_alkes: 9,
+          id: 1,
+          kriteria: "Dokter",
+          stat: 1,
+          created_at: "2025-05-10 05:00:29",
+          updated_at: null,
+        },
+        {
+          id_alkes: 9,
+          id: 3,
+          kriteria: "Bidan",
+          stat: 1,
+          created_at: "2025-05-10 05:00:53",
+          updated_at: null,
+        },
+        {
+          id_alkes: 9,
+          id: 2,
+          kriteria: "Perawat",
+          stat: 1,
+          created_at: "2025-05-10 05:00:44",
+          updated_at: null,
+        },
+        {
+          id_alkes: 9,
+          id: 5,
+          kriteria: "ATLM",
+          stat: 1,
+          created_at: "2025-05-10 05:02:14",
+          updated_at: null,
+        },
+      ],
+    },
+  ];
 
   const getResultData = () => {
     return filteredData.map((row) => ({
@@ -695,9 +740,9 @@ const EditUsulan = () => {
           ? editedData[row.id].usulan
           : row.usulan || 0,
       alasan:
-        editedData[row.id]?.alasan === "Lainnya"
+        editedData[row.id]?.keterangan_usulan === "Lainnya"
           ? editedData[row.id]?.catatanAlasan
-          : editedData[row.id]?.alasan ?? null,
+          : editedData[row.id]?.keterangan_usulan ?? null,
     }));
   };
 
@@ -759,14 +804,14 @@ const EditUsulan = () => {
       const usulan = editedData[row.id]?.usulan || row.usulan || 0;
 
       if (standard !== null && usulan < standard - masihBerfungsi) {
-        if (!editedData[row.id]?.alasan) {
-          validationErrors[row.id] = "Harap pilih alasan";
+        if (!editedData[row.id]?.keterangan_usulan) {
+          validationErrors[row.id] = "Harap pilih alasan tidak usul";
           hasError = true;
         } else if (
-          editedData[row.id]?.alasan === "Lainnya" &&
+          editedData[row.id]?.keterangan_usulan === "Lainnya" &&
           !editedData[row.id]?.catatanAlasan?.trim()
         ) {
-          validationErrors[row.id] = "Harap isi alasan lainnya";
+          validationErrors[row.id] = "Harap isi alasan tidak usul lainnya";
           hasError = true;
         }
       }
@@ -856,18 +901,29 @@ const EditUsulan = () => {
         cell: (row) => (
           <div className="text-wrap py-2 flex items-center flex-col flex-wrap md:flex-row gap-1">
             {row.nama_alkes}
-            {row.keterangan && ( // Tampilkan ikon jika keterangan ada
+            {row.keterangan_alkes && ( // Tampilkan ikon jika keterangan ada
               <FaInfoCircle
                 title="Lihat Info Detail Barang"
                 className="cursor-pointer text-primary hover:text-graydark w-5 h-5 md:w-4 md:h-4"
                 onClick={() =>
-                  handleShowKeterangan(row.keterangan, row.nama_alkes)
+                  handleShowKeterangan(row.keterangan_alkes, row.nama_alkes)
                 } // Tampilkan popup saat ikon diklik
               />
             )}
           </div>
         ),
         minWidth: "110px",
+        sortable: true,
+      },
+      {
+        name: <div className="text-wrap">Kriteria SDM</div>,
+        selector: (row) => row.kriteria_alkes,
+        cell: (row) => (
+          <div className="text-wrap py-2">
+            {row.kriteria_alkes?.map((item) => item.kriteria).join("/ ")}
+          </div>
+        ),
+        width: "120px",
         sortable: true,
       },
       {
@@ -921,6 +977,18 @@ const EditUsulan = () => {
       {
         name: <div className="text-wrap">Usulan</div>,
         cell: (row) => {
+          const memenuhiSalahSatuKriteria = row.kriteria_alkes?.some(
+            (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id)
+          );
+
+          if (!memenuhiSalahSatuKriteria) {
+            return (
+              <div className="text-red-500 text-xs">
+                SDM tidak memenuhi kriteria
+              </div>
+            );
+          }
+
           const standard =
             selectedPelayanan?.value === "Non Rawat Inap"
               ? row.standard_non_inap
@@ -959,7 +1027,7 @@ const EditUsulan = () => {
                 } // Nonaktifkan input jika masih_berfungsi >= standard
               />
               {errors[row.id] && (
-                <div className="text-red-500 text-sm mt-1">
+                <div className="text-red-500 text-xs mt-1">
                   {errors[row.id]}
                 </div>
               )}
@@ -972,6 +1040,17 @@ const EditUsulan = () => {
       {
         name: <div className="text-wrap">Alasan Tidak Mengusulkan</div>,
         cell: (row) => {
+          const memenuhiSalahSatuKriteria = row.kriteria_alkes?.some(
+            (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id)
+          );
+
+          // if (!memenuhiSalahSatuKriteria) {
+          //   return (
+          //     <div className="text-red-500 text-xs">
+          //       SDM tidak memenuhi kriteria
+          //     </div>
+          //   );
+          // }
           const standard =
             selectedPelayanan?.value === "Non Rawat Inap"
               ? row.standard_non_inap
@@ -982,6 +1061,13 @@ const EditUsulan = () => {
           const usulan = editedData[row.id]?.usulan || row.usulan || 0;
           const showAlasan =
             standard !== null && usulan < standard - masihBerfungsi;
+          console.log("Row:", row.id, {
+            standard,
+            masihBerfungsi,
+            usulan,
+            hasAlasan: !!editedData[row.id]?.keterangan_usulan,
+            showAlasan,
+          });
 
           if (!showAlasan)
             return <div className="text-xs text-gray-400">-</div>;
@@ -989,7 +1075,7 @@ const EditUsulan = () => {
           return (
             <div className="w-full">
               <select
-                value={editedData[row.id]?.alasan || ""}
+                value={editedData[row.id]?.keterangan_usulan || ""}
                 onChange={(e) => handleAlasanChange(row.id, e.target.value)}
                 className="border border-primary focus:border-primary rounded p-1 text-sm w-full focus-within:border-primary active:border-primary"
               >
@@ -1001,7 +1087,7 @@ const EditUsulan = () => {
                 ))}
               </select>
 
-              {editedData[row.id]?.alasan === "Lainnya" && (
+              {editedData[row.id]?.keterangan_usulan === "Lainnya" && (
                 <div className="mt-1">
                   <input
                     type="text"
@@ -1009,7 +1095,7 @@ const EditUsulan = () => {
                     onChange={(e) =>
                       handleCatatanAlasanChange(row.id, e.target.value)
                     }
-                    placeholder="Ketik alasan lainnya"
+                    placeholder="Ketik keterangan_usulan lainnya"
                     className="border border-primary rounded p-1 text-sm w-full mt-1"
                     required
                   />
@@ -1412,7 +1498,7 @@ const EditUsulan = () => {
                         onChange={handlePeriodeChange}
                         placeholder="Periode   "
                         className="w-full text-sm"
-                        isDisabled={user?.role == "5" || isDisabled}
+                        isDisabled={user?.role != "1" || isDisabled}
                         theme={selectThemeColors}
                       />
                     </div>

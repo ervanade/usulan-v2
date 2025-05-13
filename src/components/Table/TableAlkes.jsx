@@ -218,8 +218,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderLeftWidth: 0,
     borderTopWidth: 0,
-    textAlign: "center",
-    verticalAlign: "middle",
+    textAlign: "left",
+    verticalAlign: "",
   },
   tableCellHeader: {
     margin: 5,
@@ -331,7 +331,7 @@ export const RenderAlkesPages = (jsonData, preview) => {
                 <Text style={styles.tableCellHeader}>No</Text>
               </View>
               <View style={styles.tableColHeader}>
-                <Text style={styles.tableCellHeader}>Nama Alkes</Text>
+                <Text style={{ ...styles.tableCellHeader }}>Nama Alkes</Text>
               </View>
 
               <View style={styles.tableColHeader}>
@@ -346,7 +346,15 @@ export const RenderAlkesPages = (jsonData, preview) => {
                   <Text style={styles.tableCell}>{start + index + 1}</Text>
                 </View>
                 <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{items.namaAlkes || ""}</Text>
+                  <Text
+                    style={{
+                      ...styles.tableCell,
+                      textAlign: "left",
+                      paddingLeft: 4,
+                    }}
+                  >
+                    {items.namaAlkes || ""}
+                  </Text>
                 </View>
 
                 <View style={styles.tableCol}>

@@ -375,7 +375,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ ...styles.helvetica, textAlign: "center" }}>
                 OUTLINE PROPOSAL USULAN PEMENUHAN ALAT KESEHATAN {"\n"}
-                DI PUSKESMAS/ PUSKESMAS PEMBANTU/ POSYANDU {"\n"}
+                DI PUSKESMAS {"\n"}
                 KABUPATEN/ KOTA ………
               </Text>
             </View>
@@ -595,7 +595,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text>Data usulan alat, jumlah dan peralatan pada puskesmas</Text>
             </View>
 
-            <View
+            {/* <View
               style={{
                 ...styles.text,
                 lineHeight: 1.7,
@@ -625,7 +625,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>Data usulan alat, jumlah dan peralatan pada posyandu</Text>
-            </View>
+            </View> */}
           </View>
 
           <View
@@ -672,7 +672,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text>Data ketersediaan SDM kesehatan pada puskesmas</Text>
             </View>
 
-            <View
+            {/* <View
               style={{
                 ...styles.text,
                 lineHeight: 1.7,
@@ -702,7 +702,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>Data ketersediaan SDM kesehatan pada posyandu</Text>
-            </View>
+            </View> */}
           </View>
 
           <View
@@ -749,7 +749,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text>Data ketersediaan sarana dan prasarana pada puskesmas</Text>
             </View>
 
-            <View
+            {/* <View
               style={{
                 ...styles.text,
                 lineHeight: 1.7,
@@ -779,7 +779,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>Data ketersediaan sarana dan prasarana pada posyandu</Text>
-            </View>
+            </View> */}
           </View>
 
           <View
@@ -1085,7 +1085,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 Direviu atau diverifikasi:
               </Text>
               <Text style={{ ...styles.text, textAlign: "center" }}>
-                Inspektur Daerah {"\n"} {jsonData?.kabupaten || ""}
+                Inspektorat Daerah {"\n"} {jsonData?.kabupaten || ""}
               </Text>
               <View style={{ ...styles.imageTtd, marginVertical: 0 }}></View>
               <Text
@@ -1159,7 +1159,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 Ditelaah:{" "}
               </Text>
               <Text style={{ ...styles.text, textAlign: "center" }}>
-                Kepala Bappeda {"\n"} {jsonData?.kabupaten || ""}
+                Bappeda {"\n"} {jsonData?.kabupaten || ""}
               </Text>
               <View style={{ ...styles.imageTtd, marginVertical: 0 }}></View>
               <Text
@@ -2030,11 +2030,9 @@ const GenerateDokumen = async (jsonData, preview) => {
                 Jabatan :{"\n"}
                 Instansi :{"\n\n"}
                 Dengan ini menyatakan bahwa informasi yang tertera di proposal
-                usulan alat kesehatan untuk ..... (jumlah) jenis alkes sudah
-                sesuai dengan kebutuhan Puskesmas, Pustu, dan Posyandu. {
-                  "\n"
-                }{" "}
-                Selain itu, Dinas Kesehatan juga berkomitmen untuk:{" "}
+                usulan alat kesehatan untuk alkes sudah sesuai dengan kebutuhan
+                Puskesmas. {"\n"} Selain itu, Dinas Kesehatan juga berkomitmen
+                untuk:{" "}
               </Text>
             </View>
           </View>
@@ -2099,7 +2097,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>
-                3. Memastikan bahwa sarana dan prasarana (luas ruangan, listrik,
+                Memastikan bahwa sarana dan prasarana (luas ruangan, listrik,
                 internet, IPAL, air bersih) memenuhi standar dan tersedia
                 sebelum alat didistribusikan.
               </Text>
@@ -2153,10 +2151,9 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text style={{ marginRight: 8 }}>6.</Text>
               <Text>
                 Ikut serta memastikan pendistribusian alat kesehatan hingga ke
-                puskesmas, pustu, dan posyandu sesuai dengan Kepmenkes tentang
-                Standar Peralatan dalam Rangka Penguatan Pelayanan Kesehatan
-                Primer pada Pusat Kesehatan Masyarakat, Unit Pelayanan Kesehatan
-                di Desa/Kelurahan, dan Pos Pelayanan Terpadu.{" "}
+                puskesmas sesuai dengan Kepmenkes tentang Standar Peralatan
+                dalam Rangka Penguatan Pelayanan Kesehatan Primer pada Pusat
+                Kesehatan Masyarakat.{" "}
               </Text>
             </View>
 
