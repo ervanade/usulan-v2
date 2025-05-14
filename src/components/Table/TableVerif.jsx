@@ -45,9 +45,9 @@ const BORDER_STYLE = "solid";
 // Define column widths
 const COL1_WIDTH = 5; // No
 const COLN_WIDTH = (100 - COL1_WIDTH) / 4;
-const COL2_WIDTH = 25; // Nama Alkes (divided into 2 sub-columns)
+const COL2_WIDTH = 35; // Nama Alkes (divided into 2 sub-columns)
 const COL3_WIDTH = 35; // Puskesmas (divided into 3 sub-columns with one having 2 sub-sub-columns)
-const COL4_WIDTH = 35; // Hasil Deck (divided into 2 sub-columns)
+const COL4_WIDTH = 25; // Hasil Deck (divided into 2 sub-columns)
 
 // Sub-column widths for Nama Alkes
 const SUBCOL2_WIDTH = COL2_WIDTH / 2; // Nama Alkes and Jumlah Minimal Standar Alat
@@ -376,10 +376,11 @@ export const RenderVerifPages = (jsonData, preview) => {
               >
                 Catatan hasil verifikasi:{"\n"}
               </Text>
-              Dari total {jsonData?.distribusi?.length || ""} Puskesmas di
-              Kab/Kota {jsonData?.kabupaten}, Dinas Kesehatan mengajukan usulan
-              proposal pengadaan alat untuk Puskesmas untuk pemenuhan standar
-              alat dalam penguatan pelayanan kesehatan primer di Puskesmas.
+              Dari total {jsonData?.ba_verif[0]?.total_puskesmas || ""}{" "}
+              Puskesmas di Kab/Kota {jsonData?.kabupaten}, Dinas Kesehatan
+              mengajukan usulan proposal pengadaan alat untuk Puskesmas untuk
+              pemenuhan standar alat dalam penguatan pelayanan kesehatan primer
+              di Puskesmas.
             </Text>
           </View>
         )}
