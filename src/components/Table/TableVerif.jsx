@@ -47,7 +47,7 @@ const COL1_WIDTH = 5; // No
 const COLN_WIDTH = (100 - COL1_WIDTH) / 4;
 const COL2_WIDTH = 35; // Nama Alkes (divided into 2 sub-columns)
 const COL3_WIDTH = 35; // Puskesmas (divided into 3 sub-columns with one having 2 sub-sub-columns)
-const COL4_WIDTH = 25; // Hasil Deck (divided into 2 sub-columns)
+const COL4_WIDTH = 25; // Hasil Desk (divided into 2 sub-columns)
 
 // Sub-column widths for Nama Alkes
 const SUBCOL2_WIDTH = COL2_WIDTH / 2; // Nama Alkes and Jumlah Minimal Standar Alat
@@ -57,7 +57,7 @@ const SUBCOL2_SUB_WIDTH = SUBCOL2_WIDTH / 2; // For Ranap and Non Ranap (but wil
 const SUBCOL3_WIDTH = COL3_WIDTH / 3; // Total PKM, Jumlah PKM Memiliki Alat Sesuai Standar
 const SUBCOL3_PROPOSAL_WIDTH = SUBCOL3_WIDTH / 2; // Mengusulkan (proposal) sub-columns
 
-// Sub-column widths for Hasil Deck
+// Sub-column widths for Hasil Desk
 const SUBCOL4_WIDTH = COL4_WIDTH / 2; // Jumlah PKM yang Mengusulkan Alat and Jumlah Alat yang Diusulkan
 
 const styles = StyleSheet.create({
@@ -422,11 +422,11 @@ export const RenderVerifPages = (jsonData, preview) => {
                 <Text style={styles.tableCellHeader}>Puskesmas</Text>
               </View>
 
-              {/* Hasil Deck */}
+              {/* Hasil Desk */}
               <View
                 style={[styles.mainHeaderCell, { width: `${COL4_WIDTH}%` }]}
               >
-                <Text style={styles.tableCellHeader}>Hasil Deck</Text>
+                <Text style={styles.tableCellHeader}>Hasil Desk</Text>
               </View>
             </View>
 
@@ -498,7 +498,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                 </Text>
               </View>
 
-              {/* Hasil Deck sub-columns */}
+              {/* Hasil Desk sub-columns */}
               <View
                 style={[
                   styles.nestedHeaderCell,
@@ -588,7 +588,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                 </Text>
               </View>
 
-              {/* Hasil Deck - no sub-sub-columns */}
+              {/* Hasil Desk - no sub-sub-columns */}
               <View
                 style={[
                   styles.nestedHeaderCell,
@@ -666,7 +666,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                   </Text>
                 </View>
 
-                {/* Hasil Deck columns */}
+                {/* Hasil Desk columns */}
                 <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
                   <Text style={styles.tableCell}>
                     {items.pkmMengusulkanAlat || ""}
