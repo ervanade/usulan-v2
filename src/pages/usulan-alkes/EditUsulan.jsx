@@ -435,6 +435,32 @@ const EditUsulan = () => {
   };
 
   useEffect(() => {
+    if (formData.id_kriteria && dataKriteria.length > 0) {
+      const initialSelectedKriteria = formData.id_kriteria
+        .map((kriteriaId) => {
+          const foundKriteria = dataKriteria.find(
+            (kriteria) => kriteria.value == kriteriaId
+          );
+          return foundKriteria
+            ? { value: foundKriteria.value, label: foundKriteria.label }
+            : null;
+        })
+        .filter(Boolean); // Filter out null jika ID tidak ditemukan di dataKriteria
+      console.log(initialSelectedKriteria);
+      setSelectedKriteria(initialSelectedKriteria);
+    }
+
+    if (idPeriode && dataPeriode.length > 0) {
+      const initialOption = dataPeriode.find((kec) => kec.value == idPeriode);
+
+      if (initialOption) {
+        setSelectedPeriode({
+          label: initialOption.label,
+          value: initialOption.value,
+          stat: initialOption.stat,
+        });
+      }
+    }
     if (formData?.usulan) {
       const initialEditedData = {};
       formData.usulan.forEach((item) => {
@@ -980,6 +1006,8 @@ const EditUsulan = () => {
           const memenuhiSalahSatuKriteria = row.kriteria_alkes?.some(
             (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id)
           );
+          console.log(formData.id_kriteria)
+          console.log(row.kriteria_alkes)
 
           if (!memenuhiSalahSatuKriteria) {
             return (
