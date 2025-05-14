@@ -1006,8 +1006,6 @@ const EditUsulan = () => {
           const memenuhiSalahSatuKriteria = row.kriteria_alkes?.some(
             (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id)
           );
-          console.log(formData.id_kriteria)
-          console.log(row.kriteria_alkes)
 
           if (!memenuhiSalahSatuKriteria) {
             return (
