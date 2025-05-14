@@ -139,7 +139,7 @@ const PreviewVerif = () => {
         method: "get",
         url: `${
           import.meta.env.VITE_APP_API_URL
-        }/api/usulan/${encodeURIComponent(decryptId(id))}`,
+        }/api/usulanverif/${encodeURIComponent(decryptId(id))}`,
         headers: {
           "Content-Type": "application/json",
           //eslint-disable-next-line
@@ -172,6 +172,7 @@ const PreviewVerif = () => {
           distribusi: data.usulan_detail || [],
           total_alkes: data.total_alkes || [],
           alkes: data || [],
+          ba_verif: data.ba_verif || [],
         };
 
         const pdfBlob = await GenerateVerif(dataJson, true); // GenerateDokumen harus mengembalikan Blob PDF

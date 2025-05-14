@@ -570,7 +570,7 @@ const PdfUsulanAlkes = () => {
         method: "get",
         url: `${
           import.meta.env.VITE_APP_API_URL
-        }/api/usulan/${encodeURIComponent(id)}`,
+        }/api/usulanverif/${encodeURIComponent(id)}`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -589,6 +589,7 @@ const PdfUsulanAlkes = () => {
         user_upload: data.user_upload || "",
         distribusi: data.usulan_detail || [],
         total_alkes: data.total_alkes || [],
+        ba_verif: data.ba_verif || [],
       };
       const pdfBlob = await GenerateVerif(dataJson, false); // GenerateDokumen harus mengembalikan Blob PDF
 
@@ -1047,7 +1048,15 @@ const PdfUsulanAlkes = () => {
         button: true,
         minWidth: "120px",
       },
-      // {
+      {
+        name: <div className="text-wrap">Periode</div>,
+        selector: (row) => row.periode_name,
+        sortable: true,
+        cell: (row) => (
+          <div className="text-wrap text-xs py-2">{row.periode_name}</div>
+        ),
+        width: "80px",
+      }, // {
       //   name: "Aksi",
       //   cell: (row) => (
       //     <div className="flex items-center space-x-2">
@@ -1094,6 +1103,9 @@ const PdfUsulanAlkes = () => {
       Kabupaten_Kota: item?.kabupaten,
       Tanggal_Download: item?.tgl_download,
       Tanggal_Upload: item?.tgl_upload,
+      Tanggal_Upload_CHR: item?.tgl_chr,
+      Tanggal_BA_Verifikasi: item?.tgl_verifikasi,
+      Periode: item?.periode_name,
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);

@@ -376,7 +376,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text style={{ ...styles.helvetica, textAlign: "center" }}>
                 OUTLINE PROPOSAL USULAN PEMENUHAN ALAT KESEHATAN {"\n"}
                 DI PUSKESMAS {"\n"}
-                KABUPATEN/ KOTA ………
+                {jsonData?.kabupaten}
               </Text>
             </View>
             <View
@@ -2333,7 +2333,8 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>1.</Text>
               <Text>
-              Tidak mengusulkan alat kesehatan melalui program SOPHI untuk pemenuhan Alat Kesehatan Puskesmas {jsonData?.kabupaten}
+                Tidak mengusulkan alat kesehatan melalui program SOPHI untuk
+                pemenuhan Alat Kesehatan Puskesmas {jsonData?.kabupaten}
               </Text>
             </View>
 
@@ -2349,7 +2350,8 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>2.</Text>
               <Text>
-              Pemenuhan alat kesehatan Puskesmas {jsonData?.kabupaten} akan dilaksanakan menggunakan anggaran ….
+                Pemenuhan alat kesehatan Puskesmas {jsonData?.kabupaten} akan
+                dilaksanakan menggunakan anggaran ….
               </Text>
             </View>
 
@@ -2364,9 +2366,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               }}
             >
               <Text style={{ marginRight: 8 }}>3.</Text>
-              <Text>
-                ...
-              </Text>
+              <Text>...</Text>
             </View>
           </View>
           <View
@@ -2381,9 +2381,9 @@ const GenerateDokumen = async (jsonData, preview) => {
             }}
           >
             <Text>
-            Pernyataan ini dibuat dengan sebenarnya untuk digunakan sebagaimana mestinya.
-Demikian surat pernyataan ini saya buat dengan penuh tanggung jawab.
-
+              Pernyataan ini dibuat dengan sebenarnya untuk digunakan
+              sebagaimana mestinya. Demikian surat pernyataan ini saya buat
+              dengan penuh tanggung jawab.
             </Text>
           </View>
 

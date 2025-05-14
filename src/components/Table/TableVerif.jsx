@@ -306,20 +306,19 @@ const getAllDetailDistribusi = (distribusi) => {
   return distribusi?.map((item, index) => ({
     no: index + 1 || "",
     namaAlkes: item?.nama_alkes || "",
-    jumlahMinimalStandarAlat: item.standard_rawat_inap || "",
-    ranap: item?.ranap || "",
-    nonRanap: item?.non_ranap || "",
-    totalPkm: item?.total_pkm || "",
-    pkmMemilikiAlat: item?.pkm_memiliki_alat || "",
+    standard_rawat_inap: item.total_standard_rawat_inap || "",
+    standard_non_inap: item.total_standard_non_inap || "",
+    totalPkm: item?.total_puskesmas || "",
+    pkmMemilikiAlat: item?.total_puskesmas_berfungsi || "",
     proposalDidukungSdm: item?.proposal_didukung_sdm || "",
-    proposalTidakDidukungSdm: item?.proposal_tidak_didukung_sdm || "",
+    proposalTidakDidukungSdm: item?.total_puskesmas_non_sdm || "",
     pkmMengusulkanAlat: item?.pkm_mengusulkan_alat || "",
     jumlahAlatDiusulkan: item?.jumlah_alat_diusulkan || "",
   }));
 };
 
 export const RenderVerifPages = (jsonData, preview) => {
-  const dataBarang = getAllDetailDistribusi(alkesDokumen || []);
+  const dataBarang = getAllDetailDistribusi(jsonData?.ba_verif || []);
   const pages = [];
   const totalItems = dataBarang?.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -340,6 +339,7 @@ export const RenderVerifPages = (jsonData, preview) => {
     const end = start + ITEMS_PER_PAGE;
     const currentData = dataBarang.slice(start, end);
     const isLastPage = i === totalPages - 1;
+    const isFirstPage = i === 0;
 
     pages.push(
       <Page
@@ -351,36 +351,39 @@ export const RenderVerifPages = (jsonData, preview) => {
         <Text style={{ ...styles.watermark, left: preview ? "25%" : "43%" }}>
           {preview ? "PREVIEW" : "FINAL"}
         </Text>
-        <View
-          style={{
-            ...styles.text,
-            lineHeight: 1.7,
-            letterSpacing: 0.1,
-            display: "flex",
-            flexDirection: "row",
-            marginTop: 8,
-            width: "100%",
-          }}
-        >
-          <Text>
-            <Text
-              style={{
-                ...styles.helvetica,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                width: "100%",
-                fontSize: 8,
-                textAlign: "left",
-              }}
-            >
-              Catatan hasil verifikasi:{"\n"}
+        {isFirstPage && (
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "row",
+              marginTop: 8,
+              width: "100%",
+            }}
+          >
+            <Text>
+              <Text
+                style={{
+                  ...styles.helvetica,
+                  lineHeight: 1.7,
+                  letterSpacing: 0.1,
+                  width: "100%",
+                  fontSize: 8,
+                  textAlign: "left",
+                }}
+              >
+                Catatan hasil verifikasi:{"\n"}
+              </Text>
+              Dari total {jsonData?.distribusi?.length || ""} Puskesmas di
+              Kab/Kota {jsonData?.kabupaten}, Dinas Kesehatan mengajukan usulan
+              proposal pengadaan alat untuk Puskesmas untuk pemenuhan standar
+              alat dalam penguatan pelayanan kesehatan primer di Puskesmas.
             </Text>
-            Dari total {jsonData?.distribusi?.length || ""} Puskesmas di
-            Kab/Kota {jsonData?.kabupaten}, Dinas Kesehatan mengajukan usulan
-            proposal pengadaan alat untuk Puskesmas untuk pemenuhan standar alat
-            dalam penguatan pelayanan kesehatan primer di Puskesmas.
-          </Text>
-        </View>
+          </View>
+        )}
+
         <View
           style={{
             paddingVertical: 0,
@@ -615,9 +618,18 @@ export const RenderVerifPages = (jsonData, preview) => {
                 </View>
 
                 {/* Jumlah Minimal Standar Alat (merged Ranap and Non Ranap) */}
-                <View style={[styles.tableCol, { width: `${SUBCOL2_WIDTH}%` }]}>
+                <View
+                  style={[styles.tableCol, { width: `${SUBCOL2_SUB_WIDTH}%` }]}
+                >
                   <Text style={styles.tableCell}>
-                    {items.jumlahMinimalStandarAlat || "0"}
+                    {items.standard_rawat_inap || "0"}
+                  </Text>
+                </View>
+                <View
+                  style={[styles.tableCol, { width: `${SUBCOL2_SUB_WIDTH}%` }]}
+                >
+                  <Text style={styles.tableCell}>
+                    {items.standard_non_inap || "0"}
                   </Text>
                 </View>
 
