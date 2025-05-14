@@ -437,12 +437,22 @@ const PdfUsulanAlkes = () => {
     }
   }, [user.role, user.provinsi, user.kabupaten, dataProvinsi, dataKota]);
 
-  const updateDownload = async (id) => {
+  const updateDownload = async (id, type = "proposal") => {
     setLoading(true);
+    let urlDownload;
+    if (type === "chr") {
+      urlDownload = "downloadchr";
+    } else if (type === "baverif") {
+      urlDownload = "downloadverif";
+    } else {
+      urlDownload = "download";
+    }
     try {
       const response = await axios({
         method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/usulan/download/${id}`,
+        url: `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/usulan/${encodeURIComponent(urlDownload)}/${id}`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -511,7 +521,7 @@ const PdfUsulanAlkes = () => {
       const pdfBlob = await GenerateDokumen(dataJson, false); // GenerateDokumen harus mengembalikan Blob PDF
 
       saveAs(pdfBlob, `PDF Usulan ${dataJson.kabupaten}.pdf`);
-      await updateDownload(dataJson?.id);
+      await updateDownload(dataJson?.id, "proposal");
 
       Swal.fire({
         icon: "success",
@@ -583,6 +593,7 @@ const PdfUsulanAlkes = () => {
       const pdfBlob = await GenerateVerif(dataJson, false); // GenerateDokumen harus mengembalikan Blob PDF
 
       saveAs(pdfBlob, `BA Verifikasi ${dataJson.kabupaten}.pdf`);
+      await updateDownload(dataJson?.id, "baverif");
 
       Swal.fire({
         icon: "success",
@@ -1128,7 +1139,7 @@ const PdfUsulanAlkes = () => {
           Dokumen Usulan
         </h1>
         <p className="text-sm text-red-500 italic mb-3 text-center font-medium">
-          Batas pengisian dan unggah: 20 Mei 2025. <br />
+          Batas pengisian dan unggah: 23 Mei 2025. <br />
           Lewat tanggal tersebut pengunggahan dokumen akan dikunci.
         </p>
         <div className="flex items-center lg:items-end mt-3 gap-3 flex-col lg:flex-row">

@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     verticalAlign: "middle",
   },
   tableCellHeader: {
-    margin: 5,
+    margin: 3.5,
     fontSize: 8,
     lineHeight: 1.2,
     fontWeight: 500,
@@ -273,7 +273,7 @@ const getAllDetailDistribusi = (distribusi) => {
       standard: item.standard_rawat_inap || "",
       berfungsi: item.berfungsi || "",
       usulan: item.usulan,
-      alasan: item.keterangan_usulan || ""
+      alasan: item.keterangan_usulan || "",
     })),
   }));
 };
@@ -371,7 +371,9 @@ export const RenderHibahPages = (jsonData, preview) => {
                     <Text style={styles.tableCellHeader}>Usulan</Text>
                   </View>
                   <View style={styles.tableColHeader}>
-                    <Text style={styles.tableCellHeader}>Alasan Tidak Usul</Text>
+                    <Text style={styles.tableCellHeader}>
+                      Alasan Tidak Usul
+                    </Text>
                   </View>
                 </View>
                 {currentData.map((items, index) => (
@@ -380,7 +382,13 @@ export const RenderHibahPages = (jsonData, preview) => {
                       <Text style={styles.tableCell}>{start + index + 1}</Text>
                     </View>
                     <View style={styles.tableCol}>
-                      <Text style={{...styles.tableCell, fontSize: 6}}>
+                      <Text
+                        style={{
+                          ...styles.tableCell,
+                          fontSize: 6.5,
+                          textAlign: "left",
+                        }}
+                      >
                         {items.namaAlkes || ""}
                       </Text>
                     </View>
@@ -401,8 +409,14 @@ export const RenderHibahPages = (jsonData, preview) => {
                       </Text>
                     </View>
                     <View style={styles.tableCol}>
-                    <Text style={{...styles.tableCell, fontSize: 6}}>
-                    {items?.keterangan_usulan || "-"}
+                      <Text
+                        style={{
+                          ...styles.tableCell,
+                          fontSize: 6.5,
+                          textAlign: "left",
+                        }}
+                      >
+                        {items?.keterangan_usulan || "-"}
                       </Text>
                     </View>
                   </View>

@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     verticalAlign: "middle",
   },
   tableCellHeader: {
-    margin: 5,
+    margin: 3.5,
     fontSize: 8,
     lineHeight: 1.2,
     fontWeight: 500,
@@ -309,7 +309,7 @@ export const RenderBarangPages = (jsonData, preview) => {
           <View
             style={{
               ...styles.titleContainer,
-              marginBottom: 16,
+              marginBottom: 8,
               marginTop: 0,
             }}
           >
@@ -360,7 +360,15 @@ export const RenderBarangPages = (jsonData, preview) => {
                   <Text style={styles.tableCell}>{start + index + 1}</Text>
                 </View>
                 <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{items.namaAlkes || ""}</Text>
+                  <Text
+                    style={{
+                      ...styles.tableCell,
+                      fontSize: 6.5,
+                      textAlign: "left",
+                    }}
+                  >
+                    {items.namaAlkes || ""}
+                  </Text>
                 </View>
 
                 <View style={styles.tableCol}>

@@ -42,16 +42,23 @@ Font.register({
 
 const BORDER_COLOR = "#000";
 const BORDER_STYLE = "solid";
-const COL1_WIDTH = 5;
+// Define column widths
+const COL1_WIDTH = 5; // No
 const COLN_WIDTH = (100 - COL1_WIDTH) / 4;
+const COL2_WIDTH = 25; // Nama Alkes (divided into 2 sub-columns)
+const COL3_WIDTH = 35; // Puskesmas (divided into 3 sub-columns with one having 2 sub-sub-columns)
+const COL4_WIDTH = 35; // Hasil Deck (divided into 2 sub-columns)
 
-// const COL1_WIDTH = 5; // Lebar kolom No
-const COL2_WIDTH = 25; // Lebar kolom Nama Alkes
-const COL3_WIDTH = 35; // Lebar kolom Standard (dibagi 3 subkolom)
-const COL4_WIDTH = 35; // Lebar kolom Usulan (dibagi 4 subkolom)
+// Sub-column widths for Nama Alkes
+const SUBCOL2_WIDTH = COL2_WIDTH / 2; // Nama Alkes and Jumlah Minimal Standar Alat
+const SUBCOL2_SUB_WIDTH = SUBCOL2_WIDTH / 2; // For Ranap and Non Ranap (but will be merged in row)
 
-const SUBCOL3_WIDTH = COL3_WIDTH / 3; // Lebar masing-masing subkolom Standard
-const SUBCOL4_WIDTH = COL4_WIDTH / 4; // Lebar masing-masing subkolom Usulan
+// Sub-column widths for Puskesmas
+const SUBCOL3_WIDTH = COL3_WIDTH / 3; // Total PKM, Jumlah PKM Memiliki Alat Sesuai Standar
+const SUBCOL3_PROPOSAL_WIDTH = SUBCOL3_WIDTH / 2; // Mengusulkan (proposal) sub-columns
+
+// Sub-column widths for Hasil Deck
+const SUBCOL4_WIDTH = COL4_WIDTH / 2; // Jumlah PKM yang Mengusulkan Alat and Jumlah Alat yang Diusulkan
 
 const styles = StyleSheet.create({
   viewer: {
@@ -151,7 +158,7 @@ const styles = StyleSheet.create({
   },
   imageTtd: {
     width: 30,
-    height: 30,
+    height: 25,
     marginLeft: 90,
   },
   TableHeader: {
@@ -293,15 +300,21 @@ const styles = StyleSheet.create({
 const formatRupiah = (price) => {
   return `${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 };
-const ITEMS_PER_PAGE = 40;
+const ITEMS_PER_PAGE = 20;
 
 const getAllDetailDistribusi = (distribusi) => {
   return distribusi?.map((item, index) => ({
     no: index + 1 || "",
     namaAlkes: item?.nama_alkes || "",
-    standard: item?.standard_rawat_inap || "",
-    berfungsi: item?.berfungsi || "",
-    usulan: item?.usulan || "",
+    jumlahMinimalStandarAlat: item.standard_rawat_inap || "",
+    ranap: item?.ranap || "",
+    nonRanap: item?.non_ranap || "",
+    totalPkm: item?.total_pkm || "",
+    pkmMemilikiAlat: item?.pkm_memiliki_alat || "",
+    proposalDidukungSdm: item?.proposal_didukung_sdm || "",
+    proposalTidakDidukungSdm: item?.proposal_tidak_didukung_sdm || "",
+    pkmMengusulkanAlat: item?.pkm_mengusulkan_alat || "",
+    jumlahAlatDiusulkan: item?.jumlah_alat_diusulkan || "",
   }));
 };
 
@@ -329,49 +342,56 @@ export const RenderVerifPages = (jsonData, preview) => {
     const isLastPage = i === totalPages - 1;
 
     pages.push(
-      <Page key={i} size="FOLIO" style={{ paddingTop: 0, ...styles.page }}>
+      <Page
+        key={i}
+        size="FOLIO"
+        style={{ paddingTop: 0, ...styles.page }}
+        orientation="landscape"
+      >
         <Text style={{ ...styles.watermark, left: preview ? "25%" : "43%" }}>
           {preview ? "PREVIEW" : "FINAL"}
         </Text>
         <View
           style={{
-            paddingVertical: 0,
-            marginTop: 0,
-            height: 840,
+            ...styles.text,
+            lineHeight: 1.7,
+            letterSpacing: 0.1,
+            display: "flex",
+            flexDirection: "row",
+            marginTop: 8,
+            width: "100%",
           }}
         >
-          <View
-            style={{
-              ...styles.titleContainer,
-              marginBottom: 16,
-              marginTop: 0,
-            }}
-          >
+          <Text>
             <Text
               style={{
-                ...styles.reportTitle,
-                letterSpacing: 0.7,
+                ...styles.helvetica,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
                 width: "100%",
-                lineHeight: 1.5,
+                fontSize: 8,
+                textAlign: "left",
               }}
             >
-              <Text
-                style={{
-                  ...styles.helvetica,
-                  letterSpacing: 0.7,
-                  width: "100%",
-                  lineHeight: 1.5,
-                }}
-              >
-                Lampiran {i + 1}. Data usulan alat, jumlah dan peralatan pada
-                puskesmas Kabupaten: {jsonData?.kabupaten}
-              </Text>
+              Catatan hasil verifikasi:{"\n"}
             </Text>
-          </View>
-
+            Dari total {jsonData?.distribusi?.length || ""} Puskesmas di
+            Kab/Kota {jsonData?.kabupaten}, Dinas Kesehatan mengajukan usulan
+            proposal pengadaan alat untuk Puskesmas untuk pemenuhan standar alat
+            dalam penguatan pelayanan kesehatan primer di Puskesmas.
+          </Text>
+        </View>
+        <View
+          style={{
+            paddingVertical: 0,
+            marginTop: 8,
+            height: 530,
+          }}
+        >
           <View style={styles.table}>
-            {/* Baris pertama header */}
+            {/* Main Header Row */}
             <View style={styles.nestedHeaderRow}>
+              {/* No */}
               <View
                 style={[
                   styles.mainHeaderCell,
@@ -383,30 +403,22 @@ export const RenderVerifPages = (jsonData, preview) => {
                   No
                 </Text>
               </View>
+
+              {/* Nama Alkes */}
               <View
-                style={[
-                  styles.mainHeaderCell,
-                  { width: `${COL2_WIDTH}%` },
-                  { borderBottomWidth: 0, borderBottomColor: "transparent" },
-                ]}
+                style={[styles.mainHeaderCell, { width: `${COL2_WIDTH}%` }]}
               >
-                <Text
-                  style={{
-                    ...styles.tableCellHeader,
-                    borderBottomWidth: 0,
-                    marginBottom: -18,
-                  }}
-                >
-                  Nama Alkes
-                </Text>
+                <Text style={styles.tableCellHeader}>Alat Kesehatan</Text>
               </View>
+
+              {/* Puskesmas */}
               <View
                 style={[styles.mainHeaderCell, { width: `${COL3_WIDTH}%` }]}
               >
-                <Text style={{ ...styles.tableCellHeader, margin: 5 }}>
-                  Puskesmas
-                </Text>
+                <Text style={styles.tableCellHeader}>Puskesmas</Text>
               </View>
+
+              {/* Hasil Deck */}
               <View
                 style={[styles.mainHeaderCell, { width: `${COL4_WIDTH}%` }]}
               >
@@ -414,368 +426,247 @@ export const RenderVerifPages = (jsonData, preview) => {
               </View>
             </View>
 
-            {/* Baris kedua header (subkolom) */}
+            {/* Second Header Row (Sub-columns) */}
             <View style={styles.nestedHeaderRow}>
-              {/* Kolom No dan Nama Alkes kosong karena sudah di header atas */}
+              {/* No - empty */}
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${COL1_WIDTH}%` },
+                  { borderBottomWidth: 0, borderBottomColor: "transparent" },
+                ]}
+              ></View>
+
+              {/* Nama Alkes sub-columns */}
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL2_WIDTH}%` },
+                  { borderBottomWidth: 0, borderBottomColor: "transparent" },
+                ]}
+              >
+                <Text style={{ ...styles.tableCellHeader, marginBottom: -2 }}>
+                  Nama Alkes
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL2_WIDTH}%` },
+                ]}
+              >
+                <Text style={styles.tableCellHeader}>
+                  Jumlah Minimal Standar Alat
+                </Text>
+              </View>
+
+              {/* Puskesmas sub-columns */}
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL3_WIDTH}%` },
+                  { borderBottomWidth: 0, borderBottomColor: "transparent" },
+                ]}
+              >
+                <Text style={{ ...styles.tableCellHeader, marginBottom: -2 }}>
+                  Total PKM
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL3_WIDTH}%` },
+                  { borderBottomWidth: 0, borderBottomColor: "transparent" },
+                ]}
+              >
+                <Text style={{ ...styles.tableCellHeader, marginBottom: -2 }}>
+                  Jumlah PKM Memiliki Alat Sesuai Standar
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL3_WIDTH}%` },
+                ]}
+              >
+                <Text style={styles.tableCellHeader}>
+                  Mengusulkan (proposal)
+                </Text>
+              </View>
+
+              {/* Hasil Deck sub-columns */}
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL4_WIDTH}%` },
+                  { borderBottomWidth: 0, borderBottomColor: "transparent" },
+                ]}
+              >
+                <Text style={{ ...styles.tableCellHeader, marginBottom: -2 }}>
+                  Jumlah PKM yang Mengusulkan Alat
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL4_WIDTH}%` },
+                  { borderBottomWidth: 0, borderBottomColor: "transparent" },
+                ]}
+              >
+                <Text style={{ ...styles.tableCellHeader, marginBottom: -2 }}>
+                  Jumlah Alat yang Diusulkan
+                </Text>
+              </View>
+            </View>
+
+            {/* Third Header Row (Sub-sub-columns) */}
+            <View style={styles.nestedHeaderRow}>
+              {/* No - empty */}
               <View
                 style={[styles.nestedHeaderCell, { width: `${COL1_WIDTH}%` }]}
               ></View>
+
+              {/* Nama Alkes sub-sub-columns */}
               <View
-                style={[styles.nestedHeaderCell, { width: `${COL2_WIDTH}%` }]}
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL2_WIDTH}%` },
+                ]}
               ></View>
-
-              {/* Subkolom Standard */}
               <View
                 style={[
                   styles.nestedHeaderCell,
-                  { width: `${SUBCOL3_WIDTH}%` },
+                  { width: `${SUBCOL2_SUB_WIDTH}%` },
                 ]}
               >
-                <Text style={{ ...styles.tableCellHeader, fontSize: 8 }}>
-                  Total
-                </Text>
+                <Text style={styles.tableCellHeader}>Ranap</Text>
               </View>
               <View
                 style={[
                   styles.nestedHeaderCell,
-                  { width: `${SUBCOL3_WIDTH}%` },
+                  { width: `${SUBCOL2_SUB_WIDTH}%` },
                 ]}
               >
-                <Text style={{ ...styles.tableCellHeader, fontSize: 8 }}>
-                  Mengusulkan
-                </Text>
-              </View>
-              <View
-                style={[
-                  styles.nestedHeaderCell,
-                  { width: `${SUBCOL3_WIDTH}%` },
-                ]}
-              >
-                <Text style={{ ...styles.tableCellHeader, fontSize: 8 }}>
-                  Tidak Mengusulkan
-                </Text>
+                <Text style={styles.tableCellHeader}>Non Ranap</Text>
               </View>
 
-              {/* Subkolom Usulan */}
+              {/* Puskesmas sub-sub-columns (only for proposal) */}
               <View
                 style={[
                   styles.nestedHeaderCell,
-                  { width: `${SUBCOL4_WIDTH}%` },
+                  { width: `${SUBCOL3_WIDTH}%` },
+                ]}
+              ></View>
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL3_WIDTH}%` },
+                ]}
+              ></View>
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL3_PROPOSAL_WIDTH}%` },
                 ]}
               >
-                <Text style={{ ...styles.tableCellHeader, fontSize: 8 }}>
-                  Tidak Memenuhi Syarat SDM + ASPAK
+                <Text style={styles.tableCellHeader}>
+                  Didukung Ketersediaan SDM
                 </Text>
               </View>
               <View
                 style={[
                   styles.nestedHeaderCell,
-                  { width: `${SUBCOL4_WIDTH}%` },
+                  { width: `${SUBCOL3_PROPOSAL_WIDTH}%` },
                 ]}
               >
-                <Text style={{ ...styles.tableCellHeader, fontSize: 8 }}>
-                  Tidak Memenuhi Syarat SDM
+                <Text style={styles.tableCellHeader}>
+                  Tidak didukung Ketersediaan SDM
                 </Text>
               </View>
+
+              {/* Hasil Deck - no sub-sub-columns */}
               <View
                 style={[
                   styles.nestedHeaderCell,
                   { width: `${SUBCOL4_WIDTH}%` },
                 ]}
-              >
-                <Text style={{ ...styles.tableCellHeader, fontSize: 8 }}>
-                  Tidak Memenuhi Syarat ASPAK
-                </Text>
-              </View>
+              ></View>
               <View
                 style={[
                   styles.nestedHeaderCell,
                   { width: `${SUBCOL4_WIDTH}%` },
                 ]}
-              >
-                <Text style={{ ...styles.tableCellHeader, fontSize: 8 }}>
-                  Memenuhi Syarat
-                </Text>
-              </View>
+              ></View>
             </View>
 
             {/* Data rows */}
             {currentData.map((items, index) => (
               <View style={styles.tableRow} key={index}>
+                {/* No */}
                 <View style={[styles.tableCol1, { width: `${COL1_WIDTH}%` }]}>
                   <Text style={styles.tableCell}>{start + index + 1}</Text>
                 </View>
-                <View style={[styles.tableCol, { width: `${COL2_WIDTH}%` }]}>
-                  <Text style={styles.tableCell}>{items.namaAlkes || ""}</Text>
-                </View>
 
-                {/* Kolom Standard (3 subkolom) */}
-                <View style={[styles.tableCol, { width: `${SUBCOL3_WIDTH}%` }]}>
-                  <Text style={styles.tableCell}>{items.total || "0"}</Text>
-                </View>
-                <View style={[styles.tableCol, { width: `${SUBCOL3_WIDTH}%` }]}>
-                  <Text style={styles.tableCell}>
-                    {items.mengusulkan || "0"}
-                  </Text>
-                </View>
-                <View style={[styles.tableCol, { width: `${SUBCOL3_WIDTH}%` }]}>
-                  <Text style={styles.tableCell}>
-                    {items.tidakMengusulkan || "0"}
+                {/* Nama Alkes */}
+                <View style={[styles.tableCol, { width: `${SUBCOL2_WIDTH}%` }]}>
+                  <Text style={{ ...styles.tableCell, textAlign: "left" }}>
+                    {items.namaAlkes || ""}
                   </Text>
                 </View>
 
-                {/* Kolom Usulan (4 subkolom) */}
+                {/* Jumlah Minimal Standar Alat (merged Ranap and Non Ranap) */}
+                <View style={[styles.tableCol, { width: `${SUBCOL2_WIDTH}%` }]}>
+                  <Text style={styles.tableCell}>
+                    {items.jumlahMinimalStandarAlat || "0"}
+                  </Text>
+                </View>
+
+                {/* Puskesmas columns */}
+                <View style={[styles.tableCol, { width: `${SUBCOL3_WIDTH}%` }]}>
+                  <Text style={styles.tableCell}>{items.totalPkm || "0"}</Text>
+                </View>
+                <View style={[styles.tableCol, { width: `${SUBCOL3_WIDTH}%` }]}>
+                  <Text style={styles.tableCell}>
+                    {items.pkmMemilikiAlat || "0"}
+                  </Text>
+                </View>
+
+                {/* Proposal columns */}
+                <View
+                  style={[
+                    styles.tableCol,
+                    { width: `${SUBCOL3_PROPOSAL_WIDTH}%` },
+                  ]}
+                >
+                  <Text style={styles.tableCell}>
+                    {items.proposalDidukungSdm || "0"}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.tableCol,
+                    { width: `${SUBCOL3_PROPOSAL_WIDTH}%` },
+                  ]}
+                >
+                  <Text style={styles.tableCell}>
+                    {items.proposalTidakDidukungSdm || "0"}
+                  </Text>
+                </View>
+
+                {/* Hasil Deck columns */}
                 <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
                   <Text style={styles.tableCell}>
-                    {items.tidakMemenuhiSdmAspak || "0"}
+                    {items.pkmMengusulkanAlat || ""}
                   </Text>
                 </View>
                 <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
                   <Text style={styles.tableCell}>
-                    {items.tidakMemenuhiSdm || "0"}
-                  </Text>
-                </View>
-                <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
-                  <Text style={styles.tableCell}>
-                    {items.tidakMemenuhiAspak || "0"}
-                  </Text>
-                </View>
-                <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
-                  <Text style={styles.tableCell}>
-                    {items.memenuhiSyarat || "0"}
+                    {items.jumlahAlatDiusulkan || ""}
                   </Text>
                 </View>
               </View>
             ))}
           </View>
-          {isLastPage && (
-            <>
-              <Text>*Eligible (SDM+ASPAK+Listrik{">"}10kVA)</Text>
-
-              <View
-                style={{
-                  ...styles.text,
-                  lineHeight: 1.7,
-                  letterSpacing: 0.1,
-                  display: "flex",
-                  flexDirection: "row",
-                  marginTop: 8,
-                  width: "100%",
-                }}
-              >
-                <Text>
-                  <Text
-                    style={{
-                      ...styles.helvetica,
-                      lineHeight: 1.7,
-                      letterSpacing: 0.1,
-                      width: "100%",
-                      fontSize: 8,
-                      textAlign: "left",
-                    }}
-                  >
-                    Rekomendasi:{"\n"}
-                  </Text>
-                  (update ASPAK dan SISDMK) dan ditambahkan menyesuaikan dengan
-                  kondisi kab/kota saat desk……………………………..{"\n"}Demikian berita
-                  acara ini dibuat dengan sesungguhnya serta disahkan dengan
-                  tanggung jawab penuh agar bisa digunakan sebagaimana mestinya.
-                  Jika dikemudian hari ditemukan ketidaksesuaian dari readiness
-                  criteria dari usulan yang disampaikan, pihak pengusul dapat
-                  bertanggung jawab sesuai dengan ketentuan berlaku.
-                </Text>
-              </View>
-              <View style={{ ...styles.ttdContainer, marginTop: 24 }}>
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={{
-                      ...styles.text,
-                      textAlign: "center",
-                      marginTop: 24,
-                    }}
-                  >
-                    {/* Jakarta, dd mm 2025 */}
-                  </Text>
-                  Yang membuat pernyataan
-                  <Text
-                    style={{
-                      ...styles.text,
-                      textAlign: "center",
-                      marginTop: 16,
-                    }}
-                  >
-                    Informan/Narasumber {"\n"} Dinas Kesehatan (Jabatan)
-                  </Text>
-                  <View
-                    style={{ ...styles.imageTtd, marginVertical: 8 }}
-                  ></View>
-                  <Text
-                    style={{
-                      ...styles.text,
-                      fontFamily: "Calibri",
-                      marginTop: 12,
-                      fontSize: 8,
-                      paddingRight: 64,
-                      lineHeight: 1.2,
-                      textAlign: "center",
-                      letterSpacing: 0.2,
-                    }}
-                  >
-                    Nama
-                  </Text>
-                  <Text
-                    style={{
-                      ...styles.text,
-                      fontFamily: "Calibri",
-                      paddingRight: 70,
-                      fontSize: 8,
-                      lineHeight: 1.2,
-                      textAlign: "center",
-                      letterSpacing: 0.2,
-                    }}
-                  >
-                    NIP
-                  </Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ ...styles.text, textAlign: "center" }}>
-                    Jakarta, dd mm 2025
-                  </Text>
-                  Yang membuat pernyataan
-                  <Text
-                    style={{
-                      ...styles.text,
-                      textAlign: "center",
-                      marginTop: 24,
-                    }}
-                  >
-                    Verifikator {"\n"} Jabatan
-                  </Text>
-                  <View
-                    style={{ ...styles.imageTtd, marginVertical: 8 }}
-                  ></View>
-                  <Text
-                    style={{
-                      ...styles.text,
-                      fontFamily: "Calibri",
-                      marginTop: 12,
-                      fontSize: 8,
-                      paddingRight: 64,
-                      lineHeight: 1.2,
-                      textAlign: "center",
-                      letterSpacing: 0.2,
-                    }}
-                  >
-                    Nama
-                  </Text>
-                  <Text
-                    style={{
-                      ...styles.text,
-                      fontFamily: "Calibri",
-                      paddingRight: 70,
-                      fontSize: 8,
-                      lineHeight: 1.2,
-                      textAlign: "center",
-                      letterSpacing: 0.2,
-                    }}
-                  >
-                    NIP
-                  </Text>
-                </View>
-              </View>
-              <Text
-                style={{ ...styles.text, textAlign: "center", marginTop: 24 }}
-              >
-                Mengetahui,
-              </Text>
-              <View style={{ ...styles.ttdContainer, marginTop: 8 }}>
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={{
-                      ...styles.text,
-                      textAlign: "center",
-                      marginTop: 16,
-                    }}
-                  >
-                    Dinas Kesehatan Provinsi {"\n"} (Jabatan)
-                  </Text>
-                  <View
-                    style={{ ...styles.imageTtd, marginVertical: 8 }}
-                  ></View>
-                  <Text
-                    style={{
-                      ...styles.text,
-                      fontFamily: "Calibri",
-                      marginTop: 12,
-                      fontSize: 8,
-                      paddingRight: 64,
-                      lineHeight: 1.2,
-                      textAlign: "center",
-                      letterSpacing: 0.2,
-                    }}
-                  >
-                    Nama
-                  </Text>
-                  <Text
-                    style={{
-                      ...styles.text,
-                      fontFamily: "Calibri",
-                      paddingRight: 70,
-                      fontSize: 8,
-                      lineHeight: 1.2,
-                      textAlign: "center",
-                      letterSpacing: 0.2,
-                    }}
-                  >
-                    NIP
-                  </Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  Yang membuat pernyataan
-                  <Text
-                    style={{
-                      ...styles.text,
-                      textAlign: "center",
-                      marginTop: 16,
-                    }}
-                  >
-                    Ketua Tim Kerja Sarana, Prasarana, dan Alat {"\n"} Kesehatan
-                    Pelayanan Kesehatan Primer
-                  </Text>
-                  <View
-                    style={{ ...styles.imageTtd, marginVertical: 8 }}
-                  ></View>
-                  <Text
-                    style={{
-                      ...styles.text,
-                      fontFamily: "Calibri",
-                      marginTop: 12,
-                      fontSize: 8,
-                      paddingRight: 8,
-                      lineHeight: 1.2,
-                      textAlign: "center",
-                      letterSpacing: 0.2,
-                    }}
-                  >
-                    Bondan Wicaksono Adhi, S.E., M.B.A
-                  </Text>
-                  <Text
-                    style={{
-                      ...styles.text,
-                      fontFamily: "Calibri",
-                      paddingRight: 16,
-                      fontSize: 8,
-                      lineHeight: 1.2,
-                      textAlign: "center",
-                      letterSpacing: 0.2,
-                    }}
-                  >
-                    NIP. 198705262010121002
-                  </Text>
-                </View>
-              </View>
-            </>
-          )}
         </View>
         <View style={styles.footer}>
           <Text>

@@ -946,7 +946,9 @@ const EditUsulan = () => {
         selector: (row) => row.kriteria_alkes,
         cell: (row) => (
           <div className="text-wrap py-2">
-            {row.kriteria_alkes?.map((item) => item.kriteria).join("/ ")}
+            {row.kriteria_alkes?.length > 0
+              ? row.kriteria_alkes?.map((item) => item.kriteria).join("/ ")
+              : "Tidak Spesifik"}
           </div>
         ),
         width: "120px",
@@ -1007,7 +1009,7 @@ const EditUsulan = () => {
             (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id)
           );
 
-          if (!memenuhiSalahSatuKriteria) {
+          if (!memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
             return (
               <div className="text-red-500 text-xs">
                 SDM tidak memenuhi kriteria

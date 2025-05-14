@@ -262,7 +262,6 @@ const styles = StyleSheet.create({
 });
 
 const GenerateVerif = async (jsonData, preview) => {
-  console.log(jsonData);
   const downloadDate = (jsonData?.tgl_download || new Date()).toLocaleString(
     "id-ID",
     {
@@ -315,7 +314,7 @@ const GenerateVerif = async (jsonData, preview) => {
                   letterSpacing: 0.1,
                   width: "100%",
                   fontSize: 10,
-                  marginBottom: 32,
+                  marginBottom: 16,
                   textAlign: "center",
                 }}
               >
@@ -337,8 +336,14 @@ const GenerateVerif = async (jsonData, preview) => {
               }}
             >
               <Text>
-              Berkaitan dengan proposal usulan pemenuhan alat kesehatan di Puskesmas oleh {jsonData?.kabupaten} melalui proyek STRENGTHENING ON PRIMARY HEALTH CARE IN INDONESIA (SOPHI), kami sampaikan bahwa telah dilakukan verifikasi terkait jumlah usulan alat kesehatan, ketersediaan SDM Kesehatan dan Sarana Prasarana, serta kesiapan Pukesmas untuk mengoperasikan alkes yang diusulkan (proposal terlampir). Selain itu, Dinas Kesehatan juga berkomitmen untuk:
-
+                Berkaitan dengan proposal usulan pemenuhan alat kesehatan di
+                Puskesmas oleh {jsonData?.kabupaten} melalui proyek
+                STRENGTHENING ON PRIMARY HEALTH CARE IN INDONESIA (SOPHI), kami
+                sampaikan bahwa telah dilakukan verifikasi terkait jumlah usulan
+                alat kesehatan, ketersediaan SDM Kesehatan dan Sarana Prasarana,
+                serta kesiapan Pukesmas untuk mengoperasikan alkes yang
+                diusulkan (proposal terlampir). Selain itu, Dinas Kesehatan juga
+                berkomitmen untuk:
               </Text>
             </View>
           </View>
@@ -366,7 +371,10 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>1.</Text>
               <Text>
-              Melaksanakan Permenkes Nomor 31 tahun 2018 dengan melakukan update data sarana, prasarana dan alat kesehatan secara riil melalui aplikasi ASPAK dan telah divalidasi oleh Dinas Kesehatan, Inspektorat Daerah dan Bappeda.
+                Melaksanakan Permenkes Nomor 31 tahun 2018 dengan melakukan
+                update data sarana, prasarana dan alat kesehatan secara riil
+                melalui aplikasi ASPAK dan telah divalidasi oleh Dinas
+                Kesehatan, Inspektorat Daerah dan Bappeda.
               </Text>
             </View>
 
@@ -382,7 +390,9 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>2.</Text>
               <Text>
-              Memastikan SDM tetap ada agar barang tetap dapat digunakan secara optimal oleh tenaga kesehatan yang sesuai dengan kompetensinya sebelum alat didistribusikan.
+                Memastikan SDM tetap ada agar barang tetap dapat digunakan
+                secara optimal oleh tenaga kesehatan yang sesuai dengan
+                kompetensinya sebelum alat didistribusikan.
               </Text>
             </View>
 
@@ -398,7 +408,9 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>
-              Memastikan bahwa sarana dan prasarana (luas ruangan, listrik, internet, IPAL, air bersih) memenuhi standar dan tersedia sebelum alat didistribusikan.
+                Memastikan bahwa sarana dan prasarana (luas ruangan, listrik,
+                internet, IPAL, air bersih) memenuhi standar dan tersedia
+                sebelum alat didistribusikan.
               </Text>
             </View>
 
@@ -414,7 +426,9 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>4.</Text>
               <Text>
-              Tidak menggarkan melalui pembiayaan lainnya untuk alat kesehatan yang diusulkan sampai dengan alat kesehatan tersebut sudah terdistribusi.
+                Tidak menggarkan melalui pembiayaan lainnya untuk alat kesehatan
+                yang diusulkan sampai dengan alat kesehatan tersebut sudah
+                terdistribusi.
               </Text>
             </View>
 
@@ -430,7 +444,9 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>5.</Text>
               <Text>
-              Sanggup menerima alat sesuai dengan alat yang diusulkan dan akan melakukan pencatatan alat ke ASPAK setelah alat diserahterimakan.
+                Sanggup menerima alat sesuai dengan alat yang diusulkan dan akan
+                melakukan pencatatan alat ke ASPAK setelah alat
+                diserahterimakan.
               </Text>
             </View>
             <View
@@ -445,7 +461,11 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>6.</Text>
               <Text>
-              Ikut serta memastikan pendistribusian alat kesehatan hingga ke puskesmas, pustu, dan posyandu sesuai dengan Kepmenkes tentang Standar Peralatan dalam Rangka Penguatan Pelayanan Kesehatan Primer pada Pusat Kesehatan Masyarakat, Unit Pelayanan Kesehatan di Desa/Kelurahan, dan Pos Pelayanan Terpadu.
+                Ikut serta memastikan pendistribusian alat kesehatan hingga ke
+                puskesmas, pustu, dan posyandu sesuai dengan Kepmenkes tentang
+                Standar Peralatan dalam Rangka Penguatan Pelayanan Kesehatan
+                Primer pada Pusat Kesehatan Masyarakat, Unit Pelayanan Kesehatan
+                di Desa/Kelurahan, dan Pos Pelayanan Terpadu.
               </Text>
             </View>
 
@@ -461,7 +481,9 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>7.</Text>
               <Text>
-              Menyiapkan biaya operasional untuk pemeliharaan alat kesehatan, reagen dan BMHP, serta sarana prasarana lainnya (luas ruangan, listrik, internet, IPAL, air bersih). 
+                Menyiapkan biaya operasional untuk pemeliharaan alat kesehatan,
+                reagen dan BMHP, serta sarana prasarana lainnya (luas ruangan,
+                listrik, internet, IPAL, air bersih).
               </Text>
             </View>
 
@@ -500,37 +522,7 @@ const GenerateVerif = async (jsonData, preview) => {
             </View> */}
           </View>
 
-          <View
-            style={{
-              ...styles.text,
-              lineHeight: 1.7,
-              letterSpacing: 0.1,
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 8,
-              width: "100%",
-            }}
-          >
-            <Text>
-              <Text
-                style={{
-                  ...styles.helvetica,
-                  lineHeight: 1.7,
-                  letterSpacing: 0.1,
-                  width: "100%",
-                  fontSize: 8,
-                  textAlign: "left",
-                }}
-              >
-                Catatan hasil verifikasi:{"\n"}
-              </Text>
-              Dari total …… Puskesmas di Kab/Kota {jsonData?.kabupaten}, Dinas
-              Kesehatan mengajukan usulan proposal pengadaan alat untuk ........
-              Puskesmas untuk pemenuhan standar alat dalam penguatan pelayanan
-              kesehatan primer di Puskesmas.
-            </Text>
-          </View>
-          <View
+          {/* <View
             style={{
               ...styles.text,
               lineHeight: 1.7,
@@ -562,7 +554,7 @@ const GenerateVerif = async (jsonData, preview) => {
               dari usulan yang disampaikan, pihak pengusul dapat bertanggung
               jawab sesuai dengan ketentuan berlaku.
             </Text>
-          </View>
+          </View> */}
           <View style={styles.ttdContainer}>
             <View style={{ flex: 1 }}></View>
             <View style={{ flex: 1 }}>
@@ -613,8 +605,587 @@ const GenerateVerif = async (jsonData, preview) => {
           </Text>
         </View>
       </Page>
+      {/* <Page size="FOLIO" style={styles.page}>
+        <Text style={{ ...styles.watermark, left: preview ? "25%" : "39%" }}>
+          {preview ? "PREVIEW" : "FINAL"}
+        </Text>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            height: 800,
+          }}
+        >
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+              }}
+            >
+              <Text
+                style={{
+                  ...styles.helvetica,
+                  textAlign: "center",
+                  textDecoration: "underline",
+                }}
+              >
+                SURAT PERNYATAAN{" "}
+              </Text>
+              <Text style={{ ...styles.helvetica, textAlign: "center" }}>
+                No. {"                   "}
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Yang bertanda tangan di bawah ini :{"\n"}
+                Nama :{"\n"}
+                Jabatan :{"\n"}
+                Instansi :{"\n\n"}
+                Dengan ini menyatakan bahwa informasi yang tertera di proposal
+                usulan alat kesehatan untuk alkes sudah sesuai dengan kebutuhan
+                Puskesmas. {"\n"} Selain itu, Dinas Kesehatan juga berkomitmen
+                untuk:{" "}
+              </Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>1.</Text>
+              <Text>
+                Melaksanakan Permenkes 31 tahun 2018 dengan melakukan update
+                data sarana, prasarana dan alat kesehatan secara riil melalui
+                aplikasi ASPAK oleh puskesmas dan telah di validasi oleh Dinas
+                Kesehatan Kabupaten/Kota.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>2.</Text>
+              <Text>
+                Memastikan SDM tetap ada agar barang tetap dapat digunakan
+                secara optimal oleh tenaga kesehatan yang sesuai dengan
+                kompetensinya sebelum alat didistribusikan.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>3.</Text>
+              <Text>
+                Memastikan bahwa sarana dan prasarana (luas ruangan, listrik,
+                internet, IPAL, air bersih) memenuhi standar dan tersedia
+                sebelum alat didistribusikan.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>4.</Text>
+              <Text>
+                Tidak menggarkan melalui pembiayaan lainnya untuk alat kesehatan
+                yang diusulkan sampai dengan alat kesehatan tersebut sudah
+                terdistribusi.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>5.</Text>
+              <Text>
+                Sanggup menerima alat sesuai dengan alat yang diusulkan dan akan
+                melakukan pencatatan alat ke ASPAK setelah alat
+                diserahterimakan.
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>6.</Text>
+              <Text>
+                Ikut serta memastikan pendistribusian alat kesehatan hingga ke
+                puskesmas sesuai dengan Kepmenkes tentang Standar Peralatan
+                dalam Rangka Penguatan Pelayanan Kesehatan Primer pada Pusat
+                Kesehatan Masyarakat.{" "}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>7.</Text>
+              <Text>
+                Menyiapkan biaya operasional untuk pemeliharaan alat kesehatan,
+                reagen dan BMHP, serta sarana prasarana lainnya (luas ruangan,
+                listrik, internet, IPAL, air bersih).{" "}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "row",
+              marginTop: 8,
+              width: "100%",
+            }}
+          >
+            <Text>
+              Dinas Kesehatan {jsonData?.kabupaten} menyatakan akan
+              bertanggungjawab atas kebenaran data yang disampaikan dalam usulan
+              alat kesehatan untuk 50 alat jenis alkes melalui proyek SOPHI.{" "}
+              {"\n"}Demikian pernyataan ini dibuat dengan sebenar-benarnya dalam
+              keadaan sadar, untuk digunakan sebagaimana mestinya.{" "}
+            </Text>
+          </View>
+
+          <View style={styles.ttdContainer}>
+            <View style={{ flex: 1 }}></View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ ...styles.text, textAlign: "center" }}>
+                ...............,...................2025
+              </Text>
+              Yang membuat pernyataan
+              <Text
+                style={{ ...styles.text, textAlign: "center", marginTop: 48 }}
+              >
+                Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
+              </Text>
+              <View style={{ ...styles.imageTtd, marginVertical: 8 }}></View>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  marginTop: 12,
+                  fontSize: 8,
+                  paddingRight: 64,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                Nama
+              </Text>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  paddingRight: 70,
+                  fontSize: 8,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                NIP
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <Text>
+            Downloaded on {downloadDate}. [username ={" "}
+            {jsonData?.user_download || ""}]
+          </Text>
+        </View>
+      </Page> */}
 
       {RenderVerifPages(jsonData, preview)}
+      <Page size="FOLIO" style={styles.page}>
+        <Text style={{ ...styles.watermark, left: preview ? "25%" : "39%" }}>
+          {preview ? "PREVIEW" : "FINAL"}
+        </Text>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            height: 800,
+          }}
+        >
+          <>
+            {/* <Text>*Eligible (SDM+ASPAK+Listrik{">"}10kVA)</Text> */}
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text>
+                <Text
+                  style={{
+                    ...styles.helvetica,
+                    lineHeight: 1.7,
+                    letterSpacing: 0.1,
+                    width: "100%",
+                    fontSize: 8,
+                    textAlign: "left",
+                  }}
+                >
+                  Rekomendasi:{"\n"}
+                </Text>
+                .................................................................................................................................................................................................................................................................................
+                {"\n"}
+                .................................................................................................................................................................................................................................................................................{" "}
+                {"\n"}{" "}
+                .................................................................................................................................................................................................................................................................................
+                {/* (update ASPAK dan SISDMK) dan ditambahkan menyesuaikan dengan
+                  kondisi kab/kota saat desk……………………………..{"\n"}Demikian berita
+                  acara ini dibuat dengan sesungguhnya serta disahkan dengan
+                  tanggung jawab penuh agar bisa digunakan sebagaimana mestinya.
+                  Jika dikemudian hari ditemukan ketidaksesuaian dari readiness
+                  criteria dari usulan yang disampaikan, pihak pengusul dapat
+                  bertanggung jawab sesuai dengan ketentuan berlaku. */}
+              </Text>
+            </View>
+            <Text style={{ marginTop: 16 }}>
+              Demikian berita acara ini dibuat dengan sesungguhnya serta
+              disahkan dengan tanggung jawab penuh agar bisa digunakan
+              sebagaimana mestinya. Jika dikemudian hari ditemukan
+              ketidaksesuaian dari readiness criteria dari usulan yang
+              disampaikan, pihak pengusul dapat bertanggung jawab sesuai dengan
+              ketentuan berlaku.
+            </Text>
+            <View style={{ ...styles.ttdContainer, marginTop: 24 }}>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    ...styles.text,
+                    textAlign: "center",
+                    marginTop: 8,
+                  }}
+                >
+                  {/* Jakarta, dd mm 2025 */}
+                </Text>
+                Yang membuat pernyataan
+                <Text
+                  style={{
+                    ...styles.text,
+                    textAlign: "center",
+                    marginTop: 8,
+                  }}
+                >
+                  Informan/Narasumber {"\n"} Kepala Dinas Kesehatan{"\n"}
+                  {jsonData?.kabupaten}
+                </Text>
+                <View style={{ ...styles.imageTtd, marginVertical: 8 }}></View>
+                <Text
+                  style={{
+                    ...styles.text,
+                    fontFamily: "Calibri",
+                    marginTop: 8,
+                    fontSize: 8,
+                    paddingRight: 64,
+                    lineHeight: 1.2,
+                    textAlign: "center",
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  Nama
+                </Text>
+                <Text
+                  style={{
+                    ...styles.text,
+                    fontFamily: "Calibri",
+                    paddingRight: 70,
+                    fontSize: 8,
+                    lineHeight: 1.2,
+                    textAlign: "center",
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  NIP
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ ...styles.text, textAlign: "center" }}>
+                  ...................., ...... Mei 2025
+                </Text>
+                Yang membuat pernyataan
+                <Text
+                  style={{
+                    ...styles.text,
+                    textAlign: "center",
+                    marginTop: 16,
+                  }}
+                >
+                  Verifikator {"\n"} ..........
+                </Text>
+                <View style={{ ...styles.imageTtd, marginVertical: 8 }}></View>
+                <Text
+                  style={{
+                    ...styles.text,
+                    fontFamily: "Calibri",
+                    marginTop: 8,
+                    fontSize: 8,
+                    paddingRight: 64,
+                    lineHeight: 1.2,
+                    textAlign: "center",
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  Nama
+                </Text>
+                <Text
+                  style={{
+                    ...styles.text,
+                    fontFamily: "Calibri",
+                    paddingRight: 70,
+                    fontSize: 8,
+                    lineHeight: 1.2,
+                    textAlign: "center",
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  NIP
+                </Text>
+              </View>
+            </View>
+            {/* <Text
+                style={{ ...styles.text, textAlign: "center", marginTop: 24 }}
+              >
+                Mengetahui,
+              </Text> */}
+            <View style={{ ...styles.ttdContainer, marginTop: 8 }}>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    ...styles.text,
+                    textAlign: "center",
+                    marginTop: 16,
+                  }}
+                >
+                  Informan/Narasumber {"\n"}Bappeda{"\n"}
+                  {jsonData?.kabupaten}
+                </Text>
+                <View style={{ ...styles.imageTtd, marginVertical: 4 }}></View>
+                <Text
+                  style={{
+                    ...styles.text,
+                    fontFamily: "Calibri",
+                    marginTop: 8,
+                    fontSize: 8,
+                    paddingRight: 64,
+                    lineHeight: 1.2,
+                    textAlign: "center",
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  Nama
+                </Text>
+                <Text
+                  style={{
+                    ...styles.text,
+                    fontFamily: "Calibri",
+                    paddingRight: 70,
+                    fontSize: 8,
+                    lineHeight: 1.2,
+                    textAlign: "center",
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  NIP
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                Yang membuat pernyataan
+                <Text
+                  style={{
+                    ...styles.text,
+                    textAlign: "center",
+                    marginTop: 16,
+                  }}
+                >
+                  Informan/Narasumber {"\n"}Inspektorat Daerah{"\n"}
+                  {jsonData?.kabupaten}
+                </Text>
+                <View style={{ ...styles.imageTtd, marginVertical: 4 }}></View>
+                <Text
+                  style={{
+                    ...styles.text,
+                    fontFamily: "Calibri",
+                    marginTop: 8,
+                    fontSize: 8,
+                    paddingRight: 64,
+                    lineHeight: 1.2,
+                    textAlign: "center",
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  Nama
+                </Text>
+                <Text
+                  style={{
+                    ...styles.text,
+                    fontFamily: "Calibri",
+                    paddingRight: 70,
+                    fontSize: 8,
+                    lineHeight: 1.2,
+                    textAlign: "center",
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  NIP
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                ...styles.ttdContainer,
+                marginTop: 8,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <View>
+                Yang membuat pernyataan
+                <Text
+                  style={{
+                    ...styles.text,
+                    textAlign: "center",
+                    marginTop: 16,
+                  }}
+                >
+                  Ketua Tim Kerja Sarana, Prasarana, dan Alat {"\n"} Kesehatan
+                  Pelayanan Kesehatan Primer
+                </Text>
+                <View style={{ ...styles.imageTtd, marginVertical: 8 }}></View>
+                <Text
+                  style={{
+                    ...styles.text,
+                    fontFamily: "Calibri",
+                    marginTop: 8,
+                    fontSize: 8,
+                    paddingRight: 8,
+                    lineHeight: 1.2,
+                    textAlign: "center",
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  Bondan Wicaksono Adhi, S.E., M.B.A
+                </Text>
+                <Text
+                  style={{
+                    ...styles.text,
+                    fontFamily: "Calibri",
+                    paddingRight: 16,
+                    fontSize: 8,
+                    lineHeight: 1.2,
+                    textAlign: "center",
+                    letterSpacing: 0.2,
+                  }}
+                >
+                  NIP. 198705262010121002
+                </Text>
+              </View>
+            </View>
+          </>
+        </View>
+        <View style={styles.footer}>
+          <Text>
+            Downloaded on {downloadDate}. [username ={" "}
+            {jsonData?.user_download || ""}]
+          </Text>
+        </View>
+      </Page>
     </Document>
   );
   const blob = await pdf(<MyDocument />).toBlob();

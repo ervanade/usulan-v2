@@ -137,7 +137,9 @@ const PreviewVerif = () => {
       // eslint-disable-next-line
       const responseUser = await axios({
         method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/barang`,
+        url: `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/usulan/${encodeURIComponent(decryptId(id))}`,
         headers: {
           "Content-Type": "application/json",
           //eslint-disable-next-line
