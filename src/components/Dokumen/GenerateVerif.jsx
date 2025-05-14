@@ -322,10 +322,7 @@ const GenerateVerif = async (jsonData, preview) => {
                 BERITA ACARA VERIFIKASI {"\n"} DINAS KESEHATAN{" "}
                 {jsonData?.kabupaten}
                 {"\n"}
-                PROPOSAL USULAN ALAT OFTALMOSKOP, OTOSKOP, GARPU TALA, SPRAY{" "}
-                {"\n"}
-                CAN, CO ANALYZER, SANITARIAN KIT, DAN THERMAL ABLATION DI {"\n"}
-                PUSKESMAS
+                PROPOSAL USULAN PEMENUHAN ALAT KESEHATAN DI PUSKESMAS
               </Text>
             </View>
             <View
@@ -340,14 +337,8 @@ const GenerateVerif = async (jsonData, preview) => {
               }}
             >
               <Text>
-                Berkaitan dengan usulan proposal pengadaan alat (terlampir) yang
-                diajukan oleh Kepala Dinas Kesehatan {jsonData?.kabupaten} pada
-                proyek Strengthening Of Primary Health Care in Indonesia
-                (SOPHI), kami sampaikan bahwa telah dilakukan verifikasi terkait
-                kondisi SDM, Sarana Prasarana, dan Alat Kesehatan, serta
-                kesiapan penggunaan alat – alat tersebut dalam pelaksanaan
-                kegiatan di Puskesmas. Dalam rangka mendukung ini, Dinas
-                Kesehatan juga berkomitmen untuk:{" "}
+              Berkaitan dengan proposal usulan pemenuhan alat kesehatan di Puskesmas oleh {jsonData?.kabupaten} melalui proyek STRENGTHENING ON PRIMARY HEALTH CARE IN INDONESIA (SOPHI), kami sampaikan bahwa telah dilakukan verifikasi terkait jumlah usulan alat kesehatan, ketersediaan SDM Kesehatan dan Sarana Prasarana, serta kesiapan Pukesmas untuk mengoperasikan alkes yang diusulkan (proposal terlampir). Selain itu, Dinas Kesehatan juga berkomitmen untuk:
+
               </Text>
             </View>
           </View>
@@ -375,10 +366,7 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>1.</Text>
               <Text>
-                Melaksanakan Permenkes 31 tahun 2018 dengan melakukan update
-                data sarana, prasarana dan alat kesehatan secara riil melalui
-                aplikasi ASPAK oleh Puskesmas dan telah divalidasi oleh Dinas
-                Kesehatan Kabupaten/Kota.
+              Melaksanakan Permenkes Nomor 31 tahun 2018 dengan melakukan update data sarana, prasarana dan alat kesehatan secara riil melalui aplikasi ASPAK dan telah divalidasi oleh Dinas Kesehatan, Inspektorat Daerah dan Bappeda.
               </Text>
             </View>
 
@@ -394,9 +382,7 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>2.</Text>
               <Text>
-                Memastikan SDM tetap ada agar barang tetap dapat digunakan
-                secara optimal oleh tenaga kesehatan yang sesuai dengan
-                kompetensinya sebelum alat didistribusikan.
+              Memastikan SDM tetap ada agar barang tetap dapat digunakan secara optimal oleh tenaga kesehatan yang sesuai dengan kompetensinya sebelum alat didistribusikan.
               </Text>
             </View>
 
@@ -412,9 +398,7 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>
-                Memastikan bahwa sarana dan prasarana (Listrik, internet, luas
-                ruangan, luas bangunan, dll.) memenuhi standar dan tersedia
-                sebelum alat didistribusikan.
+              Memastikan bahwa sarana dan prasarana (luas ruangan, listrik, internet, IPAL, air bersih) memenuhi standar dan tersedia sebelum alat didistribusikan.
               </Text>
             </View>
 
@@ -430,8 +414,7 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>4.</Text>
               <Text>
-                Menjalankan Integrasi layanan Primer (ILP) pada Puskesmas, Pustu
-                dan Posyandu yang mengusulkan alat kesehatan.
+              Tidak menggarkan melalui pembiayaan lainnya untuk alat kesehatan yang diusulkan sampai dengan alat kesehatan tersebut sudah terdistribusi.
               </Text>
             </View>
 
@@ -447,9 +430,7 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>5.</Text>
               <Text>
-                Tidak menganggarkan melalui pembiayaan lainnya untuk alat
-                kesehatan yang diusulkan sampai dengan alat kesehatan tersebut
-                sudah terdistribusi.
+              Sanggup menerima alat sesuai dengan alat yang diusulkan dan akan melakukan pencatatan alat ke ASPAK setelah alat diserahterimakan.
               </Text>
             </View>
             <View
@@ -464,9 +445,7 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>6.</Text>
               <Text>
-                Sanggup menerima alat sesuai dengan alat yang diusulkan dan akan
-                melakukan pencatatan alat ke ASPAK setelah alat
-                diserahterimakan.
+              Ikut serta memastikan pendistribusian alat kesehatan hingga ke puskesmas, pustu, dan posyandu sesuai dengan Kepmenkes tentang Standar Peralatan dalam Rangka Penguatan Pelayanan Kesehatan Primer pada Pusat Kesehatan Masyarakat, Unit Pelayanan Kesehatan di Desa/Kelurahan, dan Pos Pelayanan Terpadu.
               </Text>
             </View>
 
@@ -482,17 +461,11 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>7.</Text>
               <Text>
-                Ikut serta memastikan pendistribusian alat kesehatan hingga ke
-                Puskesmas, Pustu dan Posyandu sesuai Permenkes 1578 tahun 2024
-                tentang Perubahan Atas Keputusan Menteri Kesehatan No.
-                HK.01.07/Menkes/1047/2024 Tentang Standar Peralatan Dalam Rangka
-                Penguatan Pelayanan Kesehatan Primer Pada Pusat Kesehatan
-                Masyarakat, Unit Pelayanan Kesehatan di Desa/ Kelurahan, dan Pos
-                Pelayanan Terpadu.
+              Menyiapkan biaya operasional untuk pemeliharaan alat kesehatan, reagen dan BMHP, serta sarana prasarana lainnya (luas ruangan, listrik, internet, IPAL, air bersih). 
               </Text>
             </View>
 
-            <View
+            {/* <View
               style={{
                 ...styles.text,
                 lineHeight: 1.7,
@@ -524,7 +497,7 @@ const GenerateVerif = async (jsonData, preview) => {
                 reagen dan BMHP, serta sarana prasarana lainnya (listrik,
                 internet, ruangan, dll.)
               </Text>
-            </View>
+            </View> */}
           </View>
 
           <View

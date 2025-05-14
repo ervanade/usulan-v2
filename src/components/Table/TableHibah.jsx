@@ -40,8 +40,8 @@ Font.register({
 
 const BORDER_COLOR = "#000";
 const BORDER_STYLE = "solid";
-const COL1_WIDTH = 5;
-const COLN_WIDTH = (100 - COL1_WIDTH) / 4;
+const COL1_WIDTH = 6;
+const COLN_WIDTH = (100 - COL1_WIDTH) / 5;
 
 const styles = StyleSheet.create({
   viewer: {
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const ITEMS_PER_PAGE = 32;
+const ITEMS_PER_PAGE = 51;
 
 const formatRupiah = (price) => {
   return `${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
@@ -273,6 +273,7 @@ const getAllDetailDistribusi = (distribusi) => {
       standard: item.standard_rawat_inap || "",
       berfungsi: item.berfungsi || "",
       usulan: item.usulan,
+      alasan: item.keterangan_usulan || ""
     })),
   }));
 };
@@ -324,7 +325,7 @@ export const RenderHibahPages = (jsonData, preview) => {
               <View
                 style={{
                   ...styles.titleContainer,
-                  marginBottom: 16,
+                  marginBottom: 0,
                   marginTop: 0,
                 }}
               >
@@ -369,6 +370,9 @@ export const RenderHibahPages = (jsonData, preview) => {
                   <View style={styles.tableColHeader}>
                     <Text style={styles.tableCellHeader}>Usulan</Text>
                   </View>
+                  <View style={styles.tableColHeader}>
+                    <Text style={styles.tableCellHeader}>Alasan Tidak Usul</Text>
+                  </View>
                 </View>
                 {currentData.map((items, index) => (
                   <View style={styles.tableRow} key={index}>
@@ -376,7 +380,7 @@ export const RenderHibahPages = (jsonData, preview) => {
                       <Text style={styles.tableCell}>{start + index + 1}</Text>
                     </View>
                     <View style={styles.tableCol}>
-                      <Text style={styles.tableCell}>
+                      <Text style={{...styles.tableCell, fontSize: 6}}>
                         {items.namaAlkes || ""}
                       </Text>
                     </View>
@@ -394,6 +398,11 @@ export const RenderHibahPages = (jsonData, preview) => {
                     <View style={styles.tableCol}>
                       <Text style={styles.tableCell}>
                         {formatRupiah(items.usulan) || "0"}
+                      </Text>
+                    </View>
+                    <View style={styles.tableCol}>
+                    <Text style={{...styles.tableCell, fontSize: 6}}>
+                    {items?.keterangan_usulan || "-"}
                       </Text>
                     </View>
                   </View>

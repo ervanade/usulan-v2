@@ -2246,6 +2246,198 @@ const GenerateDokumen = async (jsonData, preview) => {
         </View>
       </Page>
 
+      <Page size="FOLIO" style={styles.page}>
+        <Text style={{ ...styles.watermark, left: preview ? "25%" : "39%" }}>
+          {preview ? "PREVIEW" : "FINAL"}
+        </Text>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            height: 800,
+          }}
+        >
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+              }}
+            >
+              <Text
+                style={{
+                  ...styles.helvetica,
+                  textAlign: "center",
+                  // textDecoration: "underline",
+                }}
+              >
+                SURAT PERNYATAAN{" "}
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 8,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Yang bertanda tangan di bawah ini :{"\n"}
+                Nama :{"\n"}
+                Jabatan :{"\n"}
+                Daerah :{"\n"}
+                Alamat Kantor :{"\n\n"}
+                Dengan ini menyatakan bahwa:{" "}
+              </Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 16,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>1.</Text>
+              <Text>
+              Tidak mengusulkan alat kesehatan melalui program SOPHI untuk pemenuhan Alat Kesehatan Puskesmas {jsonData?.kabupaten}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>2.</Text>
+              <Text>
+              Pemenuhan alat kesehatan Puskesmas {jsonData?.kabupaten} akan dilaksanakan menggunakan anggaran ….
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>3.</Text>
+              <Text>
+                ...
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              ...styles.text,
+              lineHeight: 1.7,
+              letterSpacing: 0.1,
+              display: "flex",
+              flexDirection: "row",
+              marginTop: 8,
+              width: "100%",
+            }}
+          >
+            <Text>
+            Pernyataan ini dibuat dengan sebenarnya untuk digunakan sebagaimana mestinya.
+Demikian surat pernyataan ini saya buat dengan penuh tanggung jawab.
+
+            </Text>
+          </View>
+
+          <View style={styles.ttdContainer}>
+            <View style={{ flex: 1 }}></View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ ...styles.text, textAlign: "center" }}>
+                ...............,...................2025
+              </Text>
+              Yang membuat pernyataan
+              <Text
+                style={{ ...styles.text, textAlign: "center", marginTop: 48 }}
+              >
+                Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
+              </Text>
+              <View style={{ ...styles.imageTtd, marginVertical: 8 }}></View>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  marginTop: 12,
+                  fontSize: 8,
+                  paddingRight: 64,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                Nama
+              </Text>
+              <Text
+                style={{
+                  ...styles.text,
+                  fontFamily: "Calibri",
+                  paddingRight: 70,
+                  fontSize: 8,
+                  lineHeight: 1.2,
+                  textAlign: "center",
+                  letterSpacing: 0.2,
+                }}
+              >
+                NIP
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <Text>
+            Downloaded on {downloadDate}. [username ={" "}
+            {jsonData?.user_download || ""}]
+          </Text>
+        </View>
+      </Page>
+
       {RenderBarangPages(jsonData, preview)}
       {RenderHibahPages(jsonData, preview)}
     </Document>
