@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   docContainerBorder: {
     flexDirection: "column",
-    marginTop: 16,
+    marginTop: 12,
     border: 1,
     borderWidth: 1.5,
     display: "flex",
@@ -300,9 +300,9 @@ const GenerateDokumen = async (jsonData, preview) => {
               textAlign: "center",
             }}
           >
-            dibuat oleh kab/kota {"\n\n"}PROPOSAL {"\n\n"}PEMENUHAN ALAT
-            KESEHATAN DI PUSKESMAS,{"\n\n"}
-            KABUPATEN/KOTA {jsonData?.kabupaten}
+            dibuat oleh kab/kota {"\n\n"}PROPOSAL USULAN PEMENUHAN ALAT
+            KESEHATAN{"\n\n"} DI PUSKESMAS{"\n\n"}
+            {jsonData?.kabupaten}
           </Text>
           <Text
             style={{
@@ -315,7 +315,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               textAlign: "center",
             }}
           >
-            DINAS KESEHATAN KABUPATEN/KOTA {jsonData?.kabupaten} {"\n\n"}
+            DINAS KESEHATAN {jsonData?.kabupaten} {"\n\n"}
             PROVINSI {jsonData?.provinsi} {"\n\n"}TAHUN 2025
           </Text>
         </View>
@@ -332,7 +332,7 @@ const GenerateDokumen = async (jsonData, preview) => {
           style={{
             paddingHorizontal: 16,
             paddingVertical: 16,
-            height: 850,
+            height: 865,
           }}
         >
           <View
@@ -342,7 +342,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "column",
-              marginTop: 16,
+              marginTop: 12,
               width: "100%",
             }}
           >
@@ -353,46 +353,47 @@ const GenerateDokumen = async (jsonData, preview) => {
                 letterSpacing: 0.1,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
-                width: "100%",
-              }}
-            >
-              <Text style={{ ...styles.helvetica, marginRight: 16 }}>1.</Text>
-              <Text style={{ ...styles.helvetica, marginRight: 16 }}>
-                Kerangka Proposal SOPHI
-              </Text>
-            </View>
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                display: "flex",
-                flexDirection: "column",
-                width: "100%",
-                marginVertical: 16,
-              }}
-            >
-              <Text style={{ ...styles.helvetica, textAlign: "center" }}>
-                OUTLINE PROPOSAL USULAN PEMENUHAN ALAT KESEHATAN {"\n"}
-                DI PUSKESMAS {"\n"}
-                {jsonData?.kabupaten}
-              </Text>
-            </View>
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                display: "flex",
-                flexDirection: "row",
-                marginTop: 8,
                 width: "100%",
               }}
             >
               <Text style={{ ...styles.helvetica, marginRight: 16 }}>A.</Text>
               <Text style={{ ...styles.helvetica, marginRight: 16 }}>
                 LATAR BELAKANG
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 6,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Rencana Pembangunan Jangka Menengah Nasional (RPJMN) 2025-2029
+                memiliki arah kebijakan dan strategi pembangunan bidang
+                kesehatan untuk meningkatkan pelayanan kesehatan menuju cakupan
+                kesehatan semesta, khususnya dalam penguatan pelayanan kesehatan
+                dasar atau Pelayanan Kesehatan Primer. Dalam upaya percepatan
+                penguatan layanan kesehatan primer, Kementerian Kesehatan
+                menyelenggarakan program Bantuan Pemerintah tahun 2024 – 2028
+                berupa pemenuhan alat kesehatan melalui proyek Strengthening of
+                Primary Healthcare in Indonesia (SOPHI). Pemenuhan alat
+                kesehatan pada proyek SOPHI diharapkan dapat meningkatkan akses
+                masyarakat kepada pelayanan kesehatan yang berkualitas khususnya
+                pelayanan kesehatan primer, pencegahan dan pengendalian
+                penyakit, serta promosi kesehatan di berbagai fasilitas
+                kesehatan primer, seperti Puskesmas, Posyandu, dan Unit
+                Pelayanan Kesehatan Desa/Kelurahan (UPKD/K). Diperlukan
+                penguatan kapasitas layanan melalui penyediaan alat kesehatan
+                yang sesuai dengan standar pelayanan minimal (SPM) kesehatan.
+                Atas dasar pertimbangan tersebut, tahun ini kami mengajukan
+                proposal usulan pemenuhan alat kesehatan di Puskesmas kepada
+                Kementerian Kesehatan.
               </Text>
             </View>
             {/* <View
@@ -403,33 +404,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 paddingLeft: 24,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
-                width: "100%",
-              }}
-            >
-              <Text>
-                Kementerian Kesehatan telah melakukan transformasi sistem
-                kesehatan melalui 6 pilar, dengan pilar pertama yaitu
-                transformasi layanan primer. Transformasi layanan primer
-                difokuskan untuk meningkatkan layanan promotif dan preventif,
-                termasuk upaya pencegahan, deteksi dini, promosi kesehatan,
-                membangun infrastruktur, melengkapi sarana, prasarana, SDM,
-                serta memperkuat manajemen di seluruh layanan primer.
-                Transformasi layanan kesehatan primer yang akan dijalankan
-                menerapkan konsep kewilayahan difokuskan pada pendekatan siklus
-                hidup serta mendekatkan layanan kesehatan melalui jejaring
-                hingga ke tingkat dusun.
-              </Text>
-            </View>
-            <View
-              style={{
-                ...styles.text,
-                lineHeight: 1.7,
-                letterSpacing: 0.1,
-                paddingLeft: 24,
-                display: "flex",
-                flexDirection: "row",
-                marginTop: 8,
+                marginTop: 6,
                 width: "100%",
               }}
             >
@@ -451,7 +426,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 paddingLeft: 24,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
+                marginTop: 6,
                 width: "100%",
               }}
             >
@@ -474,7 +449,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "column",
-              marginTop: 16,
+              marginTop: 12,
               width: "100%",
             }}
           >
@@ -485,8 +460,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 letterSpacing: 0.1,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
-                marginBottom: 8,
+                marginBottom: 6,
                 width: "100%",
               }}
             >
@@ -495,19 +469,18 @@ const GenerateDokumen = async (jsonData, preview) => {
                 TUJUAN
               </Text>
             </View>
-
-            {/* <View
+            <View
               style={{
                 ...styles.text,
                 lineHeight: 1.7,
                 letterSpacing: 0.1,
-                paddingHorizontal: 24,
+                paddingLeft: 24,
                 display: "flex",
                 flexDirection: "row",
+                marginTop: 0,
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 8 }}>1.</Text>
               <Text>
                 Terpenuhinya jumlah dan jenis alat kesehatan di puskesmas sesuai
                 standar.
@@ -525,10 +498,29 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
+              <Text style={{ marginRight: 8 }}>1.</Text>
+              <Text>
+                Pemenuhan alat kesehatan sesuai standar di Puskesmas untuk
+                mendukung pelayanan kesehatan dasar yang komprehensif.
+              </Text>
+            </View>
+
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingHorizontal: 24,
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+              }}
+            >
               <Text style={{ marginRight: 8 }}>2.</Text>
               <Text>
-                Terpenuhinya jumlah dan jenis alat kesehatan di puskesmas
-                pembantu sesuai standar.
+                Penguatan kapasitas fasilitas pelayanan kesehatan primer dalam
+                menyediakan layanan kesehatan dasar yang berkualitas dan sesuai
+                standar pelayanan minimal.
               </Text>
             </View>
 
@@ -545,10 +537,11 @@ const GenerateDokumen = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>
-                Terpenuhinya jumlah dan jenis alat kesehatan di posyandu sesuai
+                Peningkatan akses masyarakat terhadap pelayanan kesehatan primer
+                yang berkualitas melalui pemenuhan alat kesehatan sesuai
                 standar.
               </Text>
-            </View> */}
+            </View>
           </View>
 
           <View
@@ -558,7 +551,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "column",
-              marginTop: 16,
+              marginTop: 12,
               width: "100%",
             }}
           >
@@ -569,8 +562,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 letterSpacing: 0.1,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
-                marginBottom: 8,
+                marginBottom: 6,
                 width: "100%",
               }}
             >
@@ -591,8 +583,13 @@ const GenerateDokumen = async (jsonData, preview) => {
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 8 }}>1.</Text>
-              <Text>Data usulan alat, jumlah dan peralatan pada puskesmas</Text>
+              <Text>
+                Usulan peralatan puskesmas dalam lampiran ini diusulkan dengan
+                memasukkan kriteria alat yang masih berfungsi baik di puskesmas
+                didasarkan pada data ASPAK dan jumlah usulan berdasarkan
+                ketersediaan SDMK pengoperasian alat. {"\n"}
+                <Text style={styles.helvetica}>(Nama alat terlampir)</Text>
+              </Text>
             </View>
 
             {/* <View
@@ -635,7 +632,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "column",
-              marginTop: 16,
+              marginTop: 12,
               width: "100%",
             }}
           >
@@ -646,14 +643,13 @@ const GenerateDokumen = async (jsonData, preview) => {
                 letterSpacing: 0.1,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
-                marginBottom: 8,
+                marginBottom: 6,
                 width: "100%",
               }}
             >
               <Text style={{ ...styles.helvetica, marginRight: 16 }}>D.</Text>
               <Text style={{ ...styles.helvetica, marginRight: 16 }}>
-                Ketersediaan SDM Kesehatan
+                Ketersediaan SDM Puskesmas
               </Text>
             </View>
 
@@ -662,14 +658,21 @@ const GenerateDokumen = async (jsonData, preview) => {
                 ...styles.text,
                 lineHeight: 1.7,
                 letterSpacing: 0.1,
-                paddingHorizontal: 24,
+                paddingLeft: 24,
                 display: "flex",
                 flexDirection: "row",
+                marginTop: 0,
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 8 }}>1.</Text>
-              <Text>Data ketersediaan SDM kesehatan pada puskesmas</Text>
+              <Text>
+                Usulan peralatan puskesmas dalam lampiran ini diusulkan dengan
+                memasukkan kriteria SDM di puskesmas yang terdiri dari minimal 8
+                jenis tenaga kesehatan yaitu terdiri dari: Dokter, Dokter Gigi,
+                Bidan, Perawat, ATLM (Ahli Teknisi Laboratorium Medik), Kesling,
+                Kesmas, dan Gizi sesuai dengan jenis SDMK yang akan
+                mengoperasikan alat.
+              </Text>
             </View>
 
             {/* <View
@@ -712,7 +715,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "column",
-              marginTop: 16,
+              marginTop: 12,
               width: "100%",
             }}
           >
@@ -723,8 +726,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 letterSpacing: 0.1,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
-                marginBottom: 8,
+                marginBottom: 6,
                 width: "100%",
               }}
             >
@@ -739,14 +741,18 @@ const GenerateDokumen = async (jsonData, preview) => {
                 ...styles.text,
                 lineHeight: 1.7,
                 letterSpacing: 0.1,
-                paddingHorizontal: 24,
+                paddingLeft: 24,
                 display: "flex",
                 flexDirection: "row",
+                marginTop: 0,
                 width: "100%",
               }}
             >
-              <Text style={{ marginRight: 8 }}>1.</Text>
-              <Text>Data ketersediaan sarana dan prasarana pada puskesmas</Text>
+              <Text>
+                Usulan peralatan puskesmas dalam lampiran ini diusulkan dengan
+                mempertimbangkan sarana dan prasarana pendukung yang mencakup
+                ketersediaan Listrik dan ruangan untuk menerima alat Kesehatan.
+              </Text>
             </View>
 
             {/* <View
@@ -789,7 +795,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "column",
-              marginTop: 16,
+              marginTop: 12,
               width: "100%",
             }}
           >
@@ -800,14 +806,32 @@ const GenerateDokumen = async (jsonData, preview) => {
                 letterSpacing: 0.1,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
-                marginBottom: 8,
+                marginBottom: 6,
                 width: "100%",
               }}
             >
               <Text style={{ ...styles.helvetica, marginRight: 16 }}>F.</Text>
               <Text style={{ ...styles.helvetica, marginRight: 16 }}>
                 Penutup
+              </Text>
+            </View>
+            <View
+              style={{
+                ...styles.text,
+                lineHeight: 1.7,
+                letterSpacing: 0.1,
+                paddingLeft: 24,
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 0,
+                width: "100%",
+              }}
+            >
+              <Text>
+                Demikian proposal yang dapat kami usulkan dengan kondisi
+                sebenarnya. Besar harapan kami usulan alat kesehatan di
+                puskesmas, puskesmas pembantu dan posyandu ini dapat dipenuhi
+                oleh Kementerian Kesehatan. Terima kasih.
               </Text>
             </View>
           </View>
@@ -818,7 +842,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "column",
-              marginTop: 16,
+              marginTop: 12,
               width: "100%",
             }}
           >
@@ -829,8 +853,8 @@ const GenerateDokumen = async (jsonData, preview) => {
                 letterSpacing: 0.1,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
-                marginBottom: 8,
+                marginTop: 0,
+                marginBottom: 0,
                 width: "100%",
               }}
             >
@@ -847,7 +871,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 paddingLeft: 24,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 16,
+                marginTop: 6,
                 width: "100%",
               }}
             >
@@ -865,10 +889,10 @@ const GenerateDokumen = async (jsonData, preview) => {
               ...styles.text,
               textAlign: "right",
               paddingRight: 92,
-              marginTop: 16,
+              marginTop: 12,
             }}
           >
-            Tempat, ............................
+            {jsonData?.kabupaten}, ............................
           </Text>
 
           <View style={{ ...styles.ttdContainer, marginTop: 0 }}>
@@ -1013,7 +1037,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "column",
-              marginTop: 16,
+              marginTop: 12,
               width: "100%",
             }}
           >
@@ -1047,7 +1071,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 letterSpacing: 0.1,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
+                marginTop: 6,
                 width: "100%",
               }}
             >
@@ -1071,7 +1095,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "column",
-              marginTop: 16,
+              marginTop: 12,
               width: "100%",
             }}
           >
@@ -1209,7 +1233,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "row",
-              marginTop: 8,
+              marginTop: 6,
               width: "100%",
             }}
           >
@@ -1291,7 +1315,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "column",
-              marginTop: 16,
+              marginTop: 12,
               width: "100%",
             }}
           >
@@ -1322,7 +1346,7 @@ const GenerateDokumen = async (jsonData, preview) => {
                 letterSpacing: 0.1,
                 display: "flex",
                 flexDirection: "row",
-                marginTop: 8,
+                marginTop: 6,
                 width: "100%",
               }}
             >
@@ -1344,7 +1368,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "column",
-              marginTop: 16,
+              marginTop: 12,
               width: "100%",
             }}
           >
@@ -1403,7 +1427,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               letterSpacing: 0.1,
               display: "flex",
               flexDirection: "row",
-              marginTop: 8,
+              marginTop: 6,
               width: "100%",
             }}
           >
