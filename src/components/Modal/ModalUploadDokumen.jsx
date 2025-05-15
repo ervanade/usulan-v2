@@ -60,6 +60,8 @@ const ModalUploadDokumen = ({
     if (formData.fileDokumen) {
       if (uploadType == "chr") {
         formDataToSend.append("file_chr", formData.fileDokumen);
+      } else if (uploadType == "chp") {
+        formDataToSend.append("file_chp", formData.fileDokumen);
       } else if (uploadType == "baverif") {
         formDataToSend.append("file_verifikasi", formData.fileDokumen);
       } else {
@@ -150,6 +152,13 @@ const ModalUploadDokumen = ({
       setModalTitle(`Upload Dokumen CHR & CHP ${jsonData?.kabupaten}`);
       setUploadApiUrl(
         `${import.meta.env.VITE_APP_API_URL}/api/usulan/uploadchr/${
+          formData.id_dokumen
+        }`
+      );
+    } else if (uploadType === "chp") {
+      setModalTitle(`Upload Dokumen CHP ${jsonData?.kabupaten}`);
+      setUploadApiUrl(
+        `${import.meta.env.VITE_APP_API_URL}/api/usulan/uploadchp/${
           formData.id_dokumen
         }`
       );

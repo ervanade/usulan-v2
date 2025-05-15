@@ -442,6 +442,8 @@ const PdfUsulanAlkes = () => {
     let urlDownload;
     if (type === "chr") {
       urlDownload = "downloadchr";
+    } else if (type === "chp") {
+      urlDownload = "downloadchp";
     } else if (type === "baverif") {
       urlDownload = "downloadverif";
     } else {
@@ -646,12 +648,16 @@ const PdfUsulanAlkes = () => {
         kabupaten: data.kabupaten || "",
         file_upload: data.file_upload || null,
         file_chr: data.file_chr || null,
+        file_chp: data.file_chp || null,
         file_verifikasi: data.file_verifikasi || null,
       };
 
       if (type === "chr") {
         fileUrl = dataJson?.file_chr;
         fileNamePrefix = "Dokumen CHR";
+      } else if (type === "chp") {
+        fileUrl = dataJson?.file_verifikasi;
+        fileNamePrefix = "Dokumen CHP";
       } else if (type === "baverif") {
         fileUrl = dataJson?.file_verifikasi;
         fileNamePrefix = "Dokumen BA Verifikasi";
@@ -783,6 +789,69 @@ const PdfUsulanAlkes = () => {
               <div className="text-green-500 text-xs">Sudah Upload</div>
             )}
             {(!row?.tgl_chr || !row?.file_chr) && (
+              <div className="text-red-500 text-xs">Belum Upload</div>
+            )}
+          </div>
+        ),
+        ignoreRowClick: true,
+        button: true,
+        minWidth: "120px",
+      },
+      {
+        name: <div className="text-wrap px-1">Upload CHP</div>,
+        selector: (row) => (row?.tgl_chp && row?.file_chp ? "Sudah" : "Belum"),
+        sortable: true,
+        omit: false,
+        cell: (row) => (
+          <div className="flex flex-col items-center space-y-1">
+            {!row?.tgl_chp || !row?.file_chp ? (
+              <button
+                title="Upload Dokumen"
+                className="text-white py-1 px-2 bg-primary rounded-md text-xs"
+                onClick={(e) =>
+                  handleModalDokumen(
+                    e,
+                    row.id,
+                    `Dokumen CHP ${row.kabupaten}`,
+                    row.kabupaten,
+                    "chp"
+                  )
+                }
+              >
+                Upload <br />
+                CHP
+              </button>
+            ) : (
+              <div className="flex space-x-1">
+                <button
+                  title="Upload Dokumen Baru"
+                  className="text-white py-1 px-2 bg-blue-500 hover:bg-blue-700 rounded-md text-xs"
+                  onClick={(e) =>
+                    handleModalDokumen(
+                      e,
+                      row.id,
+                      `Dokumen CHP ${row.kabupaten}`,
+                      row.kabupaten,
+                      "chp"
+                    )
+                  }
+                >
+                  Upload <br />
+                  CHP
+                </button>
+                <button
+                  title="Buka CHP"
+                  className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
+                  onClick={() => handleBukaUpload(row.id, "chr")}
+                >
+                  Buka
+                </button>
+              </div>
+            )}
+            {row?.tgl_chp && row?.file_chp && (
+              <div className="text-green-500 text-xs">Sudah Upload</div>
+            )}
+            {(!row?.tgl_chp || !row?.file_chp) && (
               <div className="text-red-500 text-xs">Belum Upload</div>
             )}
           </div>
@@ -1104,6 +1173,7 @@ const PdfUsulanAlkes = () => {
       Tanggal_Download: item?.tgl_download,
       Tanggal_Upload: item?.tgl_upload,
       Tanggal_Upload_CHR: item?.tgl_chr,
+      Tanggal_Upload_CHP: item?.tgl_chp,
       Tanggal_BA_Verifikasi: item?.tgl_verifikasi,
       Periode: item?.periode_name,
     }));
