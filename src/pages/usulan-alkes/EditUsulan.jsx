@@ -435,6 +435,57 @@ const EditUsulan = () => {
   };
 
   useEffect(() => {
+    if (formData.pelayanan) {
+      const initialOption = pelayananOptions.find(
+        (kec) => kec.value == formData.pelayanan
+      );
+
+      if (initialOption) {
+        setSelectedPelayanan({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
+
+    if (formData.ketersediaan_listrik) {
+      const initialOption = SelectOptions.find(
+        (kec) => kec.value == formData.ketersediaan_listrik
+      );
+
+      if (initialOption) {
+        setSelectedListrik({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
+
+    if (formData.kapasitas_listrik) {
+      const initialOption = dayaOptions.find(
+        (kec) => kec.value == formData.kapasitas_listrik
+      );
+
+      if (initialOption) {
+        setSelectedDaya({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
+
+    if (formData.internet) {
+      const initialOption = SelectOptions.find(
+        (kec) => kec.value == formData.internet
+      );
+
+      if (initialOption) {
+        setSelectedInternet({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
     if (formData.id_kriteria && dataKriteria.length > 0) {
       const initialSelectedKriteria = formData.id_kriteria
         .map((kriteriaId) => {

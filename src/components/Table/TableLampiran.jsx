@@ -43,6 +43,11 @@ const BORDER_COLOR = "#000";
 const BORDER_STYLE = "solid";
 const COL1_WIDTH = 5;
 const COLN_WIDTH = (100 - COL1_WIDTH) / 4;
+const COL2_WIDTH = 35; // Nama Alkes (divided into 2 sub-columns)
+const COL3_WIDTH = 15; // Puskesmas (divided into 3 sub-columns with one having 2 sub-sub-columns)
+const COL4_WIDTH = 15; // Hasil Desk (divided into 2 sub-columns)
+const COL5_WIDTH = 15; // Hasil Desk (divided into 2 sub-columns)
+const COL6_WIDTH = 15; // Hasil Desk (divided into 2 sub-columns)
 
 const styles = StyleSheet.create({
   viewer: {
@@ -265,7 +270,8 @@ const getAllDetailDistribusi = (distribusi) => {
   return distribusi?.map((item, index) => ({
     no: index + 1 || "",
     namaAlkes: item.nama_alkes || "",
-    standard: item.standard_rawat_inap || "",
+    standard_rawat_inap: item.standard_rawat_inap || "",
+    standard_non_inap: item.standard_non_inap || "",
     berfungsi: item.berfungsi || "",
     usulan: item.usulan,
   }));
@@ -337,29 +343,46 @@ export const RenderBarangPages = (jsonData, preview) => {
 
           <View style={styles.table}>
             <View style={{ ...styles.tableRow, backgroundColor: "#F0F0F0" }}>
-              <View style={styles.tableCol1Header}>
+              <View
+                style={{ ...styles.tableCol1Header, width: `${COL1_WIDTH}%` }}
+              >
                 <Text style={styles.tableCellHeader}>No</Text>
               </View>
-              <View style={styles.tableColHeader}>
+              <View
+                style={{ ...styles.tableColHeader, width: `${COL2_WIDTH}%` }}
+              >
                 <Text style={styles.tableCellHeader}>Nama Alkes</Text>
               </View>
 
-              <View style={styles.tableColHeader}>
-                <Text style={styles.tableCellHeader}>Standard</Text>
+              <View
+                style={{ ...styles.tableColHeader, width: `${COL3_WIDTH}%` }}
+              >
+                <Text style={styles.tableCellHeader}>Standar Rawat Inap</Text>
               </View>
-              <View style={styles.tableColHeader}>
+              <View
+                style={{ ...styles.tableColHeader, width: `${COL4_WIDTH}%` }}
+              >
+                <Text style={styles.tableCellHeader}>
+                  Standar Non Rawat Inap
+                </Text>
+              </View>
+              <View
+                style={{ ...styles.tableColHeader, width: `${COL5_WIDTH}%` }}
+              >
                 <Text style={styles.tableCellHeader}>Eksisting</Text>
               </View>
-              <View style={styles.tableColHeader}>
+              <View
+                style={{ ...styles.tableColHeader, width: `${COL6_WIDTH}%` }}
+              >
                 <Text style={styles.tableCellHeader}>Usulan</Text>
               </View>
             </View>
             {currentData.map((items, index) => (
               <View style={styles.tableRow} key={index}>
-                <View style={styles.tableCol1}>
+                <View style={{ ...styles.tableCol1, width: `${COL1_WIDTH}%` }}>
                   <Text style={styles.tableCell}>{start + index + 1}</Text>
                 </View>
-                <View style={styles.tableCol}>
+                <View style={{ ...styles.tableCol, width: `${COL2_WIDTH}%` }}>
                   <Text
                     style={{
                       ...styles.tableCell,
@@ -371,15 +394,22 @@ export const RenderBarangPages = (jsonData, preview) => {
                   </Text>
                 </View>
 
-                <View style={styles.tableCol}>
-                  <Text style={styles.tableCell}>{items.standard || "0"}</Text>
+                <View style={{ ...styles.tableCol, width: `${COL3_WIDTH}%` }}>
+                  <Text style={styles.tableCell}>
+                    {items.standard_rawat_inap || "0"}
+                  </Text>
                 </View>
-                <View style={styles.tableCol}>
+                <View style={{ ...styles.tableCol, width: `${COL4_WIDTH}%` }}>
+                  <Text style={styles.tableCell}>
+                    {items.standard_non_inap || "0"}
+                  </Text>
+                </View>
+                <View style={{ ...styles.tableCol, width: `${COL5_WIDTH}%` }}>
                   <Text style={styles.tableCell}>
                     {formatRupiah(items.berfungsi) || "0"}
                   </Text>
                 </View>
-                <View style={styles.tableCol}>
+                <View style={{ ...styles.tableCol, width: `${COL6_WIDTH}%` }}>
                   <Text style={styles.tableCell}>
                     {formatRupiah(items.usulan) || "0"}
                   </Text>
