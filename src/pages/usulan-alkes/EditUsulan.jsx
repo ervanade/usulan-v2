@@ -59,7 +59,6 @@ const EditUsulan = () => {
   const [error, setError] = useState(false);
   const [getLoading, setGetLoading] = useState(false);
   const isDisabled = false;
-  console.log(formData);
 
   const [dataUser, setDataUser] = useState([]);
   const [dataProvinsi, setDataProvinsi] = useState([]);
@@ -497,7 +496,6 @@ const EditUsulan = () => {
             : null;
         })
         .filter(Boolean); // Filter out null jika ID tidak ditemukan di dataKriteria
-      console.log(initialSelectedKriteria);
       setSelectedKriteria(initialSelectedKriteria);
     }
 
@@ -537,10 +535,6 @@ const EditUsulan = () => {
             ? undefined
             : item.keterangan_usulan,
         };
-        console.log(
-          `initialEditedData untuk ID ${item.id}:`,
-          initialEditedData[item.id]
-        );
       });
       setEditedData(initialEditedData);
     }
@@ -604,6 +598,30 @@ const EditUsulan = () => {
         : filteredData.find((row) => row.id === rowId)?.berfungsi || 0;
 
     // Jika standard null, bebas mengisi usulan dan masih_berfungsi
+
+    const row = filteredData.find((row) => row.id === rowId);
+    const memenuhiKriteria = row.kriteria_alkes?.some((alkesKriteria) =>
+      formData.id_kriteria?.includes(alkesKriteria.id)
+    );
+
+    // Jika tidak memenuhi kriteria dan mengubah usulan
+    if (
+      columnName === "usulan" &&
+      !memenuhiKriteria &&
+      row.kriteria_alkes?.length > 0
+    ) {
+      setEditedData((prevData) => ({
+        ...prevData,
+        [rowId]: {
+          ...prevData[rowId],
+          [columnName]: finalValue,
+          keterangan_usulan: "Tidak Siap SDM", // Otomatis isi alasan
+          catatanAlasan: undefined,
+        },
+      }));
+      return;
+    }
+
     if (standard === null) {
       setEditedData((prevData) => ({
         ...prevData,
@@ -702,125 +720,26 @@ const EditUsulan = () => {
     }
   };
 
-  [
-    {
-      id: 88451,
-      id_usulan: 2024,
-      id_puskesmas: 3,
-      id_alkes: 8,
-      berfungsi: 0,
-      usulan: 0,
-      periode_id: 2,
-      nama_alkes: "Elektrokardiograf (EKG)",
-      jenis_alkes: "EKG",
-      kategori: "EKG",
-      satuan: "unit",
-      tahun: "2025",
-      standard_rawat_inap: 1,
-      standard_non_inap: 1,
-      harga: 1000,
-      keterangan_alkes:
-        "[https://drive.google.com/file/d/1EizZI9-aUpkZQuJmzj9rYGZBAKhSwssR/view?usp=drive_link]",
-      keterangan_usulan: "",
-      kriteria_alkes: [
-        {
-          id_alkes: 8,
-          id: 1,
-          kriteria: "Dokter",
-          stat: 1,
-          created_at: "2025-05-10 05:00:29",
-          updated_at: null,
-        },
-        {
-          id_alkes: 8,
-          id: 3,
-          kriteria: "Bidan",
-          stat: 1,
-          created_at: "2025-05-10 05:00:53",
-          updated_at: null,
-        },
-        {
-          id_alkes: 8,
-          id: 2,
-          kriteria: "Perawat",
-          stat: 1,
-          created_at: "2025-05-10 05:00:44",
-          updated_at: null,
-        },
-      ],
-    },
-    {
-      id: 98719,
-      id_usulan: 2024,
-      id_puskesmas: 3,
-      id_alkes: 9,
-      berfungsi: 0,
-      usulan: 0,
-      periode_id: 2,
-      nama_alkes: "Chemistry Analyzer",
-      jenis_alkes: "Chemistry Analyzer",
-      kategori: "Chemistry Analyzer",
-      satuan: "1",
-      tahun: "2025",
-      standard_rawat_inap: 1,
-      standard_non_inap: 1,
-      harga: 0,
-      keterangan_alkes:
-        "[https://drive.google.com/file/d/1EizZI9-aUpkZQuJmzj9rYGZBAKhSwssR/view?usp=sharing]",
-      keterangan_usulan: "",
-      kriteria_alkes: [
-        {
-          id_alkes: 9,
-          id: 1,
-          kriteria: "Dokter",
-          stat: 1,
-          created_at: "2025-05-10 05:00:29",
-          updated_at: null,
-        },
-        {
-          id_alkes: 9,
-          id: 3,
-          kriteria: "Bidan",
-          stat: 1,
-          created_at: "2025-05-10 05:00:53",
-          updated_at: null,
-        },
-        {
-          id_alkes: 9,
-          id: 2,
-          kriteria: "Perawat",
-          stat: 1,
-          created_at: "2025-05-10 05:00:44",
-          updated_at: null,
-        },
-        {
-          id_alkes: 9,
-          id: 5,
-          kriteria: "ATLM",
-          stat: 1,
-          created_at: "2025-05-10 05:02:14",
-          updated_at: null,
-        },
-      ],
-    },
-  ];
-
   const getResultData = () => {
-    return filteredData.map((row) => ({
-      id: row.id,
-      berfungsi:
-        editedData[row.id]?.berfungsi !== undefined
-          ? editedData[row.id].berfungsi
-          : row.berfungsi || 0,
-      usulan:
-        editedData[row.id]?.usulan !== undefined
-          ? editedData[row.id].usulan
-          : row.usulan || 0,
-      alasan:
-        editedData[row.id]?.keterangan_usulan === "Lainnya"
-          ? editedData[row.id]?.catatanAlasan
-          : editedData[row.id]?.keterangan_usulan ?? null,
-    }));
+    return filteredData.map((row) => {
+      const memenuhiKriteria = row.kriteria_alkes?.some((alkesKriteria) =>
+        formData.id_kriteria?.includes(alkesKriteria.id)
+      );
+
+      return {
+        id: row.id,
+        berfungsi: editedData[row.id]?.berfungsi ?? row.berfungsi ?? 0,
+        usulan: editedData[row.id]?.usulan ?? row.usulan ?? 0,
+        alasan:
+          // Jika tidak memenuhi kriteria
+          !memenuhiKriteria && row.kriteria_alkes?.length > 0
+            ? "Tidak Siap SDM"
+            : // Jika memenuhi kriteria tapi ada alasan lain
+            editedData[row.id]?.keterangan_usulan === "Lainnya"
+            ? editedData[row.id]?.catatanAlasan
+            : editedData[row.id]?.keterangan_usulan ?? null,
+      };
+    });
   };
 
   const editUsulan = async () => {
@@ -1061,6 +980,18 @@ const EditUsulan = () => {
           );
 
           if (!memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
+            // Jika tidak memenuhi kriteria, set otomatis alasan
+            if (!editedData[row.id]?.keterangan_usulan) {
+              setEditedData((prev) => ({
+                ...prev,
+                [row.id]: {
+                  ...prev[row.id],
+                  keterangan_usulan: "Tidak Siap SDM",
+                  catatanAlasan: undefined,
+                },
+              }));
+            }
+
             return (
               <div className="text-red-500 text-xs">
                 SDM tidak memenuhi kriteria
@@ -1123,13 +1054,20 @@ const EditUsulan = () => {
             (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id)
           );
 
-          // if (!memenuhiSalahSatuKriteria) {
-          //   return (
-          //     <div className="text-red-500 text-xs">
-          //       SDM tidak memenuhi kriteria
-          //     </div>
-          //   );
-          // }
+          // Jika tidak memenuhi kriteria, tampilkan alasan otomatis
+          if (!memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
+            return (
+              <div className="w-full">
+                <input
+                  type="text"
+                  value="Tidak Siap SDM"
+                  className="border border-primary rounded p-1 text-sm w-full bg-gray-100"
+                  readOnly
+                  disabled
+                />
+              </div>
+            );
+          }
           const standard =
             selectedPelayanan?.value === "Non Rawat Inap"
               ? row.standard_non_inap
@@ -1140,13 +1078,6 @@ const EditUsulan = () => {
           const usulan = editedData[row.id]?.usulan || row.usulan || 0;
           const showAlasan =
             standard !== null && usulan < standard - masihBerfungsi;
-          console.log("Row:", row.id, {
-            standard,
-            masihBerfungsi,
-            usulan,
-            hasAlasan: !!editedData[row.id]?.keterangan_usulan,
-            showAlasan,
-          });
 
           if (!showAlasan)
             return <div className="text-xs text-gray-400">-</div>;
