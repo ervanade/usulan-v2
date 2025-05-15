@@ -280,7 +280,7 @@ const getAllDetailDistribusi = (distribusi) => {
       standard_non_inap: item.standard_non_inap || "",
       berfungsi: item.berfungsi || "",
       usulan: item.usulan,
-      alasan: item.keterangan_usulan || "",
+      keterangan_usulan: item.keterangan_usulan || "",
     })),
   }));
 };

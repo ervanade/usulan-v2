@@ -656,7 +656,7 @@ const PdfUsulanAlkes = () => {
         fileUrl = dataJson?.file_chr;
         fileNamePrefix = "Dokumen CHR";
       } else if (type === "chp") {
-        fileUrl = dataJson?.file_verifikasi;
+        fileUrl = dataJson?.file_chp;
         fileNamePrefix = "Dokumen CHP";
       } else if (type === "baverif") {
         fileUrl = dataJson?.file_verifikasi;
@@ -841,7 +841,7 @@ const PdfUsulanAlkes = () => {
                 <button
                   title="Buka CHP"
                   className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
-                  onClick={() => handleBukaUpload(row.id, "chr")}
+                  onClick={() => handleBukaUpload(row.id, "chp")}
                 >
                   Buka
                 </button>

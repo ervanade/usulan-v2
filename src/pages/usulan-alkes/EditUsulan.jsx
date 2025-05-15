@@ -433,12 +433,13 @@ const EditUsulan = () => {
     }));
   };
 
+  // 1. Inisialisasi awal saat pertama kali mount
   useEffect(() => {
+    // Inisialisasi pelayanan
     if (formData.pelayanan) {
       const initialOption = pelayananOptions.find(
         (kec) => kec.value == formData.pelayanan
       );
-
       if (initialOption) {
         setSelectedPelayanan({
           label: initialOption.label,
@@ -447,11 +448,11 @@ const EditUsulan = () => {
       }
     }
 
+    // Inisialisasi listrik
     if (formData.ketersediaan_listrik) {
       const initialOption = SelectOptions.find(
         (kec) => kec.value == formData.ketersediaan_listrik
       );
-
       if (initialOption) {
         setSelectedListrik({
           label: initialOption.label,
@@ -460,11 +461,11 @@ const EditUsulan = () => {
       }
     }
 
+    // Inisialisasi daya
     if (formData.kapasitas_listrik) {
       const initialOption = dayaOptions.find(
         (kec) => kec.value == formData.kapasitas_listrik
       );
-
       if (initialOption) {
         setSelectedDaya({
           label: initialOption.label,
@@ -473,11 +474,11 @@ const EditUsulan = () => {
       }
     }
 
+    // Inisialisasi internet
     if (formData.internet) {
       const initialOption = SelectOptions.find(
         (kec) => kec.value == formData.internet
       );
-
       if (initialOption) {
         setSelectedInternet({
           label: initialOption.label,
@@ -485,6 +486,15 @@ const EditUsulan = () => {
         });
       }
     }
+  }, [
+    formData?.internet,
+    formData?.pelayanan,
+    formData?.ketersediaan_listrik,
+    formData?.kapasitas_listrik,
+  ]);
+
+  // 2. Inisialisasi kriteria (terpisah karena tergantung dataKriteria)
+  useEffect(() => {
     if (formData.id_kriteria && dataKriteria.length > 0) {
       const initialSelectedKriteria = formData.id_kriteria
         .map((kriteriaId) => {
@@ -495,13 +505,15 @@ const EditUsulan = () => {
             ? { value: foundKriteria.value, label: foundKriteria.label }
             : null;
         })
-        .filter(Boolean); // Filter out null jika ID tidak ditemukan di dataKriteria
+        .filter(Boolean);
       setSelectedKriteria(initialSelectedKriteria);
     }
+  }, [formData.id_kriteria, dataKriteria]);
 
+  // 3. Inisialisasi periode (terpisah karena tergantung idPeriode)
+  useEffect(() => {
     if (idPeriode && dataPeriode.length > 0) {
       const initialOption = dataPeriode.find((kec) => kec.value == idPeriode);
-
       if (initialOption) {
         setSelectedPeriode({
           label: initialOption.label,
@@ -510,7 +522,11 @@ const EditUsulan = () => {
         });
       }
     }
-    if (formData?.usulan) {
+  }, [idPeriode, dataPeriode]);
+
+  // 4. Inisialisasi usulan (terpisah karena kompleks)
+  useEffect(() => {
+    if (formData?.usulan && AlasanOptions) {
       const initialEditedData = {};
       formData.usulan.forEach((item) => {
         const isStandardAlasan = AlasanOptions.some(
@@ -536,9 +552,14 @@ const EditUsulan = () => {
             : item.keterangan_usulan,
         };
       });
-      setEditedData(initialEditedData);
+
+      // Gabungkan dengan data yang sudah diubah sebelumnya
+      setEditedData((prev) => ({
+        ...prev,
+        ...initialEditedData,
+      }));
     }
-  }, [formData, AlasanOptions]);
+  }, [formData.usulan, AlasanOptions]);
   // useEffect(() => {
   //   if (formData.id_provinsi) {
   //     fetchKota(formData.id_provinsi);
@@ -582,29 +603,47 @@ const EditUsulan = () => {
   };
 
   const handleInputChange = (rowId, columnName, value) => {
-    const newValue = parseInt(value, 10); // Konversi ke number, termasuk 0
+    const newValue = parseInt(value, 10);
     const finalValue = isNaN(newValue) ? 0 : newValue;
 
-    // Ambil standard berdasarkan selectedPelayanan
+    // Ambil data row yang sedang diubah
+    const row = filteredData.find((row) => row.id === rowId);
+
+    // Ambil standard berdasarkan jenis pelayanan
     const standard =
       selectedPelayanan?.value === "Non Rawat Inap"
-        ? filteredData.find((row) => row.id === rowId)?.standard_non_inap
-        : filteredData.find((row) => row.id === rowId)?.standard_rawat_inap;
+        ? row.standard_non_inap
+        : row.standard_rawat_inap;
 
-    // Ambil nilai masih_berfungsi
-    const masihBerfungsi =
-      editedData[rowId]?.berfungsi !== undefined
-        ? editedData[rowId].berfungsi
-        : filteredData.find((row) => row.id === rowId)?.berfungsi || 0;
+    // Ambil nilai yang ada di state atau data awal
+    const masihBerfungsi = editedData[rowId]?.berfungsi ?? row.berfungsi ?? 0;
+    const currentUsulan = editedData[rowId]?.usulan ?? row.usulan ?? 0;
 
-    // Jika standard null, bebas mengisi usulan dan masih_berfungsi
-
-    const row = filteredData.find((row) => row.id === rowId);
+    // Cek apakah memenuhi kriteria SDM
     const memenuhiKriteria = row.kriteria_alkes?.some((alkesKriteria) =>
       formData.id_kriteria?.includes(alkesKriteria.id)
     );
 
-    // Jika tidak memenuhi kriteria dan mengubah usulan
+    // 1. Handle perubahan usulan untuk alkes yang memenuhi kriteria SDM
+    if (columnName === "usulan" && memenuhiKriteria) {
+      const currentKeterangan = editedData[rowId]?.keterangan_usulan;
+
+      // Bersihkan alasan "Tidak Siap SDM" jika sebelumnya ada
+      if (currentKeterangan === "Tidak Siap SDM") {
+        setEditedData((prevData) => ({
+          ...prevData,
+          [rowId]: {
+            ...prevData[rowId],
+            [columnName]: finalValue,
+            keterangan_usulan: null,
+            catatanAlasan: null,
+          },
+        }));
+        return;
+      }
+    }
+
+    // 2. Handle perubahan usulan untuk alkes yang TIDAK memenuhi kriteria SDM
     if (
       columnName === "usulan" &&
       !memenuhiKriteria &&
@@ -615,14 +654,15 @@ const EditUsulan = () => {
         [rowId]: {
           ...prevData[rowId],
           [columnName]: finalValue,
-          keterangan_usulan: "Tidak Siap SDM", // Otomatis isi alasan
+          keterangan_usulan: "Tidak Siap SDM",
           catatanAlasan: undefined,
         },
       }));
       return;
     }
 
-    if (standard === null) {
+    // 3. Skip validasi jika standard tidak terdefinisi
+    if (standard === null || standard === undefined) {
       setEditedData((prevData) => ({
         ...prevData,
         [rowId]: {
@@ -637,15 +677,15 @@ const EditUsulan = () => {
       return;
     }
 
-    // Validasi untuk usulan
+    // 4. Handle perubahan usulan (validasi dan alasan)
     if (columnName === "usulan") {
-      const maxUsulan = Math.max(0, standard - masihBerfungsi);
+      const requiredUsulan = Math.max(0, standard - masihBerfungsi);
 
-      // Validasi nilai usulan
-      if (finalValue > maxUsulan) {
+      // Validasi maksimal usulan
+      if (finalValue > requiredUsulan) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          [rowId]: `Usulan tidak boleh melebihi ${maxUsulan}`,
+          [rowId]: `Usulan tidak boleh melebihi ${requiredUsulan}`,
         }));
         return;
       } else {
@@ -655,69 +695,62 @@ const EditUsulan = () => {
         }));
       }
 
-      // Logika keterangan_usulan ketika usulan kurang dari standar
-      const requiredUsulan = standard - masihBerfungsi;
+      // Set needAlasan berdasarkan kondisi
+      const newState = {
+        ...editedData[rowId],
+        [columnName]: finalValue,
+        needAlasan: finalValue < requiredUsulan,
+      };
 
-      // Jika usulan kurang dari standar dan belum ada keterangan_usulan
-      if (
-        finalValue < requiredUsulan &&
-        !editedData[rowId]?.keterangan_usulan
-      ) {
-        // Set state untuk men-trigger tampilan input keterangan_usulan
-        setEditedData((prev) => ({
-          ...prev,
-          [rowId]: {
-            ...prev[rowId],
-            [columnName]: finalValue,
-            needAlasan: true, // Flag untuk menunjukkan perlu keterangan_usulan
-          },
-        }));
-        return;
+      // Jika usulan sekarang memenuhi syarat, bersihkan alasan yang ada
+      if (finalValue >= requiredUsulan) {
+        newState.keterangan_usulan = undefined;
+        newState.catatanAlasan = undefined;
+        newState.needAlasan = false;
       }
 
-      // Jika usulan memenuhi standar dan ada keterangan_usulan, hapus keterangan_usulan
-      if (
-        finalValue >= requiredUsulan &&
-        editedData[rowId]?.keterangan_usulan
-      ) {
-        setEditedData((prev) => ({
-          ...prev,
-          [rowId]: {
-            ...prev[rowId],
-            [columnName]: finalValue,
-            keterangan_usulan: undefined,
-            catatanAlasan: undefined,
-            needAlasan: false,
-          },
-        }));
-        return;
-      }
+      setEditedData((prev) => ({
+        ...prev,
+        [rowId]: newState,
+      }));
+      return;
     }
 
-    // Jika masih_berfungsi diubah dan memenuhi standar
-    if (columnName === "berfungsi" && finalValue >= standard) {
+    // 5. Handle perubahan masih_berfungsi
+    if (columnName === "berfungsi") {
+      const newRequiredUsulan = Math.max(0, standard - finalValue);
+
+      // Sesuaikan usulan jika melebihi kebutuhan baru
+      const adjustedUsulan = Math.min(currentUsulan, newRequiredUsulan);
+
+      const newState = {
+        ...editedData[rowId],
+        [columnName]: finalValue,
+        usulan: adjustedUsulan,
+      };
+
+      // Jika sudah memenuhi syarat, bersihkan alasan
+      if (adjustedUsulan >= newRequiredUsulan) {
+        newState.keterangan_usulan = undefined;
+        newState.catatanAlasan = undefined;
+        newState.needAlasan = false;
+      }
+
       setEditedData((prevData) => ({
         ...prevData,
-        [rowId]: {
-          ...prevData[rowId],
-          berfungsi: finalValue,
-          usulan: 0,
-          ...(editedData[rowId]?.keterangan_usulan && {
-            keterangan_usulan: undefined,
-            catatanAlasan: undefined,
-          }),
-        },
+        [rowId]: newState,
       }));
-    } else {
-      // Update nilai biasa
-      setEditedData((prevData) => ({
-        ...prevData,
-        [rowId]: {
-          ...prevData[rowId],
-          [columnName]: finalValue,
-        },
-      }));
+      return;
     }
+
+    // Default: update nilai biasa untuk kolom lainnya
+    setEditedData((prevData) => ({
+      ...prevData,
+      [rowId]: {
+        ...prevData[rowId],
+        [columnName]: finalValue,
+      },
+    }));
   };
 
   const getResultData = () => {
@@ -726,18 +759,26 @@ const EditUsulan = () => {
         formData.id_kriteria?.includes(alkesKriteria.id)
       );
 
+      const currentKeterangan = editedData[row.id]?.keterangan_usulan;
+
+      // Handle case where criteria was added but reason was "Tidak Siap SDM"
+      const finalAlasan =
+        // If now meets criteria but had "Tidak Siap SDM" reason
+        memenuhiKriteria && currentKeterangan === "Tidak Siap SDM"
+          ? null
+          : // If doesn't meet criteria
+          !memenuhiKriteria && row.kriteria_alkes?.length > 0
+          ? "Tidak Siap SDM"
+          : // If meets criteria and has other reason
+          currentKeterangan === "Lainnya"
+          ? editedData[row.id]?.catatanAlasan
+          : currentKeterangan;
+
       return {
         id: row.id,
         berfungsi: editedData[row.id]?.berfungsi ?? row.berfungsi ?? 0,
         usulan: editedData[row.id]?.usulan ?? row.usulan ?? 0,
-        alasan:
-          // Jika tidak memenuhi kriteria
-          !memenuhiKriteria && row.kriteria_alkes?.length > 0
-            ? "Tidak Siap SDM"
-            : // Jika memenuhi kriteria tapi ada alasan lain
-            editedData[row.id]?.keterangan_usulan === "Lainnya"
-            ? editedData[row.id]?.catatanAlasan
-            : editedData[row.id]?.keterangan_usulan ?? null,
+        alasan: finalAlasan,
       };
     });
   };
@@ -795,18 +836,38 @@ const EditUsulan = () => {
           ? row.standard_non_inap
           : row.standard_rawat_inap;
 
-      const masihBerfungsi =
-        editedData[row.id]?.berfungsi || row.berfungsi || 0;
-      const usulan = editedData[row.id]?.usulan || row.usulan || 0;
+      // Handle case where standard might be undefined/null
+      if (standard === null || standard === undefined) {
+        return; // Skip validation if no standard defined
+      }
 
-      if (standard !== null && usulan < standard - masihBerfungsi) {
-        if (!editedData[row.id]?.keterangan_usulan) {
+      const masihBerfungsi =
+        editedData[row.id]?.berfungsi ?? row.berfungsi ?? 0;
+      const usulan = editedData[row.id]?.usulan ?? row.usulan ?? 0;
+      const keterangan = editedData[row.id]?.keterangan_usulan;
+      const catatan = editedData[row.id]?.catatanAlasan;
+
+      // Check if equipment meets SDM criteria
+      const memenuhiKriteria = row.kriteria_alkes?.some((alkesKriteria) =>
+        formData.id_kriteria?.includes(alkesKriteria.id)
+      );
+
+      // Special case: Skip validation if SDM doesn't meet criteria
+      if (!memenuhiKriteria && row.kriteria_alkes?.length > 0) {
+        return;
+      }
+
+      const kekurangan = standard - masihBerfungsi;
+
+      // Only validate if usulan is less than required
+      if (usulan < kekurangan && kekurangan > 0) {
+        // Case 1: No reason provided
+        if (!keterangan) {
           validationErrors[row.id] = "Harap pilih alasan tidak usul";
           hasError = true;
-        } else if (
-          editedData[row.id]?.keterangan_usulan === "Lainnya" &&
-          !editedData[row.id]?.catatanAlasan?.trim()
-        ) {
+        }
+        // Case 2: 'Lainnya' selected but no note
+        else if (keterangan === "Lainnya" && !catatan?.trim()) {
           validationErrors[row.id] = "Harap isi alasan tidak usul lainnya";
           hasError = true;
         }
@@ -981,7 +1042,10 @@ const EditUsulan = () => {
 
           if (!memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
             // Jika tidak memenuhi kriteria, set otomatis alasan
-            if (!editedData[row.id]?.keterangan_usulan) {
+            if (
+              !editedData[row.id]?.keterangan_usulan ||
+              editedData[row.id]?.keterangan_usulan === "Tidak Siap SDM"
+            ) {
               setEditedData((prev) => ({
                 ...prev,
                 [row.id]: {
@@ -997,6 +1061,20 @@ const EditUsulan = () => {
                 SDM tidak memenuhi kriteria
               </div>
             );
+          }
+          // If now meets criteria but had "Tidak Siap SDM" reason, clear it
+          if (
+            memenuhiSalahSatuKriteria &&
+            editedData[row.id]?.keterangan_usulan === "Tidak Siap SDM"
+          ) {
+            setEditedData((prev) => ({
+              ...prev,
+              [row.id]: {
+                ...prev[row.id],
+                keterangan_usulan: null,
+                catatanAlasan: null,
+              },
+            }));
           }
 
           const standard =
@@ -1054,7 +1132,7 @@ const EditUsulan = () => {
             (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id)
           );
 
-          // Jika tidak memenuhi kriteria, tampilkan alasan otomatis
+          // If doesn't meet criteria, show auto-reason
           if (!memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
             return (
               <div className="w-full">
@@ -1062,6 +1140,24 @@ const EditUsulan = () => {
                   type="text"
                   value="Tidak Siap SDM"
                   className="border border-primary rounded p-1 text-sm w-full bg-gray-100"
+                  readOnly
+                  disabled
+                />
+              </div>
+            );
+          }
+
+          // If now meets criteria but had "Tidak Siap SDM" reason, show empty
+          if (
+            memenuhiSalahSatuKriteria &&
+            editedData[row.id]?.keterangan_usulan === "Tidak Siap SDM"
+          ) {
+            return (
+              <div className="w-full">
+                <input
+                  type="text"
+                  value=""
+                  className="border border-primary rounded p-1 text-sm w-full"
                   readOnly
                   disabled
                 />
@@ -1076,8 +1172,13 @@ const EditUsulan = () => {
           const masihBerfungsi =
             editedData[row.id]?.berfungsi || row.berfungsi || 0;
           const usulan = editedData[row.id]?.usulan || row.usulan || 0;
+          const required = standard - masihBerfungsi;
+
+          // Perbaikan utama: Tampilkan alasan jika usulan < required ATAU ada flag needAlasan
           const showAlasan =
-            standard !== null && usulan < standard - masihBerfungsi;
+            standard !== null &&
+            standard !== undefined &&
+            (usulan < required || editedData[row.id]?.needAlasan);
 
           if (!showAlasan)
             return <div className="text-xs text-gray-400">-</div>;
