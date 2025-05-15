@@ -730,7 +730,7 @@ const PdfUsulanAlkes = () => {
         sortable: true,
       },
       {
-        name: <div className="text-wrap px-1">Upload CHR</div>,
+        name: <div className="text-wrap px-1">Upload CHR & CHP</div>,
         selector: (row) => (row?.tgl_chr && row?.file_chr ? "Sudah" : "Belum"),
         sortable: true,
         cell: (row) => (
@@ -743,14 +743,14 @@ const PdfUsulanAlkes = () => {
                   handleModalDokumen(
                     e,
                     row.id,
-                    `Dokumen CHR ${row.kabupaten}`,
+                    `Dokumen CHR & CHP ${row.kabupaten}`,
                     row.kabupaten,
                     "chr"
                   )
                 }
               >
                 Upload <br />
-                CHR
+                CHR & CHP
               </button>
             ) : (
               <div className="flex space-x-1">
@@ -768,10 +768,10 @@ const PdfUsulanAlkes = () => {
                   }
                 >
                   Upload <br />
-                  CHR
+                  CHR & CHP
                 </button>
                 <button
-                  title="Buka CHR"
+                  title="Buka CHR & CHP"
                   className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
                   onClick={() => handleBukaUpload(row.id, "chr")}
                 >
@@ -891,7 +891,7 @@ const PdfUsulanAlkes = () => {
           <div className="flex flex-col items-center space-y-1">
             {!row?.tgl_chr || !row?.file_chr ? (
               <div className="text-amber-500 font-medium text-xs italic">
-                Belum upload CHR
+                Belum upload CHR & CHP
               </div>
             ) : !row?.tgl_upload || !row?.file_upload ? (
               <button
