@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { StyleSheet, Font } from "@react-pdf/renderer";
 import {
   Document as DocumentPreview,
   Page as PagePreview,
