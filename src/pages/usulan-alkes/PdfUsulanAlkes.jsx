@@ -801,7 +801,7 @@ const PdfUsulanAlkes = () => {
         name: <div className="text-wrap px-1">Upload CHP</div>,
         selector: (row) => (row?.tgl_chp && row?.file_chp ? "Sudah" : "Belum"),
         sortable: true,
-        omit: false,
+        omit: true,
         cell: (row) => (
           <div className="flex flex-col items-center space-y-1">
             {!row?.tgl_chp || !row?.file_chp ? (
