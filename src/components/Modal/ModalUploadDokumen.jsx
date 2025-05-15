@@ -149,7 +149,7 @@ const ModalUploadDokumen = ({
   }, [jsonData]);
   useEffect(() => {
     if (uploadType === "chr") {
-      setModalTitle(`Upload Dokumen CHR & CHP ${jsonData?.kabupaten}`);
+      setModalTitle(`Upload Dokumen CHR ${jsonData?.kabupaten}`);
       setUploadApiUrl(
         `${import.meta.env.VITE_APP_API_URL}/api/usulan/uploadchr/${
           formData.id_dokumen

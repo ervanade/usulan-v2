@@ -736,7 +736,7 @@ const PdfUsulanAlkes = () => {
         sortable: true,
       },
       {
-        name: <div className="text-wrap px-1">Upload CHR & CHP</div>,
+        name: <div className="text-wrap px-1">Upload CHR</div>,
         selector: (row) => (row?.tgl_chr && row?.file_chr ? "Sudah" : "Belum"),
         sortable: true,
         cell: (row) => (
@@ -749,14 +749,14 @@ const PdfUsulanAlkes = () => {
                   handleModalDokumen(
                     e,
                     row.id,
-                    `Dokumen CHR & CHP ${row.kabupaten}`,
+                    `Dokumen CHR ${row.kabupaten}`,
                     row.kabupaten,
                     "chr"
                   )
                 }
               >
                 Upload <br />
-                CHR & CHP
+                CHR
               </button>
             ) : (
               <div className="flex space-x-1">
@@ -774,10 +774,10 @@ const PdfUsulanAlkes = () => {
                   }
                 >
                   Upload <br />
-                  CHR & CHP
+                  CHR
                 </button>
                 <button
-                  title="Buka CHR & CHP"
+                  title="Buka CHR"
                   className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
                   onClick={() => handleBukaUpload(row.id, "chr")}
                 >
@@ -801,7 +801,6 @@ const PdfUsulanAlkes = () => {
         name: <div className="text-wrap px-1">Upload CHP</div>,
         selector: (row) => (row?.tgl_chp && row?.file_chp ? "Sudah" : "Belum"),
         sortable: true,
-        omit: true,
         cell: (row) => (
           <div className="flex flex-col items-center space-y-1">
             {!row?.tgl_chp || !row?.file_chp ? (
@@ -885,6 +884,7 @@ const PdfUsulanAlkes = () => {
 
       {
         name: <div className="text-wrap">Tanggal Download Proposal</div>,
+        omit: true,
         selector: (row) =>
           row.tgl_download?.substring(0, 10) || "Belum Download",
         cell: (row) => (
@@ -939,6 +939,7 @@ const PdfUsulanAlkes = () => {
       {
         name: <div className="text-wrap">Tanggal Upload Proposal</div>,
         selector: (row) => row.tgl_upload?.substring(0, 10) || "Belum Upload",
+        omit: true,
         cell: (row) => (
           <div className="text-wrap py-4 text-xs">
             {row.tgl_upload?.substring(0, 10) || (
@@ -958,9 +959,14 @@ const PdfUsulanAlkes = () => {
         sortable: true,
         cell: (row) => (
           <div className="flex flex-col items-center space-y-1">
-            {!row?.tgl_chr || !row?.file_chr ? (
+            {!(row?.tgl_chr && row?.file_chr) ||
+            !(row?.tgl_chp && row?.file_chp) ? (
               <div className="text-amber-500 font-medium text-xs italic">
-                Belum upload CHR & CHP
+                {!row?.tgl_chr || !row?.file_chr
+                  ? !row?.tgl_chp || !row?.file_chp
+                    ? "Belum upload CHR & CHP"
+                    : "Belum upload CHR"
+                  : "Belum upload CHP"}
               </div>
             ) : !row?.tgl_upload || !row?.file_upload ? (
               <button
@@ -1012,7 +1018,9 @@ const PdfUsulanAlkes = () => {
             )}
             {(!row?.tgl_upload || !row?.file_upload) &&
               row?.tgl_chr &&
-              row?.file_chr && (
+              row?.file_chr &&
+              row?.tgl_chp &&
+              row?.file_chp && (
                 <div className="text-red-500 text-xs">Belum Upload</div>
               )}
           </div>
