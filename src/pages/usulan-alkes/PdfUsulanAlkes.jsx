@@ -1151,7 +1151,7 @@ const PdfUsulanAlkes = () => {
           Dokumen Usulan
         </h1>
         <p className="text-sm text-red-500 italic mb-3 text-center font-medium">
-          Batas pengisian dan unggah: 23 Mei 2025. <br />
+          Batas pengisian dan unggah: 15-19 Mei 2025. <br />
           Lewat tanggal tersebut pengunggahan dokumen akan dikunci.
         </p>
         <div className="flex items-center lg:items-end mt-3 gap-3 flex-col lg:flex-row">

@@ -311,8 +311,8 @@ export const AlasanOptions = [
         "value": "Tidak Siap SDM"
     },
     {
-        "label": "Tidak Sarpras",
-        "value": "Tidak Sarpras"
+        "label": "Tidak Siap Sarpras",
+        "value": "Tidak Siap Sarpras"
     },
     {
         "label": "Lainnya",
