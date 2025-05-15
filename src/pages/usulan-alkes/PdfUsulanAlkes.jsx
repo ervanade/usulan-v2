@@ -520,7 +520,7 @@ const PdfUsulanAlkes = () => {
       };
       const pdfBlob = await GenerateDokumen(dataJson, false); // GenerateDokumen harus mengembalikan Blob PDF
 
-      saveAs(pdfBlob, `PDF Usulan ${dataJson.kabupaten}.pdf`);
+      saveAs(pdfBlob, `Dokumen Usulan ${dataJson.kabupaten}.pdf`);
       await updateDownload(dataJson?.id, "proposal");
 
       Swal.fire({

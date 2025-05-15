@@ -1598,6 +1598,8 @@ const EditUsulan = () => {
                   columns={columns}
                   data={filteredData}
                   pagination
+                  paginationPerPage={100} // Default 100 item per halaman
+                  paginationRowsPerPageOptions={[10, 20, 50, 100]} // Opsi yang tersedia
                   // defaultSortFieldId="Aksi"
                   striped
                   defaultSortAsc={false}
