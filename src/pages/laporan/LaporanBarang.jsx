@@ -380,105 +380,105 @@ const LaporanBarang = () => {
     XLSX.writeFile(wb, `Data laporan Per Alkes ${tanggal}.xlsx`);
   };
 
+  const workerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    // Buat worker
+    workerRef.current = new Worker(
+      new URL("./exportWorker.js", import.meta.url)
+    );
+
+    // Cleanup
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
+
   const handleExportAll = async () => {
-    const XLSX = await import("xlsx");
-    const moment = (await import("moment")).default;
-
-    // Menampilkan loading
-    Swal.fire({
-      title: "Loading...",
-      text: "Sedang mengambil data dari server",
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-
+    let swalInstance;
     try {
-      // Mengambil data dari API dengan headers
-      const response = await fetch(
-        "https://api.tatakelolakesmas.com/api/lapalkes/semua",
-        {
-          method: "GET", // Metode request
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`, // Menggunakan token dari user
-          },
-        }
-      );
-
-      // Cek jika response tidak OK
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (!data || !data.data) {
-        throw new Error("Data tidak ditemukan");
-      }
-
-      const exportData = data.data.map((item) => ({
-        Provinsi: item.provinsi,
-        Kabupaten: item.kabupaten,
-        Puskesmas: item?.nama_puskesmas,
-        "Nama Alkes": item.nama_alkes,
-        "Jumlah Eksisting": item.berfungsi,
-        "Jumlah Usulan": item.usulan,
-      }));
-
-      const wb = XLSX.utils.book_new();
-
-      const cols = [
-        { wch: 20 },
-        { wch: 20 },
-        { wch: 20 },
-        { wch: 25 },
-        { wch: 20 },
-        { wch: 20 },
-        { wch: 20 },
-        { wch: 20 },
-      ];
-
-      // Sheet 1: Urutkan berdasarkan "Nama Alkes"
-
-      const wsAlkes = XLSX.utils.json_to_sheet(exportData);
-      wsAlkes["!cols"] = cols;
-      XLSX.utils.book_append_sheet(wb, wsAlkes, "Data Sort by Puskesmas");
-
-      // Sheet 2: Urutkan berdasarkan "Provinsi"
-      // const exportDataAlkes = [...exportData];
-      // exportDataAlkes.sort((a, b) => {
-      //   if (a["Nama Alkes"] < b["Nama Alkes"]) return -1;
-      //   if (a["Nama Alkes"] > b["Nama Alkes"]) return 1;
-      //   return 0;
-      // });
-      // const wsProvinsi = XLSX.utils.json_to_sheet(exportDataAlkes);
-      // wsProvinsi["!cols"] = cols;
-      // XLSX.utils.book_append_sheet(wb, wsProvinsi, "Data Sort by Alkes");
-
-      const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
-      XLSX.writeFile(wb, `Data laporan Semua Alkes Puskesmas ${tanggal}.xlsx`, {
-        compression: true, // Aktifkan kompresi
+      // Init loading Swal
+      swalInstance = Swal.fire({
+        title: "Sedang Mengekspor Data...",
+        html: `
+         <div class="w-full bg-gray-200 rounded-full h-2.5">
+           <div id="export-progress" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+         </div>
+         <p class="text-sm text-gray-500 mt-2">
+           Progress: <span id="progress-text">0%</span>
+         </p>
+       `,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => Swal.showLoading(),
       });
 
-      // Menampilkan notifikasi berhasil
-      Swal.fire({
-        icon: "success",
-        title: "Berhasil!",
-        text: "Data berhasil diambil dan diexport",
+      // Setup event listener untuk worker
+      workerRef.current.onmessage = (event) => {
+        const { type, payload } = event.data;
+
+        switch (type) {
+          case "PROGRESS":
+            if (Swal.isVisible()) {
+              document.getElementById(
+                "export-progress"
+              ).style.width = `${payload}%`;
+              document.getElementById(
+                "progress-text"
+              ).textContent = `${payload}%`;
+            }
+            break;
+
+          case "SUCCESS":
+            triggerDownload(payload.fileName, payload.fileData);
+
+            Swal.fire({
+              icon: "success",
+              title: "Export Berhasil",
+              text: `Data ${payload.rowCount.toLocaleString()} row telah diekspor`,
+            });
+            break;
+
+          case "ERROR":
+            Swal.fire({
+              icon: "error",
+              title: "Gagal Export",
+              text: payload.message,
+            });
+            break;
+        }
+      };
+
+      // Mulai proses export di worker
+      workerRef.current.postMessage({
+        type: "START_EXPORT",
+        payload: {
+          apiUrl: "https://api.tatakelolakesmas.com/api/lapalkes/semua",
+          token: user?.token,
+        },
       });
     } catch (error) {
-      // Menampilkan notifikasi gagal
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
-        title: "Gagal!",
-        text: "Terjadi kesalahan saat mengambil data: " + error.message,
+        title: "Gagal Export",
+        text: error.message,
       });
-    } finally {
-      // Menutup loading
-      Swal.close();
     }
+  };
+
+  // Fungsi untuk memicu download file
+  const triggerDownload = (fileName, fileData) => {
+    const blob = new Blob([fileData], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
   };
 
   if (getLoading) {
