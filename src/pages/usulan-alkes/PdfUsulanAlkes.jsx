@@ -719,6 +719,19 @@ const PdfUsulanAlkes = () => {
     }
   };
 
+  useEffect(() => {
+    if (dataPeriode.length > 0) {
+      const initialOption = dataPeriode.find((kec) => kec.stat == "1");
+      if (initialOption) {
+        setSelectedPeriode({
+          label: initialOption.label,
+          value: initialOption.value,
+          stat: initialOption.stat,
+        });
+      }
+    }
+  }, [dataPeriode]);
+
   const columns = useMemo(
     () => [
       {
