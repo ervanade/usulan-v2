@@ -906,10 +906,12 @@ const GenerateDokumen = async (jsonData, preview) => {
                 Inspektorat Daerah {"\n"} {jsonData?.kabupaten || ""}
               </Text>
               {/* <View style={{ ...styles.imageTtd, marginVertical: 0, width: 80 }}></View> */}
-              <View style={{marginVertical: 20 }}>
-              <Text style={{ ...styles.text, textAlign: "center", fontSize: 7, }}>
-                TTD + Cap
-              </Text>
+              <View style={{ marginVertical: 20 }}>
+                <Text
+                  style={{ ...styles.text, textAlign: "center", fontSize: 7 }}
+                >
+                  TTD + Cap
+                </Text>
               </View>
               <Text
                 style={{
@@ -946,10 +948,12 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text style={{ ...styles.text, textAlign: "center" }}>
                 Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
               </Text>
-              <View style={{marginVertical: 20 }}>
-              <Text style={{ ...styles.text, textAlign: "center", fontSize: 7, }}>
-                TTD + Cap
-              </Text>
+              <View style={{ marginVertical: 20 }}>
+                <Text
+                  style={{ ...styles.text, textAlign: "center", fontSize: 7 }}
+                >
+                  TTD + Cap
+                </Text>
               </View>
               <Text
                 style={{
@@ -989,10 +993,12 @@ const GenerateDokumen = async (jsonData, preview) => {
                 Bappeda {"\n"} {jsonData?.kabupaten || ""}
               </Text>
               {/* <View style={{ ...styles.imageTtd, marginVertical: 0 }}></View> */}
-              <View style={{marginVertical: 20 }}>
-              <Text style={{ ...styles.text, textAlign: "center", fontSize: 7, }}>
-                TTD + Cap
-              </Text>
+              <View style={{ marginVertical: 20 }}>
+                <Text
+                  style={{ ...styles.text, textAlign: "center", fontSize: 7 }}
+                >
+                  TTD + Cap
+                </Text>
               </View>
               <Text
                 style={{
@@ -1256,7 +1262,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             <Text>
               Dinas Kesehatan {jsonData?.kabupaten} menyatakan akan
               bertanggungjawab atas kebenaran data yang disampaikan dalam usulan
-              alat kesehatan untuk 50 alat jenis alkes melalui proyek SOPHI.{" "}
+              alat kesehatan untuk 51 alat jenis alkes melalui proyek SOPHI.{" "}
               {"\n"}Demikian pernyataan ini dibuat dengan sebenar-benarnya dalam
               keadaan sadar, untuk digunakan sebagaimana mestinya.{" "}
             </Text>
@@ -1274,11 +1280,14 @@ const GenerateDokumen = async (jsonData, preview) => {
               >
                 Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
               </Text>
-              <View style={{marginVertical: 25 }}>
-              <Text style={{ ...styles.text, textAlign: "center", fontSize: 7, }}>
-                TTD + Cap + Materai 10.000
-              </Text>
-              </View>              <Text
+              <View style={{ marginVertical: 25 }}>
+                <Text
+                  style={{ ...styles.text, textAlign: "center", fontSize: 7 }}
+                >
+                  TTD + Cap + Materai 10.000
+                </Text>
+              </View>{" "}
+              <Text
                 style={{
                   ...styles.text,
                   fontFamily: "Calibri",
@@ -1469,11 +1478,14 @@ const GenerateDokumen = async (jsonData, preview) => {
               >
                 Kepala Dinas Kesehatan {"\n"} {jsonData?.kabupaten || ""}
               </Text>
-              <View style={{marginVertical: 25 }}>
-              <Text style={{ ...styles.text, textAlign: "center", fontSize: 7, }}>
-                TTD + Cap + Materai 10.000
-              </Text>
-              </View>               <Text
+              <View style={{ marginVertical: 25 }}>
+                <Text
+                  style={{ ...styles.text, textAlign: "center", fontSize: 7 }}
+                >
+                  TTD + Cap + Materai 10.000
+                </Text>
+              </View>{" "}
+              <Text
                 style={{
                   ...styles.text,
                   fontFamily: "Calibri",

@@ -826,7 +826,7 @@ const GenerateVerif = async (jsonData, preview) => {
             <Text>
               Dinas Kesehatan {jsonData?.kabupaten} menyatakan akan
               bertanggungjawab atas kebenaran data yang disampaikan dalam usulan
-              alat kesehatan untuk 50 alat jenis alkes melalui proyek SOPHI.{" "}
+              alat kesehatan untuk 51 alat jenis alkes melalui proyek SOPHI.{" "}
               {"\n"}Demikian pernyataan ini dibuat dengan sebenar-benarnya dalam
               keadaan sadar, untuk digunakan sebagaimana mestinya.{" "}
             </Text>

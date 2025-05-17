@@ -83,7 +83,11 @@ const ModalUploadDokumen = ({
         onClose(); // Tutup modal setelah berhasil upload
       })
       .catch((error) => {
-        Swal.fire("Gagal Upload Dokumen!", "", "error");
+        Swal.fire(
+          "Gagal Upload Dokumen!",
+          "Silahkan Coba Beberapa Saat Lagi!",
+          "error"
+        );
         setLoading(false);
         setSetuju(false);
         setFormData({
