@@ -19,7 +19,7 @@ import Swal from "sweetalert2";
 import { CgSpinner } from "react-icons/cg";
 import CardDataStats from "../../components/CardDataStats";
 import { PiShieldWarningBold } from "react-icons/pi";
-import { MdOutlineDomainVerification } from "react-icons/md";
+import { MdClose, MdOutlineDomainVerification } from "react-icons/md";
 import { AiOutlineDatabase } from "react-icons/ai";
 import LaporanCard from "../../components/Card/LaporanCard";
 import { data } from "autoprefixer";
@@ -95,7 +95,7 @@ const LaporanBarang = () => {
     }
   }, [user?.token]);
 
-  // Fetch provinces only if dataProvinsi is empty
+  // Fetch dataProvinsi only if dataProvinsi is empty
   const fetchProvinsi = useCallback(async () => {
     if (dataProvinsi.length > 0) return;
 
@@ -110,7 +110,7 @@ const LaporanBarang = () => {
       });
 
       setDataProvinsi([
-        { label: "Semua Provinsi", value: "" },
+        // { label: "Semua Provinsi", value: "" },
         ...response.data.data.map((item) => ({
           label: item.name,
           value: item.id,
@@ -381,7 +381,8 @@ const LaporanBarang = () => {
   };
 
   const workerRef = React.useRef(null);
-
+  const [isProvinceModalOpen, setIsProvinceModalOpen] = useState(false);
+  const [selectedProvinceId, setSelectedProvinceId] = useState(null);
   React.useEffect(() => {
     // Buat worker
     workerRef.current = new Worker(
@@ -394,80 +395,16 @@ const LaporanBarang = () => {
     };
   }, []);
 
-  const handleExportAll = async () => {
-    let swalInstance;
-    try {
-      // Init loading Swal
-      swalInstance = Swal.fire({
-        title: "Sedang Mengekspor Data...",
-        html: `
-         <div class="w-full bg-gray-200 rounded-full h-2.5">
-           <div id="export-progress" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
-         </div>
-         <p class="text-sm text-gray-500 mt-2">
-           Progress: <span id="progress-text">0%</span>
-         </p>
-       `,
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      // Setup event listener untuk worker
-      workerRef.current.onmessage = (event) => {
-        const { type, payload } = event.data;
-
-        switch (type) {
-          case "PROGRESS":
-            if (Swal.isVisible()) {
-              document.getElementById(
-                "export-progress"
-              ).style.width = `${payload}%`;
-              document.getElementById(
-                "progress-text"
-              ).textContent = `${payload}%`;
-            }
-            break;
-
-          case "SUCCESS":
-            triggerDownload(payload.fileName, payload.fileData);
-
-            Swal.fire({
-              icon: "success",
-              title: "Export Berhasil",
-              text: `Data ${payload.rowCount.toLocaleString()} row telah diekspor`,
-            });
-            break;
-
-          case "ERROR":
-            Swal.fire({
-              icon: "error",
-              title: "Gagal Export",
-              text: payload.message,
-            });
-            break;
-        }
-      };
-
-      // Mulai proses export di worker
-      workerRef.current.postMessage({
-        type: "START_EXPORT",
-        payload: {
-          apiUrl: "https://api.tatakelolakesmas.com/api/lapalkes/semua",
-          token: user?.token,
-        },
-      });
-    } catch (error) {
-      await Swal.fire({
-        icon: "error",
-        title: "Gagal Export",
-        text: error.message,
-      });
-    }
-  };
-
-  // Fungsi untuk memicu download file
-  const triggerDownload = (fileName, fileData) => {
+  useEffect(() => {
+    workerRef.current = new Worker(
+      new URL("./exportWorker.js", import.meta.url)
+    );
+    workerRef.current.onmessage = handleWorkerMessage;
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
+  const triggerDownload = useCallback((fileName, fileData) => {
     const blob = new Blob([fileData], { type: "application/octet-stream" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -479,6 +416,109 @@ const LaporanBarang = () => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }, 100);
+  }, []);
+  const handleWorkerMessage = useCallback(
+    (event) => {
+      const { type, payload } = event.data;
+
+      switch (type) {
+        case "PROGRESS":
+          if (Swal.isVisible()) {
+            document.getElementById(
+              "export-progress"
+            ).style.width = `${payload}%`;
+            document.getElementById(
+              "progress-text"
+            ).textContent = `${payload}%`;
+          }
+          break;
+        case "SUCCESS":
+          triggerDownload(payload.fileName, payload.fileData);
+          Swal.fire({
+            icon: "success",
+            title: "Export Berhasil",
+            text: `Data ${payload.rowCount.toLocaleString()} row telah diekspor`,
+          });
+          break;
+        case "ERROR":
+          Swal.fire({
+            icon: "error",
+            title: "Gagal Export",
+            text: payload.message,
+          });
+          break;
+      }
+      // if (Swal.isVisible() && (type === "SUCCESS" || type === "ERROR")) {
+      //   Swal.close();
+      // }
+    },
+    [triggerDownload]
+  );
+
+  const handleExportAll = async () => {
+    Swal.fire({
+      title: "Sedang Mengekspor Data...",
+      html: `
+                 <div class="w-full bg-gray-200 rounded-full h-2.5">
+                     <div id="export-progress" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                 </div>
+                 <p class="text-sm text-gray-500 mt-2">
+                     Progress: <span id="progress-text">0%</span>
+                 </p>
+             `,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    workerRef.current.postMessage({
+      type: "START_EXPORT",
+      payload: {
+        apiUrl: "https://api.tatakelolakesmas.com/api/lapalkes/semua",
+        token: user?.token,
+        exportType: "all",
+      },
+    });
+  };
+
+  const openProvinceModal = () => {
+    setIsProvinceModalOpen(true);
+  };
+
+  const closeProvinceModal = () => {
+    setIsProvinceModalOpen(false);
+    setSelectedProvinceId(null);
+  };
+
+  const handleExportByProvince = async (provinceId, provinceName) => {
+    setSelectedProvinceId(provinceId);
+    closeProvinceModal();
+
+    Swal.fire({
+      title: "Sedang Mengekspor Data Provinsi...",
+      html: `
+                 <div class="w-full bg-gray-200 rounded-full h-2.5">
+                     <div id="export-progress" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                 </div>
+                 <p class="text-sm text-gray-500 mt-2">
+                     Progress: <span id="progress-text">0%</span>
+                 </p>
+             `,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    workerRef.current.postMessage({
+      type: "START_EXPORT",
+      payload: {
+        apiUrl: `https://api.tatakelolakesmas.com/api/lapalkes/provinsi/${provinceId}`,
+        token: user?.token,
+        exportType: "province",
+        provinceId: provinceId,
+        provinceName: provinceName,
+      },
+    });
   };
 
   if (getLoading) {
@@ -496,6 +536,53 @@ const LaporanBarang = () => {
         pageName="Data Laporan Alkes"
         title="Data Laporan Per Alkes"
       />
+      {isProvinceModalOpen && (
+        <div className="fixed inset-0 z-999 overflow-auto bg-black/25 flex justify-center items-center">
+          <div className="relative bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-1/2 xl:w-1/3 max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-xl font-semibold text-primary">
+                Export Data Per Provinsi
+              </h3>
+              <button
+                type="button"
+                className="text-gray-400 bg-transparent hover:text-gray-600 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+                onClick={closeProvinceModal}
+              >
+                <MdClose className="h-5 w-5" />
+                <span className="sr-only">Tutup modal</span>
+              </button>
+            </div>
+            {/* Body */}
+            <div className="p-4">
+              <ul className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+                {dataProvinsi.map((prov) => (
+                  <li key={prov.value}>
+                    <button
+                      className="w-full text-left rounded-md p-2 hover:bg-teal-100 focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-150 ease-in-out"
+                      onClick={() =>
+                        handleExportByProvince(prov.value, prov.label)
+                      } // Kirim nama provinsi
+                    >
+                      {prov.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Footer */}
+            <div className="flex justify-end items-center p-4 border-t">
+              <button
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-red-500"
+                type="button"
+                onClick={closeProvinceModal}
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col items-center justify-center w-full tracking-tight mb-8">
         <div className="flex items-center lg:items-end mt-8 gap-4 flex-col lg:flex-row">
           <div className="flex items-center gap-4 flex-col sm:flex-row">
@@ -599,6 +686,14 @@ const LaporanBarang = () => {
           </div>
           <div className="div flex gap-2 flex-row">
             <button
+              title="Export Province"
+              className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-blue-500 rounded-md tracking-tight"
+              onClick={openProvinceModal}
+            >
+              <BiExport />
+              <span className="hidden sm:block">Export Provinsi</span>
+            </button>
+            <button
               title="Export Data All"
               className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
               onClick={handleExportAll}
@@ -609,7 +704,7 @@ const LaporanBarang = () => {
 
             <button
               title="Export Data Alkes"
-              className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
+              className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-cyan-500 rounded-md tracking-tight"
               onClick={handleExport}
             >
               <BiExport />
