@@ -43,19 +43,23 @@ Font.register({
 const BORDER_COLOR = "#000";
 const BORDER_STYLE = "solid";
 // Define column widths
-const COL1_WIDTH = 5; // No
+const COL1_WIDTH = 3; // No
 const COLN_WIDTH = (100 - COL1_WIDTH) / 4;
-const COL2_WIDTH = 35; // Nama Alkes (divided into 2 sub-columns)
-const COL3_WIDTH = 35; // Puskesmas (divided into 3 sub-columns with one having 2 sub-sub-columns)
-const COL4_WIDTH = 25; // Hasil Desk (divided into 2 sub-columns)
+const COL2_WIDTH = 30; // Nama Alkes (divided into 2 sub-columns)
+const COL3_WIDTH = 55; // Puskesmas (divided into 3 sub-columns with one having 2 sub-sub-columns)
+const COL4_WIDTH = 12; // Hasil Desk (divided into 2 sub-columns)
 
 // Sub-column widths for Nama Alkes
 const SUBCOL2_WIDTH = COL2_WIDTH / 2; // Nama Alkes and Jumlah Minimal Standar Alat
 const SUBCOL2_SUB_WIDTH = SUBCOL2_WIDTH / 2; // For Ranap and Non Ranap (but will be merged in row)
 
 // Sub-column widths for Puskesmas
-const SUBCOL3_WIDTH = COL3_WIDTH / 3; // Total PKM, Jumlah PKM Memiliki Alat Sesuai Standar
-const SUBCOL3_PROPOSAL_WIDTH = SUBCOL3_WIDTH / 2; // Mengusulkan (proposal) sub-columns
+const SUBCOL3_WIDTH = COL3_WIDTH / 8; // Total PKM, Jumlah PKM Memiliki Alat Sesuai Standar
+const SUBCOL3_WIDTH2 = COL3_WIDTH / 8 * 2; // Total PKM, Jumlah PKM Memiliki Alat Sesuai Standar
+const SUBCOL3_WIDTH3 = COL3_WIDTH / 8 * 4; // Total PKM, Jumlah PKM Memiliki Alat Sesuai Standar
+
+const SUBCOL3_PROPOSAL_WIDTH = SUBCOL3_WIDTH2 / 2; // Mengusulkan (proposal) sub-columns
+const SUBCOL3_TIDAK_PROPOSAL_WIDTH = SUBCOL3_WIDTH3 / 4; // Mengusulkan (proposal) sub-columns
 
 // Sub-column widths for Hasil Desk
 const SUBCOL4_WIDTH = COL4_WIDTH / 2; // Jumlah PKM yang Mengusulkan Alat and Jumlah Alat yang Diusulkan
@@ -300,7 +304,7 @@ const styles = StyleSheet.create({
 const formatRupiah = (price) => {
   return `${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 };
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 18;
 
 const getAllDetailDistribusi = (distribusi) => {
   return distribusi?.map((item, index) => ({
@@ -490,11 +494,21 @@ export const RenderVerifPages = (jsonData, preview) => {
               <View
                 style={[
                   styles.nestedHeaderCell,
-                  { width: `${SUBCOL3_WIDTH}%` },
+                  { width: `${SUBCOL3_WIDTH2}%` },
                 ]}
               >
                 <Text style={styles.tableCellHeader}>
                   Mengusulkan (proposal)
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL3_WIDTH3}%` },
+                ]}
+              >
+                <Text style={styles.tableCellHeader}>
+                  Tidak Mengusulkan
                 </Text>
               </View>
 
@@ -577,7 +591,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                   Didukung Ketersediaan SDM
                 </Text>
               </View>
-              <View
+                <View
                 style={[
                   styles.nestedHeaderCell,
                   { width: `${SUBCOL3_PROPOSAL_WIDTH}%` },
@@ -585,6 +599,46 @@ export const RenderVerifPages = (jsonData, preview) => {
               >
                 <Text style={styles.tableCellHeader}>
                   Tidak didukung Ketersediaan SDM
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
+                ]}
+              >
+                <Text style={styles.tableCellHeader}>
+                  Pengadaan dengan sumber dana lain
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
+                ]}
+              >
+                <Text style={styles.tableCellHeader}>
+                  SDMK tidak tersedia
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
+                ]}
+              >
+                <Text style={styles.tableCellHeader}>
+                  Sarpras tidak mendukung
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.nestedHeaderCell,
+                  { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
+                ]}
+              >
+                <Text style={styles.tableCellHeader}>
+                 Lainnya (alasan sesuai ket. proposal)
                 </Text>
               </View>
 
@@ -613,7 +667,7 @@ export const RenderVerifPages = (jsonData, preview) => {
 
                 {/* Nama Alkes */}
                 <View style={[styles.tableCol, { width: `${SUBCOL2_WIDTH}%` }]}>
-                  <Text style={{ ...styles.tableCell, textAlign: "left" }}>
+                  <Text style={{ ...styles.tableCell, textAlign: "left", fontSize: 7 }}>
                     {items.namaAlkes || ""}
                   </Text>
                 </View>
@@ -659,6 +713,47 @@ export const RenderVerifPages = (jsonData, preview) => {
                   style={[
                     styles.tableCol,
                     { width: `${SUBCOL3_PROPOSAL_WIDTH}%` },
+                  ]}
+                >
+                  <Text style={styles.tableCell}>
+                    {items.proposalTidakDidukungSdm || "0"}
+                  </Text>
+                </View>
+
+                <View
+                  style={[
+                    styles.tableCol,
+                    { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
+                  ]}
+                >
+                  <Text style={styles.tableCell}>
+                    {items.proposalDidukungSdm || "0"}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.tableCol,
+                    { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
+                  ]}
+                >
+                  <Text style={styles.tableCell}>
+                    {items.proposalTidakDidukungSdm || "0"}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.tableCol,
+                    { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
+                  ]}
+                >
+                  <Text style={styles.tableCell}>
+                    {items.proposalDidukungSdm || "0"}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.tableCol,
+                    { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
                   ]}
                 >
                   <Text style={styles.tableCell}>

@@ -110,10 +110,10 @@ function App() {
                 path="dokumen/preview-dokumen/:id"
                 element={<PreviewDokumen />}
               /> */}
-              {/* <Route
+              <Route
                 path="ba-verif/preview-dokumen/:id"
                 element={<PreviewVerif />}
-              /> */}
+              />
               <Route
                 path="pdf-usulan-alkes/preview-dokumen/:id"
                 element={<PreviewDokumen />}
