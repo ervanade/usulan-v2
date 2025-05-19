@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
 const formatRupiah = (price) => {
   return `${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 };
-const ITEMS_PER_PAGE = 18;
+const ITEMS_PER_PAGE = 20;
 
 const getAllDetailDistribusi = (distribusi) => {
   return distribusi?.map((item, index) => ({
