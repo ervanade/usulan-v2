@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
     margin: 2, // Margin dihilangkan
     lineHeight: 1.2,
     fontWeight: 500,
+    fontSize: 8,
     textAlign: "center",
     verticalAlign: "middle",
     padding: 0, // Padding dihilangkan
@@ -705,7 +706,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={styles.tableCell}>
+                  <Text style={{...styles.tableCell, color: "red"}}>
                     {items.proposalDidukungSdm || "0"}
                   </Text>
                 </View>
@@ -715,7 +716,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={styles.tableCell}>
+                  <Text style={{...styles.tableCell, color: "red"}}>
                     {items.proposalTidakDidukungSdm || "0"}
                   </Text>
                 </View>
@@ -726,7 +727,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={styles.tableCell}>
+                  <Text style={{...styles.tableCell, color: "red"}}>
                     {items.proposalDidukungSdm || "0"}
                   </Text>
                 </View>
@@ -736,7 +737,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={styles.tableCell}>
+                  <Text style={{...styles.tableCell, color: "red"}}>
                     {items.proposalTidakDidukungSdm || "0"}
                   </Text>
                 </View>
@@ -746,7 +747,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={styles.tableCell}>
+                  <Text style={{...styles.tableCell, color: "red"}}>
                     {items.proposalDidukungSdm || "0"}
                   </Text>
                 </View>
@@ -756,15 +757,15 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={styles.tableCell}>
+                  <Text style={{...styles.tableCell, color: "red"}}>
                     {items.proposalTidakDidukungSdm || "0"}
                   </Text>
                 </View>
 
                 {/* Hasil Desk columns */}
                 <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
-                  <Text style={styles.tableCell}>
-                    {items.pkmMengusulkanAlat || ""}
+                <Text style={styles.tableCell}>
+                {items.pkmMengusulkanAlat || ""}
                   </Text>
                 </View>
                 <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
