@@ -40,17 +40,17 @@ const Login = () => {
         dispatch(loginUser(data));
         localStorage.setItem("user", JSON.stringify(data));
         setLoading(false);
-        Swal.fire({
-          title: "Perhatian!",
-          html: `
-            Batas akhir pengisian usulan dan unggah dokumen adalah tanggal <b>15 - 19 Mei 2025</b>.<br><br>
-            Setelahnya, fitur pengisian dan pengunggahan akan dikunci.
-            Pastikan Anda menyelesaikan semua proses sebelum batas waktu berakhir.
-          `,
-          icon: "warning",
-          confirmButtonText: "Saya Mengerti",
-          confirmButtonColor: "#3085d6",
-        });
+        // Swal.fire({
+        //   title: "Perhatian!",
+        //   html: `
+        //     Batas akhir pengisian usulan dan unggah dokumen adalah tanggal <b>15 - 19 Mei 2025</b>.<br><br>
+        //     Setelahnya, fitur pengisian dan pengunggahan akan dikunci.
+        //     Pastikan Anda menyelesaikan semua proses sebelum batas waktu berakhir.
+        //   `,
+        //   icon: "warning",
+        //   confirmButtonText: "Saya Mengerti",
+        //   confirmButtonColor: "#3085d6",
+        // });
 
         navigate("/usulan-alkes");
         return;

@@ -1241,10 +1241,10 @@ const PdfUsulanAlkes = () => {
         <h1 className="font-normal mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
           Dokumen Usulan
         </h1>
-        <p className="text-sm text-red-500 italic mb-3 text-center font-medium">
+        {/* <p className="text-sm text-red-500 italic mb-3 text-center font-medium">
           Batas pengisian dan unggah: 15-19 Mei 2025. <br />
           Lewat tanggal tersebut pengunggahan dokumen akan dikunci.
-        </p>
+        </p> */}
         <div className="flex items-center lg:items-end mt-3 gap-3 flex-col lg:flex-row">
           <div className="flex items-center gap-3 flex-col sm:flex-row">
             <div className="text-base">

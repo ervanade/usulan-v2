@@ -55,8 +55,8 @@ const SUBCOL2_SUB_WIDTH = SUBCOL2_WIDTH / 2; // For Ranap and Non Ranap (but wil
 
 // Sub-column widths for Puskesmas
 const SUBCOL3_WIDTH = COL3_WIDTH / 8; // Total PKM, Jumlah PKM Memiliki Alat Sesuai Standar
-const SUBCOL3_WIDTH2 = COL3_WIDTH / 8 * 2; // Total PKM, Jumlah PKM Memiliki Alat Sesuai Standar
-const SUBCOL3_WIDTH3 = COL3_WIDTH / 8 * 4; // Total PKM, Jumlah PKM Memiliki Alat Sesuai Standar
+const SUBCOL3_WIDTH2 = (COL3_WIDTH / 8) * 2; // Total PKM, Jumlah PKM Memiliki Alat Sesuai Standar
+const SUBCOL3_WIDTH3 = (COL3_WIDTH / 8) * 4; // Total PKM, Jumlah PKM Memiliki Alat Sesuai Standar
 
 const SUBCOL3_PROPOSAL_WIDTH = SUBCOL3_WIDTH2 / 2; // Mengusulkan (proposal) sub-columns
 const SUBCOL3_TIDAK_PROPOSAL_WIDTH = SUBCOL3_WIDTH3 / 4; // Mengusulkan (proposal) sub-columns
@@ -314,9 +314,17 @@ const getAllDetailDistribusi = (distribusi) => {
     standard_rawat_inap: item.total_standard_rawat_inap || "",
     standard_non_inap: item.total_standard_non_inap || "",
     totalPkm: item?.total_puskesmas || "",
-    pkmMemilikiAlat: item?.total_puskesmas_berfungsi || "",
-    proposalDidukungSdm: item?.proposal_didukung_sdm || "",
-    proposalTidakDidukungSdm: item?.total_puskesmas_non_sdm || "",
+    pkm_sesuai_standar: item?.pkm_sesuai_standar || "",
+    proposalDidukungSdm: item?.didukung_sdm_mengusulkan || "",
+    proposalTidakDidukungSdm: item?.tidak_didukung_sdm_mengusulkan || "",
+    pengadaan_sumber_dana_lain_tidak_mengusulkan:
+      item?.pengadaan_sumber_dana_lain_tidak_mengusulkan || "",
+    puskesmas_tidak_siap_sdm_tidak_mengusulkan:
+      item?.puskesmas_tidak_siap_sdm_tidak_mengusulkan || "",
+    puskesmas_tidak_siap_sarpras_tidak_mengusulkan:
+      item?.puskesmas_tidak_siap_sarpras_tidak_mengusulkan || "",
+    puskesmas_alasan_lainnya_tidak_mengusulkan:
+      item?.puskesmas_alasan_lainnya_tidak_mengusulkan || "",
     pkmMengusulkanAlat: item?.pkm_mengusulkan_alat || "",
     jumlahAlatDiusulkan: item?.jumlah_alat_diusulkan || "",
   }));
@@ -508,9 +516,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                   { width: `${SUBCOL3_WIDTH3}%` },
                 ]}
               >
-                <Text style={styles.tableCellHeader}>
-                  Tidak Mengusulkan
-                </Text>
+                <Text style={styles.tableCellHeader}>Tidak Mengusulkan</Text>
               </View>
 
               {/* Hasil Desk sub-columns */}
@@ -592,7 +598,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                   Didukung Ketersediaan SDM
                 </Text>
               </View>
-                <View
+              <View
                 style={[
                   styles.nestedHeaderCell,
                   { width: `${SUBCOL3_PROPOSAL_WIDTH}%` },
@@ -618,9 +624,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                   { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
                 ]}
               >
-                <Text style={styles.tableCellHeader}>
-                  SDMK tidak tersedia
-                </Text>
+                <Text style={styles.tableCellHeader}>SDMK tidak tersedia</Text>
               </View>
               <View
                 style={[
@@ -639,7 +643,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                 ]}
               >
                 <Text style={styles.tableCellHeader}>
-                 Lainnya (alasan sesuai ket. proposal)
+                  Lainnya (alasan sesuai ket. proposal)
                 </Text>
               </View>
 
@@ -668,7 +672,13 @@ export const RenderVerifPages = (jsonData, preview) => {
 
                 {/* Nama Alkes */}
                 <View style={[styles.tableCol, { width: `${SUBCOL2_WIDTH}%` }]}>
-                  <Text style={{ ...styles.tableCell, textAlign: "left", fontSize: 7 }}>
+                  <Text
+                    style={{
+                      ...styles.tableCell,
+                      textAlign: "left",
+                      fontSize: 7,
+                    }}
+                  >
                     {items.namaAlkes || ""}
                   </Text>
                 </View>
@@ -695,7 +705,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                 </View>
                 <View style={[styles.tableCol, { width: `${SUBCOL3_WIDTH}%` }]}>
                   <Text style={styles.tableCell}>
-                    {items.pkmMemilikiAlat || "0"}
+                    {items.pkm_sesuai_standar || "0"}
                   </Text>
                 </View>
 
@@ -706,7 +716,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={{...styles.tableCell, color: "red"}}>
+                  <Text style={{ ...styles.tableCell, color: "red" }}>
                     {items.proposalDidukungSdm || "0"}
                   </Text>
                 </View>
@@ -716,7 +726,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={{...styles.tableCell, color: "red"}}>
+                  <Text style={{ ...styles.tableCell, color: "red" }}>
                     {items.proposalTidakDidukungSdm || "0"}
                   </Text>
                 </View>
@@ -727,8 +737,8 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={{...styles.tableCell, color: "red"}}>
-                    {items.proposalDidukungSdm || "0"}
+                  <Text style={{ ...styles.tableCell, color: "red" }}>
+                    {items.pengadaan_sumber_dana_lain_tidak_mengusulkan || "0"}
                   </Text>
                 </View>
                 <View
@@ -737,8 +747,8 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={{...styles.tableCell, color: "red"}}>
-                    {items.proposalTidakDidukungSdm || "0"}
+                  <Text style={{ ...styles.tableCell, color: "red" }}>
+                    {items.puskesmas_tidak_siap_sdm_tidak_mengusulkan || "0"}
                   </Text>
                 </View>
                 <View
@@ -747,8 +757,9 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={{...styles.tableCell, color: "red"}}>
-                    {items.proposalDidukungSdm || "0"}
+                  <Text style={{ ...styles.tableCell, color: "red" }}>
+                    {items.puskesmas_tidak_siap_sarpras_tidak_mengusulkan ||
+                      "0"}
                   </Text>
                 </View>
                 <View
@@ -757,15 +768,15 @@ export const RenderVerifPages = (jsonData, preview) => {
                     { width: `${SUBCOL3_TIDAK_PROPOSAL_WIDTH}%` },
                   ]}
                 >
-                  <Text style={{...styles.tableCell, color: "red"}}>
-                    {items.proposalTidakDidukungSdm || "0"}
+                  <Text style={{ ...styles.tableCell, color: "red" }}>
+                    {items.puskesmas_alasan_lainnya_tidak_mengusulkan || "0"}
                   </Text>
                 </View>
 
                 {/* Hasil Desk columns */}
                 <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
-                <Text style={styles.tableCell}>
-                {items.pkmMengusulkanAlat || ""}
+                  <Text style={styles.tableCell}>
+                    {items.pkmMengusulkanAlat || ""}
                   </Text>
                 </View>
                 <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
