@@ -62,7 +62,7 @@ const SUBCOL3_PROPOSAL_WIDTH = SUBCOL3_WIDTH2 / 2; // Mengusulkan (proposal) sub
 const SUBCOL3_TIDAK_PROPOSAL_WIDTH = SUBCOL3_WIDTH3 / 4; // Mengusulkan (proposal) sub-columns
 
 // Sub-column widths for Hasil Desk
-const SUBCOL4_WIDTH = COL4_WIDTH / 2; // Jumlah PKM yang Mengusulkan Alat and Jumlah Alat yang Diusulkan
+const SUBCOL4_WIDTH = COL4_WIDTH / 1; // Jumlah PKM yang Mengusulkan Alat and Jumlah Alat yang Diusulkan
 
 const styles = StyleSheet.create({
   viewer: {
@@ -437,7 +437,11 @@ export const RenderVerifPages = (jsonData, preview) => {
 
               {/* Hasil Desk */}
               <View
-                style={[styles.mainHeaderCell, { width: `${COL4_WIDTH}%` }]}
+                style={[
+                  styles.mainHeaderCell,
+                  { width: `${COL4_WIDTH}%` },
+                  { borderBottomWidth: 0, borderBottomColor: "transparent" },
+                ]}
               >
                 <Text style={styles.tableCellHeader}>Hasil Desk</Text>
               </View>
@@ -528,10 +532,11 @@ export const RenderVerifPages = (jsonData, preview) => {
                 ]}
               >
                 <Text style={{ ...styles.tableCellHeader, marginBottom: -2 }}>
-                  Jumlah PKM yang Mengusulkan Alat
+                  (Keterangan jumlah/nama pkm yang usulannya tidak
+                  sesuai CHR & CHP)
                 </Text>
               </View>
-              <View
+              {/* <View
                 style={[
                   styles.nestedHeaderCell,
                   { width: `${SUBCOL4_WIDTH}%` },
@@ -541,7 +546,7 @@ export const RenderVerifPages = (jsonData, preview) => {
                 <Text style={{ ...styles.tableCellHeader, marginBottom: -2 }}>
                   Jumlah Alat yang Diusulkan
                 </Text>
-              </View>
+              </View> */}
             </View>
 
             {/* Third Header Row (Sub-sub-columns) */}
@@ -654,12 +659,12 @@ export const RenderVerifPages = (jsonData, preview) => {
                   { width: `${SUBCOL4_WIDTH}%` },
                 ]}
               ></View>
-              <View
+              {/* <View
                 style={[
                   styles.nestedHeaderCell,
                   { width: `${SUBCOL4_WIDTH}%` },
                 ]}
-              ></View>
+              ></View> */}
             </View>
 
             {/* Data rows */}
@@ -775,15 +780,13 @@ export const RenderVerifPages = (jsonData, preview) => {
 
                 {/* Hasil Desk columns */}
                 <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
-                  <Text style={styles.tableCell}>
-                    {items.pkmMengusulkanAlat || ""}
-                  </Text>
+                  <Text style={styles.tableCell}></Text>
                 </View>
-                <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
+                {/* <View style={[styles.tableCol, { width: `${SUBCOL4_WIDTH}%` }]}>
                   <Text style={styles.tableCell}>
                     {items.jumlahAlatDiusulkan || ""}
                   </Text>
-                </View>
+                </View> */}
               </View>
             ))}
           </View>
