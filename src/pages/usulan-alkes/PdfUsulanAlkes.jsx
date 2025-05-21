@@ -617,7 +617,7 @@ const PdfUsulanAlkes = () => {
   const handleBukaUpload = async (id, type = "proposal") => {
     try {
       Swal.fire({
-        title: "Generate dokumen...",
+        title: "Download dokumen...",
         text: "Tunggu Sebentar Dokumen Disiapkan...",
         allowOutsideClick: false,
         showConfirmButton: false,
