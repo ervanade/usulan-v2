@@ -10,6 +10,7 @@ import Select from "react-select";
 import DataTable from "react-data-table-component";
 import {
   AlasanOptions,
+  allowedKabupaten,
   dayaOptions,
   pelayananOptions,
   SelectOptions,
@@ -59,6 +60,11 @@ const EditUsulan = () => {
   const [error, setError] = useState(false);
   const [getLoading, setGetLoading] = useState(false);
   const isDisabled = false;
+
+  const isAllowedKab = useMemo(
+    () => allowedKabupaten.includes(formData.kabupaten),
+    [formData.kabupaten]
+  );
 
   const [dataUser, setDataUser] = useState([]);
   const [dataProvinsi, setDataProvinsi] = useState([]);
@@ -1024,7 +1030,10 @@ const EditUsulan = () => {
               }
               className="border border-primary rounded p-2 !text-sm py-4 w-full focus:border-graydark focus:outline-none focus:ring-0"
               disabled={
-                user?.role == "5" || isDisabled || selectedPeriode?.stat == 0
+                user?.role == "5" ||
+                isDisabled ||
+                selectedPeriode?.stat == 0 ||
+                !isAllowedKab
               }
               min={0} // Pastikan tidak bisa minus
             />
@@ -1111,7 +1120,8 @@ const EditUsulan = () => {
                   masihBerfungsi >= standard ||
                   user?.role == "5" ||
                   isDisabled ||
-                  selectedPeriode?.stat == 0
+                  selectedPeriode?.stat == 0 ||
+                  !isAllowedKab
                 } // Nonaktifkan input jika masih_berfungsi >= standard
               />
               {errors[row.id] && (
@@ -1188,6 +1198,7 @@ const EditUsulan = () => {
               <select
                 value={editedData[row.id]?.keterangan_usulan || ""}
                 onChange={(e) => handleAlasanChange(row.id, e.target.value)}
+                disabled={!isAllowedKab}
                 className="border border-primary focus:border-primary rounded p-1 text-sm w-full focus-within:border-primary active:border-primary"
               >
                 <option value="">Pilih Alasan</option>
@@ -1201,6 +1212,7 @@ const EditUsulan = () => {
               {editedData[row.id]?.keterangan_usulan === "Lainnya" && (
                 <div className="mt-1">
                   <input
+                    disabled={!isAllowedKab}
                     type="text"
                     value={editedData[row.id]?.catatanAlasan || ""}
                     onChange={(e) =>
@@ -1513,7 +1525,9 @@ const EditUsulan = () => {
                     onChange={handleDayaChange}
                     placeholder="Ketersediaan Daya"
                     className="w-full text-sm"
-                    isDisabled={user?.role == "5" || isDisabled}
+                    isDisabled={
+                      user?.role == "5" || isDisabled || !isAllowedKab
+                    }
                     theme={selectThemeColors}
                   />
                 </div>
@@ -1534,7 +1548,9 @@ const EditUsulan = () => {
                     onChange={handleListrikChange}
                     placeholder="Ketersediaan Listrik"
                     className="w-full text-sm"
-                    isDisabled={user?.role == "5" || isDisabled}
+                    isDisabled={
+                      user?.role == "5" || isDisabled || !isAllowedKab
+                    }
                     theme={selectThemeColors}
                   />
                 </div>
@@ -1555,7 +1571,9 @@ const EditUsulan = () => {
                     onChange={handleInternetChange}
                     placeholder="Ketersediaan Internet"
                     className="w-full text-sm"
-                    isDisabled={user?.role == "5" || isDisabled}
+                    isDisabled={
+                      user?.role == "5" || isDisabled || !isAllowedKab
+                    }
                     theme={selectThemeColors}
                   />
                 </div>
@@ -1579,7 +1597,9 @@ const EditUsulan = () => {
                     placeholder="SDM Tersedia"
                     isMulti
                     className="w-full text-sm"
-                    isDisabled={user?.role == "5" || isDisabled}
+                    isDisabled={
+                      user?.role == "5" || isDisabled || !isAllowedKab
+                    }
                     theme={selectThemeColors}
                   />
                 </div>
@@ -1668,7 +1688,7 @@ const EditUsulan = () => {
               )}
             </div>
           </div>
-          {!isDisabled && (
+          {isAllowedKab && (
             <button
               onClick={handleSimpan}
               className="mt-4 bg-primary hover:bg-graydark text-white font-bold py-3 px-4 rounded w-full"

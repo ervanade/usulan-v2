@@ -23,6 +23,7 @@ import GenerateDokumen from "../../components/Dokumen/GenerateDokumen.jsx";
 import ModalUploadDokumen from "../../components/Modal/ModalUploadDokumen.jsx";
 import ModalTTENew from "../../components/Modal/ModalTTENew.jsx";
 import GenerateVerif from "../../components/Dokumen/GenerateVerif.jsx";
+import { allowedKabupaten } from "../../data/data.js";
 
 const PdfUsulanAlkes = () => {
   const user = useSelector((a) => a.auth.user);
@@ -752,31 +753,18 @@ const PdfUsulanAlkes = () => {
         name: <div className="text-wrap px-1">Upload CHR</div>,
         selector: (row) => (row?.tgl_chr && row?.file_chr ? "Sudah" : "Belum"),
         sortable: true,
-        cell: (row) => (
-          <div className="flex flex-col items-center space-y-1">
-            {!row?.tgl_chr || !row?.file_chr ? (
-              <button
-                title="Upload Dokumen"
-                className="text-white py-1 px-2 bg-primary rounded-md text-xs"
-                onClick={(e) =>
-                  handleModalDokumen(
-                    e,
-                    row.id,
-                    `Dokumen CHR ${row.kabupaten}`,
-                    row.kabupaten,
-                    "chr"
-                  )
-                }
-              >
-                Upload <br />
-                CHR
-              </button>
-            ) : (
-              <div className="flex space-x-1">
+        cell: (row) => {
+          const isAllowed = allowedKabupaten.includes(row.kabupaten);
+          return (
+            <div className="flex flex-col items-center space-y-1">
+              {!row?.tgl_chr || !row?.file_chr ? (
                 <button
-                  title="Upload Dokumen Baru"
-                  className="text-white py-1 px-2 bg-blue-500 hover:bg-blue-700 rounded-md text-xs"
+                  title="Upload Dokumen"
+                  className={`text-white py-1 px-2 bg-primary rounded-md text-xs ${
+                    !isAllowed ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                   onClick={(e) =>
+                    isAllowed &&
                     handleModalDokumen(
                       e,
                       row.id,
@@ -785,27 +773,53 @@ const PdfUsulanAlkes = () => {
                       "chr"
                     )
                   }
+                  disabled={!isAllowed}
+                  style={{ display: isAllowed ? "block" : "none" }}
                 >
                   Upload <br />
                   CHR
                 </button>
-                <button
-                  title="Buka CHR"
-                  className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
-                  onClick={() => handleBukaUpload(row.id, "chr")}
-                >
-                  Buka
-                </button>
-              </div>
-            )}
-            {row?.tgl_chr && row?.file_chr && (
-              <div className="text-green-500 text-xs">Sudah Upload</div>
-            )}
-            {(!row?.tgl_chr || !row?.file_chr) && (
-              <div className="text-red-500 text-xs">Belum Upload</div>
-            )}
-          </div>
-        ),
+              ) : (
+                <div className="flex space-x-1">
+                  <button
+                    title="Upload Dokumen Baru"
+                    className={`text-white py-1 px-2 bg-blue-500 hover:bg-blue-700 rounded-md text-xs ${
+                      !isAllowed ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    onClick={(e) =>
+                      isAllowed &&
+                      handleModalDokumen(
+                        e,
+                        row.id,
+                        `Dokumen CHR ${row.kabupaten}`,
+                        row.kabupaten,
+                        "chr"
+                      )
+                    }
+                    disabled={!isAllowed}
+                    style={{ display: isAllowed ? "block" : "none" }}
+                  >
+                    Upload <br />
+                    CHR
+                  </button>
+                  <button
+                    title="Buka CHR"
+                    className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
+                    onClick={() => handleBukaUpload(row.id, "chr")}
+                  >
+                    Buka
+                  </button>
+                </div>
+              )}
+              {row?.tgl_chr && row?.file_chr && (
+                <div className="text-green-500 text-xs">Sudah Upload</div>
+              )}
+              {(!row?.tgl_chr || !row?.file_chr) && (
+                <div className="text-red-500 text-xs">Belum Upload</div>
+              )}
+            </div>
+          );
+        },
         ignoreRowClick: true,
         button: true,
         minWidth: "120px",
@@ -814,31 +828,18 @@ const PdfUsulanAlkes = () => {
         name: <div className="text-wrap px-1">Upload CHP</div>,
         selector: (row) => (row?.tgl_chp && row?.file_chp ? "Sudah" : "Belum"),
         sortable: true,
-        cell: (row) => (
-          <div className="flex flex-col items-center space-y-1">
-            {!row?.tgl_chp || !row?.file_chp ? (
-              <button
-                title="Upload Dokumen"
-                className="text-white py-1 px-2 bg-primary rounded-md text-xs"
-                onClick={(e) =>
-                  handleModalDokumen(
-                    e,
-                    row.id,
-                    `Dokumen CHP ${row.kabupaten}`,
-                    row.kabupaten,
-                    "chp"
-                  )
-                }
-              >
-                Upload <br />
-                CHP
-              </button>
-            ) : (
-              <div className="flex space-x-1">
+        cell: (row) => {
+          const isAllowed = allowedKabupaten.includes(row.kabupaten);
+          return (
+            <div className="flex flex-col items-center space-y-1">
+              {!row?.tgl_chp || !row?.file_chp ? (
                 <button
-                  title="Upload Dokumen Baru"
-                  className="text-white py-1 px-2 bg-blue-500 hover:bg-blue-700 rounded-md text-xs"
+                  title="Upload Dokumen"
+                  className={`text-white py-1 px-2 bg-primary rounded-md text-xs ${
+                    !isAllowed ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                   onClick={(e) =>
+                    isAllowed &&
                     handleModalDokumen(
                       e,
                       row.id,
@@ -847,27 +848,53 @@ const PdfUsulanAlkes = () => {
                       "chp"
                     )
                   }
+                  disabled={!isAllowed}
+                  style={{ display: isAllowed ? "block" : "none" }}
                 >
                   Upload <br />
                   CHP
                 </button>
-                <button
-                  title="Buka CHP"
-                  className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
-                  onClick={() => handleBukaUpload(row.id, "chp")}
-                >
-                  Buka
-                </button>
-              </div>
-            )}
-            {row?.tgl_chp && row?.file_chp && (
-              <div className="text-green-500 text-xs">Sudah Upload</div>
-            )}
-            {(!row?.tgl_chp || !row?.file_chp) && (
-              <div className="text-red-500 text-xs">Belum Upload</div>
-            )}
-          </div>
-        ),
+              ) : (
+                <div className="flex space-x-1">
+                  <button
+                    title="Upload Dokumen Baru"
+                    className={`text-white py-1 px-2 bg-blue-500 hover:bg-blue-700 rounded-md text-xs ${
+                      !isAllowed ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    onClick={(e) =>
+                      isAllowed &&
+                      handleModalDokumen(
+                        e,
+                        row.id,
+                        `Dokumen CHP ${row.kabupaten}`,
+                        row.kabupaten,
+                        "chp"
+                      )
+                    }
+                    disabled={!isAllowed}
+                    style={{ display: isAllowed ? "block" : "none" }}
+                  >
+                    Upload <br />
+                    CHP
+                  </button>
+                  <button
+                    title="Buka CHP"
+                    className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
+                    onClick={() => handleBukaUpload(row.id, "chp")}
+                  >
+                    Buka
+                  </button>
+                </div>
+              )}
+              {row?.tgl_chp && row?.file_chp && (
+                <div className="text-green-500 text-xs">Sudah Upload</div>
+              )}
+              {(!row?.tgl_chp || !row?.file_chp) && (
+                <div className="text-red-500 text-xs">Belum Upload</div>
+              )}
+            </div>
+          );
+        },
         ignoreRowClick: true,
         button: true,
         minWidth: "120px",
@@ -970,41 +997,27 @@ const PdfUsulanAlkes = () => {
         selector: (row) =>
           row?.tgl_upload && row?.file_upload ? "Sudah" : "Belum",
         sortable: true,
-        cell: (row) => (
-          <div className="flex flex-col items-center space-y-1">
-            {!(row?.tgl_chr && row?.file_chr) ||
-            !(row?.tgl_chp && row?.file_chp) ? (
-              <div className="text-amber-500 font-medium text-xs italic">
-                {!row?.tgl_chr || !row?.file_chr
-                  ? !row?.tgl_chp || !row?.file_chp
-                    ? "Belum upload CHR & CHP"
-                    : "Belum upload CHR"
-                  : "Belum upload CHP"}
-              </div>
-            ) : !row?.tgl_upload || !row?.file_upload ? (
-              <button
-                title="Upload Dokumen Baru"
-                className="text-white py-1 px-2 bg-cyan-600 hover:bg-cyan-700 rounded-md text-xs"
-                onClick={(e) =>
-                  handleModalDokumen(
-                    e,
-                    row.id,
-                    `Dokumen Proposal ${row.kabupaten}`,
-                    row.kabupaten,
-                    "proposal"
-                  )
-                }
-              >
-                Upload
-                <br />
-                Proposal
-              </button>
-            ) : (
-              <div className="flex space-x-1">
+        cell: (row) => {
+          const isAllowed = allowedKabupaten.includes(row.kabupaten);
+          return (
+            <div className="flex flex-col items-center space-y-1">
+              {!(row?.tgl_chr && row?.file_chr) ||
+              !(row?.tgl_chp && row?.file_chp) ? (
+                <div className="text-amber-500 font-medium text-xs italic">
+                  {!row?.tgl_chr || !row?.file_chr
+                    ? !row?.tgl_chp || !row?.file_chp
+                      ? "Belum upload CHR & CHP"
+                      : "Belum upload CHR"
+                    : "Belum upload CHP"}
+                </div>
+              ) : !row?.tgl_upload || !row?.file_upload ? (
                 <button
                   title="Upload Dokumen Baru"
-                  className="text-white py-1 px-2 bg-blue-600 hover:bg-blue-700 rounded-md text-xs"
+                  className={`text-white py-1 px-2 bg-cyan-600 hover:bg-cyan-700 rounded-md text-xs ${
+                    !isAllowed ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                   onClick={(e) =>
+                    isAllowed &&
                     handleModalDokumen(
                       e,
                       row.id,
@@ -1013,31 +1026,58 @@ const PdfUsulanAlkes = () => {
                       "proposal"
                     )
                   }
+                  disabled={!isAllowed}
+                  style={{ display: isAllowed ? "block" : "none" }}
                 >
-                  Upload <br />
+                  Upload
+                  <br />
                   Proposal
                 </button>
-                <button
-                  title="Buka Proposal"
-                  className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
-                  onClick={() => handleBukaUpload(row.id)}
-                >
-                  Buka
-                </button>
-              </div>
-            )}
-            {row?.tgl_upload && row?.file_upload && (
-              <div className="text-green-500 text-xs">Sudah Upload</div>
-            )}
-            {(!row?.tgl_upload || !row?.file_upload) &&
-              row?.tgl_chr &&
-              row?.file_chr &&
-              row?.tgl_chp &&
-              row?.file_chp && (
-                <div className="text-red-500 text-xs">Belum Upload</div>
+              ) : (
+                <div className="flex space-x-1">
+                  <button
+                    title="Upload Dokumen Baru"
+                    className={`text-white py-1 px-2 bg-blue-600 hover:bg-blue-700 rounded-md text-xs ${
+                      !isAllowed ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    onClick={(e) =>
+                      isAllowed &&
+                      handleModalDokumen(
+                        e,
+                        row.id,
+                        `Dokumen Proposal ${row.kabupaten}`,
+                        row.kabupaten,
+                        "proposal"
+                      )
+                    }
+                    disabled={!isAllowed}
+                    style={{ display: isAllowed ? "block" : "none" }}
+                  >
+                    Upload <br />
+                    Proposal
+                  </button>
+                  <button
+                    title="Buka Proposal"
+                    className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
+                    onClick={() => handleBukaUpload(row.id)}
+                  >
+                    Buka
+                  </button>
+                </div>
               )}
-          </div>
-        ),
+              {row?.tgl_upload && row?.file_upload && (
+                <div className="text-green-500 text-xs">Sudah Upload</div>
+              )}
+              {(!row?.tgl_upload || !row?.file_upload) &&
+                row?.tgl_chr &&
+                row?.file_chr &&
+                row?.tgl_chp &&
+                row?.file_chp && (
+                  <div className="text-red-500 text-xs">Belum Upload</div>
+                )}
+            </div>
+          );
+        },
         ignoreRowClick: true,
         button: true,
         minWidth: "120px",
