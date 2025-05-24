@@ -61,9 +61,10 @@ const EditUsulan = () => {
   const [getLoading, setGetLoading] = useState(false);
   const isDisabled = false;
 
+  const isAdmin = user?.role == "1"; // Asumsi role admin adalah 'admin' atau '1', sesuaikan jika berbeda
   const isAllowedKab = useMemo(
-    () => allowedKabupaten.includes(formData.kabupaten),
-    [formData.kabupaten]
+    () => isAdmin || allowedKabupaten.includes(formData.kabupaten),
+    [formData.kabupaten, isAdmin]
   );
 
   const [dataUser, setDataUser] = useState([]);

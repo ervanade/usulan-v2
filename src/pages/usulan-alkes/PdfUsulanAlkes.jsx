@@ -754,7 +754,9 @@ const PdfUsulanAlkes = () => {
         selector: (row) => (row?.tgl_chr && row?.file_chr ? "Sudah" : "Belum"),
         sortable: true,
         cell: (row) => {
-          const isAllowed = allowedKabupaten.includes(row.kabupaten);
+          const isAllowed =
+            user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
+
           return (
             <div className="flex flex-col items-center space-y-1">
               {!row?.tgl_chr || !row?.file_chr ? (
@@ -829,7 +831,9 @@ const PdfUsulanAlkes = () => {
         selector: (row) => (row?.tgl_chp && row?.file_chp ? "Sudah" : "Belum"),
         sortable: true,
         cell: (row) => {
-          const isAllowed = allowedKabupaten.includes(row.kabupaten);
+          const isAllowed =
+            user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
+
           return (
             <div className="flex flex-col items-center space-y-1">
               {!row?.tgl_chp || !row?.file_chp ? (
@@ -998,7 +1002,9 @@ const PdfUsulanAlkes = () => {
           row?.tgl_upload && row?.file_upload ? "Sudah" : "Belum",
         sortable: true,
         cell: (row) => {
-          const isAllowed = allowedKabupaten.includes(row.kabupaten);
+          const isAllowed =
+            user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
+
           return (
             <div className="flex flex-col items-center space-y-1">
               {!(row?.tgl_chr && row?.file_chr) ||
