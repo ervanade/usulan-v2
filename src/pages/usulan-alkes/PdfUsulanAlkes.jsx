@@ -754,8 +754,7 @@ const PdfUsulanAlkes = () => {
         selector: (row) => (row?.tgl_chr && row?.file_chr ? "Sudah" : "Belum"),
         sortable: true,
         cell: (row) => {
-          const isAllowed =
-            user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
+          const isAllowed = user?.role == "1";
 
           return (
             <div className="flex flex-col items-center space-y-1">
@@ -831,8 +830,7 @@ const PdfUsulanAlkes = () => {
         selector: (row) => (row?.tgl_chp && row?.file_chp ? "Sudah" : "Belum"),
         sortable: true,
         cell: (row) => {
-          const isAllowed =
-            user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
+          const isAllowed = user?.role == "1";
 
           return (
             <div className="flex flex-col items-center space-y-1">
@@ -1002,8 +1000,7 @@ const PdfUsulanAlkes = () => {
           row?.tgl_upload && row?.file_upload ? "Sudah" : "Belum",
         sortable: true,
         cell: (row) => {
-          const isAllowed =
-            user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
+          const isAllowed = user?.role == "1";
 
           return (
             <div className="flex flex-col items-center space-y-1">
@@ -1119,35 +1116,20 @@ const PdfUsulanAlkes = () => {
         selector: (row) =>
           row?.tgl_verifikasi && row?.file_verifikasi ? "Sudah" : "Belum",
         sortable: true,
-        cell: (row) => (
-          <div className="flex flex-col items-center space-y-1">
-            {!row?.tgl_upload || !row?.file_upload ? (
-              <div className="text-amber-500 font-medium text-xs italic">
-                Upload Proposal Dahulu
-              </div>
-            ) : !row?.tgl_verifikasi || !row?.file_verifikasi ? (
-              <button
-                title="Upload Dokumen"
-                className="text-white py-1 px-2 bg-primary rounded-md text-xs"
-                onClick={(e) =>
-                  handleModalDokumen(
-                    e,
-                    row.id,
-                    `Dokumen BA Verif ${row.kabupaten}`,
-                    row.kabupaten,
-                    "baverif"
-                  )
-                }
-              >
-                Upload
-                <br />
-                BA Verif
-              </button>
-            ) : (
-              <div className="flex space-x-1">
+        cell: (row) => {
+          const isAllowed = user?.role == "1";
+          return (
+            <div className="flex flex-col items-center space-y-1">
+              {!row?.tgl_upload || !row?.file_upload ? (
+                <div className="text-amber-500 font-medium text-xs italic">
+                  Upload Proposal Dahulu
+                </div>
+              ) : !row?.tgl_verifikasi || !row?.file_verifikasi ? (
                 <button
-                  title="Upload BA Verif Baru"
-                  className="text-white py-1 px-2 bg-cyan-600 hover:bg-cyan-700 rounded-md text-xs"
+                  title="Upload Dokumen"
+                  className="text-white py-1 px-2 bg-primary rounded-md text-xs"
+                  disabled={!isAllowed}
+                  style={{ display: isAllowed ? "block" : "none" }}
                   onClick={(e) =>
                     handleModalDokumen(
                       e,
@@ -1158,28 +1140,49 @@ const PdfUsulanAlkes = () => {
                     )
                   }
                 >
-                  Upload <br />
+                  Upload
+                  <br />
                   BA Verif
                 </button>
-                <button
-                  title="Buka BA Verif"
-                  className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
-                  onClick={() => handleBukaUpload(row.id, "baverif")}
-                >
-                  Buka
-                </button>
-              </div>
-            )}
-            {row?.tgl_verifikasi && row?.file_verifikasi && (
-              <div className="text-green-500 text-xs">Sudah Upload</div>
-            )}
-            {(!row?.tgl_verifikasi || !row?.file_verifikasi) &&
-              row?.tgl_upload &&
-              row?.file_upload && (
-                <div className="text-red-500 text-xs">Belum Upload</div>
+              ) : (
+                <div className="flex space-x-1">
+                  <button
+                    title="Upload BA Verif Baru"
+                    className="text-white py-1 px-2 bg-cyan-600 hover:bg-cyan-700 rounded-md text-xs"
+                    style={{ display: isAllowed ? "block" : "none" }}
+                    onClick={(e) =>
+                      handleModalDokumen(
+                        e,
+                        row.id,
+                        `Dokumen BA Verif ${row.kabupaten}`,
+                        row.kabupaten,
+                        "baverif"
+                      )
+                    }
+                  >
+                    Upload <br />
+                    BA Verif
+                  </button>
+                  <button
+                    title="Buka BA Verif"
+                    className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
+                    onClick={() => handleBukaUpload(row.id, "baverif")}
+                  >
+                    Buka
+                  </button>
+                </div>
               )}
-          </div>
-        ),
+              {row?.tgl_verifikasi && row?.file_verifikasi && (
+                <div className="text-green-500 text-xs">Sudah Upload</div>
+              )}
+              {(!row?.tgl_verifikasi || !row?.file_verifikasi) &&
+                row?.tgl_upload &&
+                row?.file_upload && (
+                  <div className="text-red-500 text-xs">Belum Upload</div>
+                )}
+            </div>
+          );
+        },
         ignoreRowClick: true,
         button: true,
         minWidth: "120px",
