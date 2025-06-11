@@ -474,7 +474,7 @@ const LaporanBarang = () => {
     workerRef.current.postMessage({
       type: "START_EXPORT",
       payload: {
-        apiUrl: "https://api.tatakelolakesmas.com/api/lapalkes/semua",
+        apiUrl: "https://api.alkesihss.com/api/lapalkes/semua",
         token: user?.token,
         exportType: "all",
       },
@@ -512,7 +512,7 @@ const LaporanBarang = () => {
     workerRef.current.postMessage({
       type: "START_EXPORT",
       payload: {
-        apiUrl: `https://api.tatakelolakesmas.com/api/lapalkes/provinsi/${provinceId}`,
+        apiUrl: `https://api.alkesihss.com/api/lapalkes/provinsi/${provinceId}`,
         token: user?.token,
         exportType: "province",
         provinceId: provinceId,

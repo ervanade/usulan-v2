@@ -51,7 +51,7 @@ self.onmessage = async (event) => {
     if (type === 'START_EXPORT') {
         try {
             const apiUrl = isProvinceExport && payload.provinceId
-                ? `https://api.tatakelolakesmas.com/api/lapalkes/provinsi/${payload.provinceId}`
+                ? `https://api.alkesihss.com/api/lapalkes/provinsi/${payload.provinceId}`
                 : payload.apiUrl; // Gunakan apiUrl asli untuk export semua
 
             const response = await fetch(apiUrl, {
