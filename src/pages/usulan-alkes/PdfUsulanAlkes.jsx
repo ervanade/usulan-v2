@@ -754,7 +754,8 @@ const PdfUsulanAlkes = () => {
         selector: (row) => (row?.tgl_chr && row?.file_chr ? "Sudah" : "Belum"),
         sortable: true,
         cell: (row) => {
-          const isAllowed = true;
+          const isAllowed =
+          user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
 
           return (
             <div className="flex flex-col items-center space-y-1">
