@@ -831,7 +831,8 @@ const PdfUsulanAlkes = () => {
         selector: (row) => (row?.tgl_chp && row?.file_chp ? "Sudah" : "Belum"),
         sortable: true,
         cell: (row) => {
-          const isAllowed = true;
+          const isAllowed =
+          user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
 
           return (
             <div className="flex flex-col items-center space-y-1">
@@ -1001,7 +1002,8 @@ const PdfUsulanAlkes = () => {
           row?.tgl_upload && row?.file_upload ? "Sudah" : "Belum",
         sortable: true,
         cell: (row) => {
-          const isAllowed = true;
+          const isAllowed =
+          user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
 
           return (
             <div className="flex flex-col items-center space-y-1">
@@ -1118,7 +1120,8 @@ const PdfUsulanAlkes = () => {
           row?.tgl_verifikasi && row?.file_verifikasi ? "Sudah" : "Belum",
         sortable: true,
         cell: (row) => {
-          const isAllowed = true;
+          const isAllowed =
+          user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
           return (
             <div className="flex flex-col items-center space-y-1">
               {!row?.tgl_upload || !row?.file_upload ? (
