@@ -1014,7 +1014,7 @@ const KonfirmasiKabupaten = () => {
                 }
               />
             </div>
-            {user?.role == "1" && (
+            {/* {user?.role == "1" && (
               <div>
                 <label
                   className="block text-[#728294] text-base font-normal mb-2"
@@ -1038,7 +1038,7 @@ const KonfirmasiKabupaten = () => {
                   })}
                 />
               </div>
-            )}
+            )} */}
           </div>
           <button
             onClick={handleSearchClick}
