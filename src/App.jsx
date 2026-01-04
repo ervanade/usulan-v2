@@ -57,6 +57,9 @@ import PreviewVerif from "./pages/ba-verif/PreviewVerif.jsx";
 import DataKriteria from "./pages/master-kriteria/DataKriteria.jsx";
 import TambahKriteria from "./pages/master-kriteria/TambahKriteria.jsx";
 import EditKriteria from "./pages/master-kriteria/EditKriteria.jsx";
+import KonfirmasiAlkes from "./pages/konfirmasi-alkes/KonfirmasiAlkes.jsx";
+import EditKonfirmasi from "./pages/konfirmasi-alkes/EditKonfirmasi.jsx";
+import KonfirmasiKabupaten from "./pages/konfirmasi-alkes/KonfirmasiKabupaten.jsx";
 
 function App() {
   const { pathname } = useLocation();
@@ -83,8 +86,17 @@ function App() {
               {/* <Route path="tes-template" element={<TesTemplate />} />
               <Route path="preview-dokumen/:id" element={<TemplateDokumen />} /> */}
               <Route path="usulan-alkes" element={<UsulanAlkes />} />
+              <Route path="konfirmasi-alkes" element={<KonfirmasiAlkes />} />
+              <Route
+                path="konfirmasi-alkes/edit/:id"
+                element={<EditKonfirmasi />}
+              />
               <Route path="usulan-alkes/edit/:id" element={<EditUsulan />} />
               <Route path="pdf-usulan-alkes" element={<PdfUsulanAlkes />} />
+              <Route
+                path="konfirmasi-kabupaten"
+                element={<KonfirmasiKabupaten />}
+              />
               {/* <Route path="data-distribusi" element={<DataDistribusi />} />
               <Route
                 path="data-distribusi/detail/:id"
