@@ -122,7 +122,7 @@ export default function EditKonfirmasi() {
                     className={`border rounded-md p-3 space-y-2 ${
                       isChecked
                         ? "border-primary bg-primary/5"
-                        : "border-gray-300"
+                        : "border-[#cacaca]"
                     }`}
                   >
                     <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
@@ -265,7 +265,7 @@ function ReadOnly({ label, value }) {
   return (
     <div>
       <label className="text-xs text-[#3f4750] font-semibold">{label}</label>
-      <div className="mt-1 border rounded-md px-3 py-2 bg-white text-sm text-[#728294]">
+      <div className="mt-1 border rounded-md px-3 py-2 bg-white text-sm text-[#3f4750] border-[#cacaca]">
         {value}
       </div>
     </div>
@@ -301,7 +301,7 @@ function FormInput({ label, helper, type = "text", ...props }) {
 
       <input
         type={type}
-        className="w-full border rounded-md px-3 py-2 text-sm text-gray-800 
+        className="w-full border border-[#cacaca] rounded-md px-3 py-2 text-sm text-gray-800 
                    focus:outline-none focus:ring-1 focus:ring-primary 
                    focus:border-primary"
         {...props}
