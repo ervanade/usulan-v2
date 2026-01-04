@@ -759,7 +759,7 @@ const KonfirmasiKabupaten = () => {
                 Upload Proposal Dahulu
               </div>
             ) : (
-              <Link
+              <a
                 href="https://docs.google.com/document/d/1mtfLgWaJ018jbxUD2ox_0axIFQMg9jTM/edit"
                 title="Download Dokumen Konfirmasi"
                 className="text-white bg-cyan-600 hover:bg-cyan-700 py-1 px-3 rounded-md font-medium text-xs"
@@ -769,7 +769,7 @@ const KonfirmasiKabupaten = () => {
                 Download
                 <br />
                 Dokumen
-              </Link>
+              </a>
             )}
           </div>
         ),
