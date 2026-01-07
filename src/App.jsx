@@ -86,17 +86,21 @@ function App() {
               {/* <Route path="tes-template" element={<TesTemplate />} />
               <Route path="preview-dokumen/:id" element={<TemplateDokumen />} /> */}
               <Route path="usulan-alkes" element={<UsulanAlkes />} />
-              <Route path="konfirmasi-alkes" element={<KonfirmasiAlkes />} />
+              <Route
+                path="konfirmasi-alkes"
+                element={<KonfirmasiKabupaten />}
+              />
+              <Route
+                path="konfirmasi-alkes/kabupaten/:id"
+                element={<KonfirmasiAlkes />}
+              />
               <Route
                 path="konfirmasi-alkes/edit/:id"
                 element={<EditKonfirmasi />}
               />
+
               <Route path="usulan-alkes/edit/:id" element={<EditUsulan />} />
               <Route path="pdf-usulan-alkes" element={<PdfUsulanAlkes />} />
-              <Route
-                path="konfirmasi-kabupaten"
-                element={<KonfirmasiKabupaten />}
-              />
               {/* <Route path="data-distribusi" element={<DataDistribusi />} />
               <Route
                 path="data-distribusi/detail/:id"

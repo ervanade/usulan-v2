@@ -33,10 +33,6 @@ const DataBarang = () => {
     const filtered = data.filter((item) => {
       return (
         (item?.nama_alkes && item.nama_alkes.toLowerCase().includes(value)) ||
-        (item?.standard_rawat_inap &&
-          item.standard_rawat_inap.toLowerCase().includes(value)) ||
-        (item?.standard_non_inap &&
-          item.standard_non_inap.toLowerCase().includes(value)) ||
         (item?.jenis_alkes && item.jenis_alkes.toLowerCase().includes(value)) ||
         (item?.kategori && item.kategori.toLowerCase().includes(value)) ||
         (item?.satuan && item.satuan.toLowerCase().includes(value)) ||

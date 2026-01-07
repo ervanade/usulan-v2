@@ -144,9 +144,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               </li>
               <li>
                 <NavLink
-                  to="/konfirmasi-kabupaten"
+                  to="/konfirmasi-alkes"
                   className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
-                    isActive(["/konfirmasi-kabupaten", "/konfirmasi-alkes"]) &&
+                    isActive(["/konfirmasi-alkes", "/konfirmasi-alkes"]) &&
                     "bg-gradient-to-r from-emerald-600 to-teal-500 dark:bg-meta-4 !text-white"
                   }`}
                 >

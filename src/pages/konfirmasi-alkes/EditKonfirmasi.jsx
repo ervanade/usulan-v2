@@ -1,4 +1,3 @@
-// UPDATED VERSION – React Vite, react-select, mock data, UX aligned with existing theme
 import { useState, useMemo } from "react";
 import Select from "react-select";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
@@ -6,7 +5,7 @@ import Card from "../../components/Card/Card";
 import { Link } from "react-router-dom";
 import { selectThemeColors } from "../../data/utils";
 
-/* ================== CONSTANTS & MOCK ================== */
+/* ================== CONSTANTS ================== */
 const yaTidakOptions = [
   { value: "Ya", label: "Ya" },
   { value: "Tidak", label: "Tidak" },
@@ -34,6 +33,18 @@ const sdmList = [
   "Kesmas",
 ];
 
+const skemaRelokasiOptions = [
+  { value: "dalam_kab", label: "Dalam 1 Kab/Kota yang sama" },
+  { value: "antar_kab", label: "Antar Kab/Kota (1 Provinsi)" },
+  { value: "antar_prov", label: "Antar Provinsi" },
+];
+
+const alasanRelokasiOptions = [
+  { value: "sdm", label: "Tidak dapat memenuhi SDMK" },
+  { value: "sarpras", label: "Sarana prasarana tidak siap" },
+  { value: "alkes", label: "Alat kesehatan tersedia (relokasi)" },
+];
+
 const dbData = {
   provinsi: "Jawa Barat",
   kabKota: "Sukabumi",
@@ -43,12 +54,10 @@ const dbData = {
   jumlah: 1,
   sdmWajib: ["Dokter", "Perawat"],
 };
-
 const kabKotaOptions = [
   { value: "Bandung", label: "Kota Bandung" },
   { value: "Bogor", label: "Kab. Bogor" },
 ];
-
 const puskesmasOptions = [
   { value: "PKM A", label: "Puskesmas A" },
   { value: "PKM B", label: "Puskesmas B" },
@@ -57,14 +66,27 @@ const puskesmasOptions = [
 /* ================== COMPONENT ================== */
 export default function EditKonfirmasi() {
   const [sdmChecked, setSdmChecked] = useState([]);
+  const [sdmNama, setSdmNama] = useState({});
   const [upayaSDM, setUpayaSDM] = useState(null);
   const [strategi, setStrategi] = useState([]);
   const [sarpras, setSarpras] = useState(null);
   const [alkes, setAlkes] = useState(null);
 
+  const [skemaRelokasi, setSkemaRelokasi] = useState(null);
+  const [alasanRelokasi, setAlasanRelokasi] = useState([]);
+  const [alamatRelokasi, setAlamatRelokasi] = useState("");
+  const [cpRelokasi, setCpRelokasi] = useState("");
+  const [cpDinkes, setCpDinkes] = useState("");
   const [kabRelokasi, setKabRelokasi] = useState(null);
   const [pusRelokasi, setPusRelokasi] = useState(null);
 
+  const [picNama, setPicNama] = useState("");
+  const [picHp, setPicHp] = useState("");
+  const [picDinkes, setPicDinkes] = useState("");
+  const [statusVerifikasi, setStatusVerifikasi] = useState(null);
+  const [fileSurat, setFileSurat] = useState(null);
+
+  /* ================== COMPUTED ================== */
   const kesiapanSDM = useMemo(() => {
     return dbData.sdmWajib.every((x) => sdmChecked.includes(x))
       ? "Ya"
@@ -72,79 +94,90 @@ export default function EditKonfirmasi() {
   }, [sdmChecked]);
 
   const relokasi = useMemo(() => {
-    if (kesiapanSDM === "Tidak") return "Ya";
+    if (kesiapanSDM === "Tidak" && upayaSDM?.value === "Tidak") return "Ya";
     if (sarpras?.value === "Tidak") return "Ya";
     if (alkes?.value === "Ya") return "Ya";
     return "Tidak";
-  }, [kesiapanSDM, sarpras, alkes]);
+  }, [kesiapanSDM, upayaSDM, sarpras, alkes]);
 
-  const [picNama, setPicNama] = useState("");
-  const [picHp, setPicHp] = useState("");
+  useMemo(() => {
+    const alasan = [];
+    if (kesiapanSDM === "Tidak" && upayaSDM?.value === "Tidak")
+      alasan.push(alasanRelokasiOptions[0]);
+    if (sarpras?.value === "Tidak") alasan.push(alasanRelokasiOptions[1]);
+    if (alkes?.value === "Ya") alasan.push(alasanRelokasiOptions[2]);
+    setAlasanRelokasi(alasan);
+  }, [kesiapanSDM, upayaSDM, sarpras, alkes]);
 
+  /* ================== UI ================== */
   return (
     <div>
       <Breadcrumb title="Konfirmasi Ulang Alkes" pageName="Konfirmasi Alkes" />
       <Card>
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="card-header flex justify-between">
-            {/* <h1 className="mb-5 mt-1 font-medium font-antic text-xl lg:text-[28px] tracking-tight text-left text-bodydark1">
-                    Edit Usulan Alkes
-                  </h1> */}
-            <div className="ml-auto">
-              <Link
-                to="/konfirmasi-alkes"
-                className="flex items-center px-4 py-2 bg-primary text-white rounded-md font-semibold"
-              >
-                Back
-              </Link>
-            </div>
+          <div className="flex justify-end mb-4">
+            <Link
+              to="/konfirmasi-alkes"
+              className="px-4 py-2 bg-primary text-white rounded-md font-semibold"
+            >
+              Back
+            </Link>
           </div>
-          {/* READ ONLY */}
+
+          {/* IDENTITAS */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-white p-4 rounded-md">
             <ReadOnly label="Provinsi" value={dbData.provinsi} />
             <ReadOnly label="Kab/Kota" value={dbData.kabKota} />
             <ReadOnly label="Kode Puskesmas" value={dbData.kode} />
-            <ReadOnly label="Puskesmas" value={dbData.puskesmas} />
+            <ReadOnly label="Nama Puskesmas" value={dbData.puskesmas} />
             <ReadOnly label="Nama Alkes" value={dbData.alat} />
             <ReadOnly label="Jumlah" value={dbData.jumlah} />
           </div>
 
+          {/* SDM WAJIB */}
+          <section className="mt-6 bg-white p-4 rounded-md">
+            <h2 className="font-semibold mb-2">SDM Wajib per Alat</h2>
+            <ul className="list-disc ml-5 text-sm text-gray-700">
+              {dbData.sdmWajib.map((s) => (
+                <li key={s}>{s}</li>
+              ))}
+            </ul>
+          </section>
+
+          {/* SDM DIMILIKI */}
           <section className="mt-8">
-            <h2 className="font-semibold mb-3 text-[#1f2937]">
-              SDM Dimiliki Puskesmas
-            </h2>
+            <h2 className="font-semibold mb-3">SDM Dimiliki Puskesmas</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {sdmList.map((s) => {
                 const isChecked = sdmChecked.includes(s);
                 return (
                   <div
                     key={s}
-                    className={`border rounded-md p-3 space-y-2 ${
-                      isChecked
-                        ? "border-primary bg-primary/5"
-                        : "border-[#cacaca]"
+                    className={`border rounded-md p-3 border-[#cacaca] ${
+                      isChecked ? "border-primary bg-primary/5" : ""
                     }`}
                   >
-                    <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 font-medium">
+                    <label className="flex items-center gap-2 text-sm font-medium">
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() =>
-                          setSdmChecked((prev) =>
-                            prev.includes(s)
-                              ? prev.filter((x) => x !== s)
-                              : [...prev, s]
+                          setSdmChecked((p) =>
+                            p.includes(s) ? p.filter((x) => x !== s) : [...p, s]
                           )
                         }
                       />
                       {s}
                     </label>
-
                     {isChecked && (
                       <input
                         type="text"
-                        placeholder={`Nama ${s} (opsional)`}
-                        className="w-full border rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-primary"
+                        className="mt-2 w-full border rounded-md px-2 py-1 text-sm"
+                        placeholder={`Nama ${s}`}
+                        value={sdmNama[s] || ""}
+                        onChange={(e) =>
+                          setSdmNama({ ...sdmNama, [s]: e.target.value })
+                        }
                       />
                     )}
                   </div>
@@ -153,8 +186,7 @@ export default function EditKonfirmasi() {
             </div>
           </section>
 
-          {/* KESIAPAN SDM */}
-          <div className="mt-6">
+          <div className="mt-4">
             <ReadOnly label="Kesiapan SDMK" value={kesiapanSDM} />
           </div>
 
@@ -181,7 +213,7 @@ export default function EditKonfirmasi() {
             </section>
           )}
 
-          {/* SARPRAS & ALKES */}
+          {/* SARPRAS */}
           <section className="mt-6 grid grid-cols-2 gap-4">
             <FormSelect
               label="Kesiapan Sarpras"
@@ -191,7 +223,7 @@ export default function EditKonfirmasi() {
               options={yaTidakOptions}
             />
             <FormSelect
-              label="Alat Kesehatan Berfungsi"
+              label="Alkes Berfungsi"
               placeholder="Apakah alat berfungsi dengan baik?"
               value={alkes}
               onChange={setAlkes}
@@ -204,51 +236,103 @@ export default function EditKonfirmasi() {
             <ReadOnly label="Relokasi" value={relokasi} />
 
             {relokasi === "Ya" && (
-              <div className="grid grid-cols-2 gap-4 mt-4">
+              <>
                 <FormSelect
-                  label="Kab/Kota Tujuan Relokasi"
-                  placeholder="Pilih kabupaten / kota tujuan"
-                  value={kabRelokasi}
-                  onChange={setKabRelokasi}
-                  options={kabKotaOptions}
+                  label="Skema Relokasi"
+                  placeholder="Pilih Skema Relokasi"
+                  value={skemaRelokasi}
+                  onChange={setSkemaRelokasi}
+                  options={skemaRelokasiOptions}
                 />
                 <FormSelect
-                  label="Puskesmas Tujuan Relokasi"
-                  placeholder="Pilih puskesmas penerima relokasi"
-                  value={pusRelokasi}
-                  onChange={setPusRelokasi}
-                  options={puskesmasOptions}
+                  label="Alasan Relokasi"
+                  placeholder="Pilih Alasan Relokasi"
+                  isMulti
+                  value={alasanRelokasi}
+                  onChange={setAlasanRelokasi}
+                  options={alasanRelokasiOptions}
                 />
-              </div>
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  {" "}
+                  <FormSelect
+                    label="Kab/Kota Tujuan Relokasi"
+                    placeholder="Pilih kabupaten / kota tujuan"
+                    value={kabRelokasi}
+                    onChange={setKabRelokasi}
+                    options={kabKotaOptions}
+                  />{" "}
+                  <FormSelect
+                    label="Puskesmas Tujuan Relokasi"
+                    placeholder="Pilih puskesmas penerima relokasi"
+                    value={pusRelokasi}
+                    onChange={setPusRelokasi}
+                    options={puskesmasOptions}
+                  />{" "}
+                </div>
+
+                <FormInput
+                  label="Alamat Puskesmas Relokasi"
+                  value={alamatRelokasi}
+                  onChange={(e) => setAlamatRelokasi(e.target.value)}
+                />
+                <FormInput
+                  label="Contact Person Puskesmas Relokasi"
+                  value={cpRelokasi}
+                  placeholder="Contoh: 081234567890"
+                  onChange={(e) => setCpRelokasi(e.target.value)}
+                />
+                <FormInput
+                  label="Contact Person Dinkes Penerima"
+                  placeholder="Contoh: 081234567890"
+                  value={cpDinkes}
+                  onChange={(e) => setCpDinkes(e.target.value)}
+                />
+              </>
             )}
           </section>
 
-          {/* PIC PUSKESMAS */}
-          <section className="mt-8 bg-white p-4 rounded-md">
-            <h2 className="font-semibold mb-4 text-[#1f2937]">
-              PIC Puskesmas (Petugas ASPAK)
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormInput
-                label="Nama PIC Puskesmas"
-                placeholder="Contoh: Dr. Ahmad Fauzi"
-                value={picNama}
-                onChange={(e) => setPicNama(e.target.value)}
-              />
-
-              <FormInput
-                label="No. HP PIC Puskesmas"
-                placeholder="Contoh: 081234567890"
-                value={picHp}
-                onChange={(e) => setPicHp(e.target.value)}
-                type="tel"
-                helper="Gunakan nomor aktif WhatsApp"
-              />
-            </div>
+          {/* PIC */}
+          <section className="mt-8 grid grid-cols-2 gap-4">
+            <FormInput
+              label="Nama PIC Puskesmas"
+              placeholder="Contoh: Dr. Ahmad Fauzi"
+              value={picNama}
+              onChange={(e) => setPicNama(e.target.value)}
+            />
+            <FormInput
+              label="No HP PIC Puskesmas"
+              value={picHp}
+              placeholder="Contoh: 081234567890"
+              onChange={(e) => setPicHp(e.target.value)}
+            />
+            <FormInput
+              label="PIC Dinkes Kab/Kota"
+              placeholder="Contoh: Dr. Ahmad Fauzi"
+              value={picDinkes}
+              onChange={(e) => setPicDinkes(e.target.value)}
+            />
+            <FormSelect
+              label="Status Verifikasi"
+              value={statusVerifikasi}
+              onChange={setStatusVerifikasi}
+              options={[
+                { value: "OK", label: "OK" },
+                { value: "Perlu Revisi", label: "Perlu Revisi" },
+              ]}
+            />
           </section>
 
-          {/* FOOTER */}
+          {/* <section className="mt-6">
+            <label className="text-xs font-semibold block mb-1">
+              Upload Surat Balasan (PDF)
+            </label>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) => setFileSurat(e.target.files[0])}
+            />
+          </section> */}
+
           <div className="flex justify-end mt-8">
             <button className="bg-primary text-white px-6 py-2 rounded-md font-semibold">
               Simpan
@@ -260,24 +344,29 @@ export default function EditKonfirmasi() {
   );
 }
 
-/* ================== UI HELPERS ================== */
+/* ================== HELPERS ================== */
 function ReadOnly({ label, value }) {
   return (
     <div>
-      <label className="text-xs text-[#3f4750] font-semibold">{label}</label>
+      {" "}
+      <label className="text-xs text-[#3f4750] font-semibold">
+        {label}
+      </label>{" "}
       <div className="mt-1 border rounded-md px-3 py-2 bg-white text-sm text-[#3f4750] border-[#cacaca]">
-        {value}
-      </div>
+        {" "}
+        {value}{" "}
+      </div>{" "}
     </div>
   );
 }
-
 function FormSelect({ label, placeholder, isMulti, ...props }) {
   return (
     <div>
+      {" "}
       <label className="text-xs text-[#272b2f] font-semibold mb-1 block">
-        {label}
-      </label>
+        {" "}
+        {label}{" "}
+      </label>{" "}
       <Select
         className="text-sm"
         theme={selectThemeColors}
@@ -287,27 +376,24 @@ function FormSelect({ label, placeholder, isMulti, ...props }) {
         }
         isMulti={isMulti}
         {...props}
-      />
+      />{" "}
     </div>
   );
 }
-
 function FormInput({ label, helper, type = "text", ...props }) {
   return (
     <div>
+      {" "}
       <label className="text-xs text-[#272b2f] font-semibold mb-1 block">
-        {label}
-      </label>
-
+        {" "}
+        {label}{" "}
+      </label>{" "}
       <input
         type={type}
-        className="w-full border border-[#cacaca] rounded-md px-3 py-2 text-sm text-gray-800 
-                   focus:outline-none focus:ring-1 focus:ring-primary 
-                   focus:border-primary"
+        className="w-full border border-[#cacaca] rounded-md px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
         {...props}
-      />
-
-      {helper && <p className="text-xs text-[#728294] mt-1">{helper}</p>}
+      />{" "}
+      {helper && <p className="text-xs text-[#728294] mt-1">{helper}</p>}{" "}
     </div>
   );
 }

@@ -752,25 +752,19 @@ const KonfirmasiKabupaten = () => {
 
       {
         name: <div className="text-wrap px-1">Dokumen Konfirmasi</div>,
-        cell: (row) => (
+        cell: () => (
           <div className="flex items-center justify-center">
-            {!row?.tgl_upload || !row?.file_upload ? (
-              <div className="text-amber-500 font-medium text-xs italic">
-                Upload Proposal Dahulu
-              </div>
-            ) : (
-              <a
-                href="https://docs.google.com/document/d/1mtfLgWaJ018jbxUD2ox_0axIFQMg9jTM/edit"
-                title="Download Dokumen Konfirmasi"
-                className="text-white bg-cyan-600 hover:bg-cyan-700 py-1 px-3 rounded-md font-medium text-xs"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Download
-                <br />
-                Dokumen
-              </a>
-            )}
+            <a
+              href="https://docs.google.com/document/d/1mtfLgWaJ018jbxUD2ox_0axIFQMg9jTM/edit"
+              title="Download Dokumen Konfirmasi"
+              className="text-white bg-cyan-600 hover:bg-cyan-700 py-1 px-3 rounded-md font-medium text-xs"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Download
+              <br />
+              Dokumen
+            </a>
           </div>
         ),
         ignoreRowClick: true,
@@ -788,11 +782,7 @@ const KonfirmasiKabupaten = () => {
             user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
           return (
             <div className="flex flex-col items-center space-y-1">
-              {!row?.tgl_upload || !row?.file_upload ? (
-                <div className="text-amber-500 font-medium text-xs italic">
-                  Upload Proposal Dahulu
-                </div>
-              ) : !row?.tgl_verifikasi || !row?.file_verifikasi ? (
+              {!row?.tgl_verifikasi || !row?.file_verifikasi ? (
                 <button
                   title="Upload Dokumen"
                   className="text-white py-1 px-2 bg-primary rounded-md text-xs"
@@ -872,14 +862,14 @@ const KonfirmasiKabupaten = () => {
               title="Lihat"
               className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
               onClick={() => {
-                navigate(`/konfirmasi-alkes`, {
+                navigate(`/konfirmasi-alkes/kabupaten/${row.id}`, {
                   replace: true,
                 });
               }}
             >
               <Link
                 className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
-                to={`/konfirmasi-alkes`}
+                to={`/konfirmasi-alkes/kabupaten/${row.id}`}
               >
                 Detail
               </Link>
