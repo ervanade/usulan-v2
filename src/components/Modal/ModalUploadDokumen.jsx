@@ -64,6 +64,8 @@ const ModalUploadDokumen = ({
         formDataToSend.append("file_chp", formData.fileDokumen);
       } else if (uploadType == "baverif") {
         formDataToSend.append("file_verifikasi", formData.fileDokumen);
+      } else if (uploadType == "konfirmasi") {
+        formDataToSend.append("doc_konfirmasi", formData.fileDokumen);
       } else {
         formDataToSend.append("file_upload", formData.fileDokumen);
       }
@@ -170,6 +172,13 @@ const ModalUploadDokumen = ({
       setModalTitle(`Upload BA Verifikasi ${jsonData?.kabupaten}`);
       setUploadApiUrl(
         `${import.meta.env.VITE_APP_API_URL}/api/usulan/uploadverif/${
+          formData.id_dokumen
+        }`
+      );
+    } else if (uploadType === "konfirmasi") {
+      setModalTitle(`Upload Dokumen Konfirmasi ${jsonData?.kabupaten}`);
+      setUploadApiUrl(
+        `${import.meta.env.VITE_APP_API_URL}/api/konfirmasiheader/${
           formData.id_dokumen
         }`
       );

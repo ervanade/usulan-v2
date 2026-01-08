@@ -102,7 +102,7 @@ const KonfirmasiKabupaten = () => {
     try {
       const response = await axios({
         method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/usulan`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/konfirmasiheader`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -336,8 +336,10 @@ const KonfirmasiKabupaten = () => {
         (item?.nama_dokumen &&
           item.nama_dokumen.toLowerCase().includes(value)) ||
         (item?.nomor_bast && item.nomor_bast.toLowerCase().includes(value)) ||
-        (item?.provinsi && item.provinsi.toLowerCase().includes(value)) ||
-        (item?.kabupaten && item.kabupaten.toLowerCase().includes(value)) ||
+        (item?.nama_provinsi &&
+          item.nama_provinsi.toLowerCase().includes(value)) ||
+        (item?.nama_kabupaten &&
+          item.nama_kabupaten.toLowerCase().includes(value)) ||
         (item?.tanggal_bast &&
           item.tanggal_bast.toLowerCase().includes(value)) ||
         (item?.tahun_lokus && item.tahun_lokus.toLowerCase().includes(value)) ||
@@ -355,7 +357,7 @@ const KonfirmasiKabupaten = () => {
     try {
       const response = await axios({
         method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/usulan/filter`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/konfirmasiheader/filter`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -631,7 +633,7 @@ const KonfirmasiKabupaten = () => {
         method: "get",
         url: `${
           import.meta.env.VITE_APP_API_URL
-        }/api/usulan/${encodeURIComponent(id)}`,
+        }/api/konfirmasiheader/${encodeURIComponent(id)}`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -651,6 +653,7 @@ const KonfirmasiKabupaten = () => {
         file_chr: data.file_chr || null,
         file_chp: data.file_chp || null,
         file_verifikasi: data.file_verifikasi || null,
+        file_konfirmasi: data.doc_konfirmasi || null,
       };
 
       if (type === "chr") {
@@ -662,6 +665,9 @@ const KonfirmasiKabupaten = () => {
       } else if (type === "baverif") {
         fileUrl = dataJson?.file_verifikasi;
         fileNamePrefix = "Dokumen BA Verifikasi";
+      } else if (type === "konfirmasi") {
+        fileUrl = dataJson?.file_konfirmasi;
+        fileNamePrefix = "Dokumen Konfirmasi";
       } else {
         fileUrl = dataJson?.file_upload;
       }
@@ -739,13 +745,17 @@ const KonfirmasiKabupaten = () => {
         name: <div className="text-wrap">Provinsi</div>,
         selector: (row) => row.provinsi,
         sortable: true,
-        cell: (row) => <div className="text-wrap py-2">{row.provinsi}</div>,
+        cell: (row) => (
+          <div className="text-wrap py-2">{row.nama_provinsi}</div>
+        ),
         width: "120px",
       },
       {
         name: <div className="text-wrap">Kab / Kota</div>,
-        selector: (row) => row.kabupaten,
-        cell: (row) => <div className="text-wrap py-2">{row.kabupaten}</div>,
+        selector: (row) => row.id_kabupaten,
+        cell: (row) => (
+          <div className="text-wrap py-2">{row.nama_kabupaten}</div>
+        ),
         minWidth: "120px",
         sortable: true,
       },
@@ -779,10 +789,10 @@ const KonfirmasiKabupaten = () => {
         sortable: true,
         cell: (row) => {
           const isAllowed =
-            user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
+            user?.role == "1" || allowedKabupaten.includes(row.id_kabupaten);
           return (
             <div className="flex flex-col items-center space-y-1">
-              {!row?.tgl_verifikasi || !row?.file_verifikasi ? (
+              {!row?.doc_konfirmasi ? (
                 <button
                   title="Upload Dokumen"
                   className="text-white py-1 px-2 bg-primary rounded-md text-xs"
@@ -792,9 +802,9 @@ const KonfirmasiKabupaten = () => {
                     handleModalDokumen(
                       e,
                       row.id,
-                      `Dokumen BA Verif ${row.kabupaten}`,
-                      row.kabupaten,
-                      "baverif"
+                      `Dokumen Konfirmasi ${row.nama_kabupaten}`,
+                      row.nama_kabupaten,
+                      "konfirmasi"
                     )
                   }
                 >
@@ -805,16 +815,16 @@ const KonfirmasiKabupaten = () => {
               ) : (
                 <div className="flex space-x-1">
                   <button
-                    title="Upload BA Verif Baru"
+                    title="Upload Konfirmasi Baru"
                     className="text-white py-1 px-2 bg-cyan-600 hover:bg-cyan-700 rounded-md text-xs"
                     style={{ display: isAllowed ? "block" : "none" }}
                     onClick={(e) =>
                       handleModalDokumen(
                         e,
                         row.id,
-                        `Dokumen BA Verif ${row.kabupaten}`,
-                        row.kabupaten,
-                        "baverif"
+                        `Dokumen Konfirmasi ${row.nama_kabupaten}`,
+                        row.nama_kabupaten,
+                        "konfirmasi"
                       )
                     }
                   >
@@ -822,22 +832,20 @@ const KonfirmasiKabupaten = () => {
                     Dokumen
                   </button>
                   <button
-                    title="Buka BA Verif"
+                    title="Buka Dokumen Konfirmasi"
                     className="text-white bg-green-600 hover:bg-green-700 py-1 px-2 rounded-md font-medium text-xs"
-                    onClick={() => handleBukaUpload(row.id, "baverif")}
+                    onClick={() => handleBukaUpload(row.id, "konfirmasi")}
                   >
                     Buka
                   </button>
                 </div>
               )}
-              {row?.tgl_verifikasi && row?.file_verifikasi && (
+              {row?.doc_konfirmasi && (
                 <div className="text-green-500 text-xs">Sudah Upload</div>
               )}
-              {(!row?.tgl_verifikasi || !row?.file_verifikasi) &&
-                row?.tgl_upload &&
-                row?.file_upload && (
-                  <div className="text-red-500 text-xs">Belum Upload</div>
-                )}
+              {!row?.doc_konfirmasi && (
+                <div className="text-red-500 text-xs">Belum Upload</div>
+              )}
             </div>
           );
         },
@@ -862,14 +870,21 @@ const KonfirmasiKabupaten = () => {
               title="Lihat"
               className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
               onClick={() => {
-                navigate(`/konfirmasi-alkes/kabupaten/${row.id}`, {
-                  replace: true,
-                });
+                navigate(
+                  `/konfirmasi-alkes/kabupaten/${encodeURIComponent(
+                    encryptId(row.id_kabupaten)
+                  )}`,
+                  {
+                    replace: true,
+                  }
+                );
               }}
             >
               <Link
                 className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
-                to={`/konfirmasi-alkes/kabupaten/${row.id}`}
+                to={`/konfirmasi-alkes/kabupaten/${encodeURIComponent(
+                  encryptId(row.id_kabupaten)
+                )}`}
               >
                 Detail
               </Link>
@@ -976,7 +991,7 @@ const KonfirmasiKabupaten = () => {
                 isDisabled={user.role == "3" || user.role == "5"}
               />
             </div>
-            <div>
+            {/* <div>
               <label
                 className="block text-[#728294] text-base font-normal mb-2"
                 htmlFor="kota"
@@ -1003,7 +1018,7 @@ const KonfirmasiKabupaten = () => {
                     : "Pilih Provinsi Dahulu"
                 }
               />
-            </div>
+            </div> */}
             {/* {user?.role == "1" && (
               <div>
                 <label
@@ -1108,7 +1123,7 @@ const KonfirmasiKabupaten = () => {
               <BiExport />
               <span className="hidden sm:block">Export</span>
             </button>
-            {user.role == "1" ? (
+            {/* {user.role == "1" ? (
               <button
                 title="Tambah Data Dokumen"
                 className="flex font-semibold items-center gap-2 cursor-pointer text-base text-white  bg-primary rounded-md tracking-tight"
@@ -1125,7 +1140,7 @@ const KonfirmasiKabupaten = () => {
               </button>
             ) : (
               ""
-            )}
+            )} */}
           </div>
         </div>
         <div className="overflow-x-auto">

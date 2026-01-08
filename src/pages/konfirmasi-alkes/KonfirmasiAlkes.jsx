@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.jsx";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
-import { encryptId, selectThemeColors } from "../../data/utils";
+import { decryptId, encryptId, selectThemeColors } from "../../data/utils";
 import {
   FaCheck,
   FaEdit,
@@ -12,7 +12,7 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import { BiExport, BiSolidFileExport } from "react-icons/bi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
@@ -20,6 +20,7 @@ import Swal from "sweetalert2";
 
 const KonfirmasiAlkes = () => {
   const user = useSelector((a) => a.auth.user);
+  const { id } = useParams();
   const [search, setSearch] = useState(""); // Initialize search state with an empty string
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -45,7 +46,7 @@ const KonfirmasiAlkes = () => {
 
     const filtered = data.filter((item) => {
       return (
-        (item?.nomor_bast && item.nomor_bast.toLowerCase().includes(value)) ||
+        (item?.nama_barang && item.nama_barang.toLowerCase().includes(value)) ||
         (item?.provinsi && item.provinsi.toLowerCase().includes(value)) ||
         (item?.kabupaten && item.kabupaten.toLowerCase().includes(value)) ||
         (item?.kecamatan && item.kecamatan.toLowerCase().includes(value)) ||
@@ -244,11 +245,14 @@ const KonfirmasiAlkes = () => {
     setError(false);
     try {
       const response = await axios({
-        method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/puskesmas`,
+        method: "post",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/konfirmasidetail/filter`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
+        },
+        data: {
+          id_kabupaten: decryptId(id).toString() || "",
         },
       });
 
@@ -269,15 +273,14 @@ const KonfirmasiAlkes = () => {
     try {
       const response = await axios({
         method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/puskesmas/filter`,
+        url: `${import.meta.env.VITE_APP_API_URL}/api/konfirmasidetail/filter`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
         },
         data: {
-          id_provinsi: selectedProvinsi?.value.toString() || "",
-          id_kabupaten: selectedKota?.value.toString() || "",
-          id_kecamatan: selectedKecamatan?.value.toString() || "",
+          id_kabupaten: decryptId(id).toString() || "",
+          id_alkes: selectedBarang?.value.toString() || "",
         },
       });
 
@@ -291,26 +294,9 @@ const KonfirmasiAlkes = () => {
     }
   };
 
-  const fetchDokumen = async () => {
-    try {
-      const response = await axios({
-        method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/getdokumen/0`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      setDataDokumen(...response.data.data);
-    } catch (error) {
-      setError(true);
-      setDataDokumen([]);
-    }
-  };
-
   useEffect(() => {
     fetchDistribusiData();
-    fetchProvinsi();
+    fetchKecamatan(decryptId(id).toString());
     fetchBarang();
   }, []);
 
@@ -393,22 +379,15 @@ const KonfirmasiAlkes = () => {
       },
       {
         name: <div className="text-wrap">Nama Alkes</div>,
-        selector: (row) => row.nama_puskesmas,
-        cell: (row) => <div className="text-wrap py-2">{"Spirometer"}</div>,
+        selector: (row) => row.nama_barang,
+        cell: (row) => <div className="text-wrap py-2">{row.nama_barang}</div>,
         minWidth: "110px",
-        sortable: true,
-      },
-      {
-        name: <div className="text-wrap">Kecamatan</div>,
-        selector: (row) => row.kecamatan,
-        cell: (row) => <div className="text-wrap py-2">{row.kecamatan}</div>,
-        width: "120px",
         sortable: true,
       },
       {
         name: <div className="text-wrap">Kab / Kota</div>,
         selector: (row) => row.kabupaten,
-        cell: (row) => <div className="text-wrap py-2">{row.kabupaten}</div>,
+        cell: (row) => <div className="text-wrap py-2">{row.kab_kota}</div>,
         width: "150px",
         sortable: true,
       },
@@ -420,25 +399,6 @@ const KonfirmasiAlkes = () => {
         width: "150px",
         omit: user.role == "3",
       },
-
-      // {
-      //   name: <div className="text-wrap">Jumlah Dikirim</div>,
-      //   selector: (row) => Number(row.jumlah_barang_dikirim) || 0,
-      //   cell: (row) => (
-      //     <div className="text-wrap py-2">{row.jumlah_barang_dikirim}</div>
-      //   ),
-      //   sortable: true,
-      //   width: "100px",
-      // },
-      // {
-      //   name: <div className="text-wrap">Jumlah Diterima</div>,
-      //   selector: (row) => Number(row.jumlah_barang_diterima) || 0,
-      //   cell: (row) => (
-      //     <div className="text-wrap py-2">{row.jumlah_barang_diterima}</div>
-      //   ),
-      //   sortable: true,
-      //   width: "100px",
-      // },
       {
         name: "Aksi",
         id: "Aksi",
@@ -544,8 +504,8 @@ const KonfirmasiAlkes = () => {
     <div>
       <Breadcrumb pageName="Usulan Alkes" />
       <div className="flex flex-col items-center justify-center w-full tracking-tight mb-6">
-        <h1 className="font-medium mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
-          KONFIRMASI ULANG ALKES KAB. ...
+        <h1 className="font-medium mb-3 text-xl lg:text-[28px] uppercase tracking-tight text-center text-bodydark1">
+          KONFIRMASI ULANG ALKES {data[0]?.kab_kota}
           {/* SELAMAT DATANG{" "}
           {user.role == "1"
             ? "ADMIN PUSAT"
@@ -557,7 +517,7 @@ const KonfirmasiAlkes = () => {
         </h1>
         <div className="flex items-center lg:items-end mt-3 gap-3 flex-col lg:flex-row">
           <div className="flex items-center gap-3 flex-col sm:flex-row">
-            <div className="text-base">
+            {/* <div className="text-base">
               <label
                 className="block text-[#728294] text-base font-normal mb-2"
                 htmlFor="email"
@@ -609,7 +569,7 @@ const KonfirmasiAlkes = () => {
                     : "Pilih Provinsi Dahulu"
                 }
               />
-            </div>
+            </div> */}
             <div>
               <label
                 className="block text-[#728294] text-base font-normal mb-2"
@@ -630,10 +590,7 @@ const KonfirmasiAlkes = () => {
                     primary: "grey",
                   },
                 })}
-                isDisabled={!selectedKota}
-                placeholder={
-                  selectedKota ? "Pilih Kecamatan" : "Pilih Kab / Kota Dahulu"
-                }
+                placeholder={"Pilih Kecamatan"}
               />
             </div>
             <div>
@@ -718,7 +675,7 @@ const KonfirmasiAlkes = () => {
               <BiExport />
               <span className="hidden sm:block">Export</span>
             </button>
-            {user.role == "1" ? (
+            {/* {user.role == "1" ? (
               <button
                 title="Tambah Usulan Alkes"
                 className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white  bg-primary rounded-md tracking-tight"
@@ -733,7 +690,7 @@ const KonfirmasiAlkes = () => {
               </button>
             ) : (
               ""
-            )}
+            )} */}
             {/* {user.role == "3" && dataDokumen.length > 0 ? (
               <button
                 title="Tandatangani Dokumen BMN"
