@@ -1,9 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Select from "react-select";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import Card from "../../components/Card/Card";
-import { Link } from "react-router-dom";
-import { selectThemeColors } from "../../data/utils";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { decryptId, selectThemeColors } from "../../data/utils";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { CgSpinner } from "react-icons/cg";
 
 /* ================== CONSTANTS ================== */
 const yaTidakOptions = [
@@ -65,6 +68,21 @@ const puskesmasOptions = [
 
 /* ================== COMPONENT ================== */
 export default function EditKonfirmasi() {
+  const user = useSelector((a) => a.auth.user);
+  const { id } = useParams();
+  const [formData, setFormData] = useState({
+    provinsi: "Jawa Barat",
+    kabKota: "Sukabumi",
+    puskesmas: "PALABUHANRATU",
+    kode: "32020200019",
+    alat: "Spirometer",
+    jumlah: 1,
+    kriteria_alkes: ["Dokter", "Perawat"],
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [getLoading, setGetLoading] = useState(false);
+  const navigate = useNavigate();
   const [sdmChecked, setSdmChecked] = useState([]);
   const [sdmNama, setSdmNama] = useState({});
   const [upayaSDM, setUpayaSDM] = useState(null);
@@ -85,6 +103,60 @@ export default function EditKonfirmasi() {
   const [picDinkes, setPicDinkes] = useState("");
   const [statusVerifikasi, setStatusVerifikasi] = useState(null);
   const [fileSurat, setFileSurat] = useState(null);
+
+  const fetchKonfirmasiData = useCallback(
+    async (periodeId = null) => {
+      setLoading(true);
+      setGetLoading(true);
+
+      setError(false);
+      const decryptedId = decryptId(id);
+      if (!decryptedId) {
+        // Jika decryptId gagal (mengembalikan null atau nilai falsy lainnya)
+        navigate("/not-found"); // Arahkan ke halaman "not found"
+        return; // Hentikan eksekusi fungsi
+      }
+      let url = `${
+        import.meta.env.VITE_APP_API_URL
+      }/api/konfirmasidetail/${encodeURIComponent(decryptedId)}`;
+      if (periodeId) {
+        url += `/${periodeId}`;
+      }
+      try {
+        const response = await axios({
+          method: "get",
+          url: url,
+
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+        });
+        const data = response.data.data;
+
+        setFormData({
+          provinsi: data?.provinsi || "Jawa Barat",
+          kabKota: data?.kab_kota || "Sukabumi",
+          puskesmas: data?.nama_puskesmas || "PALABUHANRATU",
+          kode: data?.kode_puskesmas || "32020200019",
+          alat: data?.nama_barang || "Spirometer",
+          jumlah: data?.jumlah_barang_unit || 1,
+          kriteria_alkes: data?.jenis_sdmk_per_alat || ["Dokter", "Perawat"],
+        });
+      } catch (error) {
+        setError(true);
+      } finally {
+        setLoading(false);
+        setGetLoading(false);
+      }
+    },
+    [user?.token]
+  );
+
+  useEffect(() => {
+    fetchKonfirmasiData();
+    // fetchProvinsi();
+  }, []);
 
   /* ================== COMPUTED ================== */
   const kesiapanSDM = useMemo(() => {
@@ -110,6 +182,14 @@ export default function EditKonfirmasi() {
   }, [kesiapanSDM, upayaSDM, sarpras, alkes]);
 
   /* ================== UI ================== */
+  if (getLoading) {
+    return (
+      <div className="flex justify-center items-center">
+        <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
+        <span className="ml-2">Loading...</span>
+      </div>
+    );
+  }
   return (
     <div>
       <Breadcrumb title="Konfirmasi Ulang Alkes" pageName="Konfirmasi Alkes" />
@@ -126,12 +206,12 @@ export default function EditKonfirmasi() {
 
           {/* IDENTITAS */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-white p-4 rounded-md">
-            <ReadOnly label="Provinsi" value={dbData.provinsi} />
-            <ReadOnly label="Kab/Kota" value={dbData.kabKota} />
-            <ReadOnly label="Kode Puskesmas" value={dbData.kode} />
-            <ReadOnly label="Nama Puskesmas" value={dbData.puskesmas} />
-            <ReadOnly label="Nama Alkes" value={dbData.alat} />
-            <ReadOnly label="Jumlah" value={dbData.jumlah} />
+            <ReadOnly label="Provinsi" value={formData.provinsi} />
+            <ReadOnly label="Kab/Kota" value={formData.kabKota} />
+            <ReadOnly label="Kode Puskesmas" value={formData.kode} />
+            <ReadOnly label="Nama Puskesmas" value={formData.puskesmas} />
+            <ReadOnly label="Nama Alkes" value={formData.alat} />
+            <ReadOnly label="Jumlah" value={formData.jumlah} />
           </div>
 
           {/* SDM WAJIB */}
