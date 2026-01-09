@@ -83,6 +83,8 @@ export default function EditKonfirmasi() {
   const [error, setError] = useState(false);
   const [getLoading, setGetLoading] = useState(false);
   const navigate = useNavigate();
+  const [sdmWajib, setSdmWajib] = useState([]);
+
   const [sdmChecked, setSdmChecked] = useState([]);
   const [sdmNama, setSdmNama] = useState({});
   const [upayaSDM, setUpayaSDM] = useState(null);
@@ -104,55 +106,90 @@ export default function EditKonfirmasi() {
   const [statusVerifikasi, setStatusVerifikasi] = useState(null);
   const [fileSurat, setFileSurat] = useState(null);
 
-  const fetchKonfirmasiData = useCallback(
-    async (periodeId = null) => {
-      setLoading(true);
-      setGetLoading(true);
-
-      setError(false);
+  const fetchKonfirmasiData = useCallback(async () => {
+    try {
       const decryptedId = decryptId(id);
-      if (!decryptedId) {
-        // Jika decryptId gagal (mengembalikan null atau nilai falsy lainnya)
-        navigate("/not-found"); // Arahkan ke halaman "not found"
-        return; // Hentikan eksekusi fungsi
-      }
-      let url = `${
-        import.meta.env.VITE_APP_API_URL
-      }/api/konfirmasidetail/${encodeURIComponent(decryptedId)}`;
-      if (periodeId) {
-        url += `/${periodeId}`;
-      }
-      try {
-        const response = await axios({
-          method: "get",
-          url: url,
+      if (!decryptedId) return navigate("/not-found");
 
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
-          },
-        });
-        const data = response.data.data;
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_API_URL}/api/konfirmasidetail/${decryptedId}`,
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+        }
+      );
 
-        setFormData({
-          provinsi: data?.provinsi || "Jawa Barat",
-          kabKota: data?.kab_kota || "Sukabumi",
-          puskesmas: data?.nama_puskesmas || "PALABUHANRATU",
-          kode: data?.kode_puskesmas || "32020200019",
-          alat: data?.nama_barang || "Spirometer",
-          jumlah: data?.jumlah_barang_unit || 1,
-          kriteria_alkes: data?.jenis_sdmk_per_alat || ["Dokter", "Perawat"],
-        });
-      } catch (error) {
-        setError(true);
-      } finally {
-        setLoading(false);
-        setGetLoading(false);
-      }
-    },
-    [user?.token]
-  );
+      const d = res.data.data;
 
+      /* ---------- IDENTITAS ---------- */
+      setFormData({
+        provinsi: d.provinsi,
+        kabKota: d.kab_kota,
+        puskesmas: d.nama_puskesmas,
+        kode: d.kode_puskesmas,
+        alat: d.nama_barang,
+        jumlah: d.jumlah_barang_unit,
+      });
+
+      /* ---------- SDM WAJIB PER ALKES ---------- */
+      const wajib = d.alkes.kriteria_alkes.map(
+        (x) => x.kriteria.kriteria
+      );
+      setSdmWajib(wajib);
+
+      /* ---------- SDM DIMILIKI PUSKESMAS ---------- */
+      const pkmSDM = d.puskesmas.kriteria_puskesmas.map(
+        (x) => x.kriteria.kriteria
+      );
+      setSdmChecked(pkmSDM);
+
+      setSdmNama({
+        Dokter: d.sdmk_nama_dokter,
+        "Dokter Gigi": d.sdmk_nama_dokter_gigi,
+        Perawat: d.sdmk_nama_perawat,
+        Bidan: d.sdmk_nama_bidan,
+        ATLM: d.sdmk_nama_atlm,
+      });
+
+      /* ---------- SELECT VALUE ---------- */
+      setSarpras(
+        yaTidakOptions.find((o) => o.value === d.siap_sarana_prasarana)
+      );
+      setAlkes(
+        yaTidakOptions.find((o) => o.value === d.kondisi_alkes_baik)
+      );
+      setUpayaSDM(
+        yaTidakOptions.find((o) => o.value === d.upaya_memenuhi_sdm)
+      );
+
+      setStrategi(
+        d.strategi_pemenuhan_sdm
+          ? d.strategi_pemenuhan_sdm.split(",").map((x) =>
+              strategiOptions.find((o) => o.value === x.trim())
+            )
+          : []
+      );
+
+      setAlasanRelokasi(
+        d.alasan_relokasi
+          ? d.alasan_relokasi.split(",").map((x) =>
+              alasanRelokasiOptions.find((o) => o.value === x.trim())
+            )
+          : []
+      );
+
+      setPicNama(d.pic_puskesmas_nama);
+      setPicHp(d.pic_puskesmas_hp);
+      setPicDinkes(d.pic_dinkes_nama);
+
+      setStatusVerifikasi(
+        d.status_verifikasi
+          ? { value: d.status_verifikasi, label: d.status_verifikasi }
+          : null
+      );
+    } finally {
+      setGetLoading(false);
+    }
+  }, [id, user.token, navigate]);
   useEffect(() => {
     fetchKonfirmasiData();
     // fetchProvinsi();
@@ -218,7 +255,7 @@ export default function EditKonfirmasi() {
           <section className="mt-6 bg-white p-4 rounded-md">
             <h2 className="font-semibold mb-2">SDM Wajib per Alat</h2>
             <ul className="list-disc ml-5 text-sm text-gray-700">
-              {dbData.sdmWajib.map((s) => (
+              {sdmWajib.map((s) => (
                 <li key={s}>{s}</li>
               ))}
             </ul>
