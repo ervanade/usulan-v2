@@ -71,6 +71,8 @@ export default function EditKonfirmasi() {
   const user = useSelector((a) => a.auth.user);
   const { id } = useParams();
   const [formData, setFormData] = useState({
+    id_provinsi: "32",
+    id_kabupaten: "3202",
     provinsi: "Jawa Barat",
     kabKota: "Sukabumi",
     puskesmas: "PALABUHANRATU",
@@ -106,13 +108,169 @@ export default function EditKonfirmasi() {
   const [statusVerifikasi, setStatusVerifikasi] = useState(null);
   const [fileSurat, setFileSurat] = useState(null);
 
+  const [kabOptions, setKabOptions] = useState([]);
+  const [pusOptions, setPusOptions] = useState([]);
+  const [loadingKab, setLoadingKab] = useState(false);
+  const [loadingPus, setLoadingPus] = useState(false);
+
+  const fetchKabupatenByProvinsi = useCallback(
+    async (idProvinsi) => {
+      try {
+        const res = await axios({
+          method: "get",
+          url: `${
+            import.meta.env.VITE_APP_API_URL
+          }/api/getkabupaten/${idProvinsi}`,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+        });
+
+        return res.data.data.map((k) => ({
+          value: k.id,
+          label: k.name,
+        }));
+      } catch (err) {
+        console.error("Gagal fetch kabupaten", err);
+        return [];
+      }
+    },
+    [user?.token]
+  );
+  const fetchAllKabupaten = useCallback(async () => {
+    try {
+      const res = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/kabupaten`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+
+      return res.data.data.map((k) => ({
+        value: k.id,
+        label: k.name,
+      }));
+    } catch (err) {
+      console.error("Gagal fetch semua kabupaten", err);
+      return [];
+    }
+  }, [user?.token]);
+  const fetchPuskesmas = useCallback(
+    async ({ id_provinsi = "", id_kabupaten = "", id_kecamatan = "" }) => {
+      try {
+        const res = await axios({
+          method: "post",
+          url: `${import.meta.env.VITE_APP_API_URL}/api/puskesmas/filter`,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+          data: {
+            id_provinsi: id_provinsi.toString() || "",
+            id_kabupaten: id_kabupaten.toString() || "",
+            id_kecamatan: id_kecamatan?.toString() || "",
+          },
+        });
+
+        return res.data.data.map((p) => ({
+          value: p.id,
+          label: p.nama_puskesmas,
+          alamat: p.alamat,
+        }));
+      } catch (err) {
+        console.error("Gagal fetch puskesmas", err);
+        return [];
+      }
+    },
+    [user?.token]
+  );
+
+  useEffect(() => {
+    if (!skemaRelokasi) return;
+
+    setKabRelokasi(null);
+    setPusRelokasi(null);
+    setKabOptions([]);
+    setPusOptions([]);
+    setAlamatRelokasi("");
+
+    const load = async () => {
+      setLoadingKab(true);
+
+      if (skemaRelokasi.value === "dalam_kab") {
+        const kab = await fetchKabupatenByProvinsi(formData.id_provinsi);
+        const currentKab = kab.find((k) => k.value === formData.id_kabupaten);
+        setKabOptions(kab);
+        setKabRelokasi(currentKab);
+      }
+
+      if (skemaRelokasi.value === "antar_kab") {
+        const kab = await fetchKabupatenByProvinsi(formData.id_provinsi);
+        setKabOptions(kab.filter((k) => k.value !== formData.id_kabupaten));
+      }
+
+      if (skemaRelokasi.value === "antar_prov") {
+        const kab = await fetchAllKabupaten();
+        setKabOptions(kab.filter((k) => k.value !== formData.id_kabupaten));
+      }
+
+      setLoadingKab(false);
+    };
+
+    load();
+  }, [skemaRelokasi]);
+
+  useEffect(() => {
+    if (!kabRelokasi) return;
+
+    let isActive = true; // ⬅️ proteksi
+
+    const loadPuskesmas = async () => {
+      setLoadingPus(true);
+
+      const list = await fetchPuskesmas({
+        id_provinsi: formData.id_provinsi || "",
+        id_kabupaten: kabRelokasi.value || "",
+        id_kecamatan: "",
+      });
+
+      if (isActive) {
+        setPusOptions(list);
+        setLoadingPus(false);
+      }
+    };
+
+    loadPuskesmas();
+
+    return () => {
+      isActive = false; // ⬅️ matikan response lama
+    };
+  }, [kabRelokasi]);
+
+  useEffect(() => {
+    if (pusRelokasi?.alamat) {
+      setAlamatRelokasi(pusRelokasi.alamat);
+    }
+  }, [pusRelokasi]);
+  useEffect(() => {
+    // setiap ganti kabupaten → reset puskesmas
+    setPusRelokasi(null);
+    setPusOptions([]);
+    setAlamatRelokasi("");
+  }, [kabRelokasi]);
+
   const fetchKonfirmasiData = useCallback(async () => {
     try {
       const decryptedId = decryptId(id);
       if (!decryptedId) return navigate("/not-found");
 
       const res = await axios.get(
-        `${import.meta.env.VITE_APP_API_URL}/api/konfirmasidetail/${decryptedId}`,
+        `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/konfirmasidetail/${decryptedId}`,
         {
           headers: { Authorization: `Bearer ${user.token}` },
         }
@@ -122,6 +280,8 @@ export default function EditKonfirmasi() {
 
       /* ---------- IDENTITAS ---------- */
       setFormData({
+        id_provinsi: d.id_provinsi,
+        id_kabupaten: d.id_kabupaten,
         provinsi: d.provinsi,
         kabKota: d.kab_kota,
         puskesmas: d.nama_puskesmas,
@@ -131,9 +291,7 @@ export default function EditKonfirmasi() {
       });
 
       /* ---------- SDM WAJIB PER ALKES ---------- */
-      const wajib = d.alkes.kriteria_alkes.map(
-        (x) => x.kriteria.kriteria
-      );
+      const wajib = d.alkes.kriteria_alkes.map((x) => x.kriteria.kriteria);
       setSdmWajib(wajib);
 
       /* ---------- SDM DIMILIKI PUSKESMAS ---------- */
@@ -154,26 +312,24 @@ export default function EditKonfirmasi() {
       setSarpras(
         yaTidakOptions.find((o) => o.value === d.siap_sarana_prasarana)
       );
-      setAlkes(
-        yaTidakOptions.find((o) => o.value === d.kondisi_alkes_baik)
-      );
-      setUpayaSDM(
-        yaTidakOptions.find((o) => o.value === d.upaya_memenuhi_sdm)
-      );
+      setAlkes(yaTidakOptions.find((o) => o.value === d.kondisi_alkes_baik));
+      setUpayaSDM(yaTidakOptions.find((o) => o.value === d.upaya_memenuhi_sdm));
 
       setStrategi(
         d.strategi_pemenuhan_sdm
-          ? d.strategi_pemenuhan_sdm.split(",").map((x) =>
-              strategiOptions.find((o) => o.value === x.trim())
-            )
+          ? d.strategi_pemenuhan_sdm
+              .split(",")
+              .map((x) => strategiOptions.find((o) => o.value === x.trim()))
           : []
       );
 
       setAlasanRelokasi(
         d.alasan_relokasi
-          ? d.alasan_relokasi.split(",").map((x) =>
-              alasanRelokasiOptions.find((o) => o.value === x.trim())
-            )
+          ? d.alasan_relokasi
+              .split(",")
+              .map((x) =>
+                alasanRelokasiOptions.find((o) => o.value === x.trim())
+              )
           : []
       );
 
@@ -250,6 +406,32 @@ export default function EditKonfirmasi() {
             <ReadOnly label="Nama Alkes" value={formData.alat} />
             <ReadOnly label="Jumlah" value={formData.jumlah} />
           </div>
+          {/* STATUS VERIFIKASI (ROLE 1 ONLY) */}
+          {user?.role == "1" && (
+            <section className="mt-6 bg-yellow-50 border border-yellow-300 p-4 rounded-md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-semibold text-yellow-800">
+                    Status Verifikasi
+                  </h2>
+                  <p className="text-xs text-yellow-700 mt-1">
+                    Keputusan akhir verifikasi kelayakan data puskesmas
+                  </p>
+                </div>
+
+                <div className="w-60">
+                  <FormSelect
+                    value={statusVerifikasi}
+                    onChange={setStatusVerifikasi}
+                    options={[
+                      { value: "OK", label: "✅ OK (Data Sesuai)" },
+                      { value: "Perlu Revisi", label: "⚠️ Perlu Revisi" },
+                    ]}
+                  />
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* SDM WAJIB */}
           <section className="mt-6 bg-white p-4 rounded-md">
@@ -376,14 +558,17 @@ export default function EditKonfirmasi() {
                     placeholder="Pilih kabupaten / kota tujuan"
                     value={kabRelokasi}
                     onChange={setKabRelokasi}
-                    options={kabKotaOptions}
+                    options={kabOptions}
+                    isDisabled={skemaRelokasi?.value === "dalam_kab"}
+                    isLoading={loadingKab}
                   />{" "}
                   <FormSelect
                     label="Puskesmas Tujuan Relokasi"
                     placeholder="Pilih puskesmas penerima relokasi"
                     value={pusRelokasi}
                     onChange={setPusRelokasi}
-                    options={puskesmasOptions}
+                    options={pusOptions}
+                    isLoading={loadingPus}
                   />{" "}
                 </div>
 
@@ -428,15 +613,17 @@ export default function EditKonfirmasi() {
               value={picDinkes}
               onChange={(e) => setPicDinkes(e.target.value)}
             />
-            <FormSelect
-              label="Status Verifikasi"
-              value={statusVerifikasi}
-              onChange={setStatusVerifikasi}
-              options={[
-                { value: "OK", label: "OK" },
-                { value: "Perlu Revisi", label: "Perlu Revisi" },
-              ]}
-            />
+            {/* {user?.role == "1" && (
+              <FormSelect
+                label="Status Verifikasi"
+                value={statusVerifikasi}
+                onChange={setStatusVerifikasi}
+                options={[
+                  { value: "OK", label: "OK" },
+                  { value: "Perlu Revisi", label: "Perlu Revisi" },
+                ]}
+              />
+            )} */}
           </section>
 
           {/* <section className="mt-6">

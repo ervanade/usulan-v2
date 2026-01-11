@@ -400,6 +400,30 @@ const KonfirmasiAlkes = () => {
         omit: user.role == "3",
       },
       {
+        name: <div className="text-wrap">Status Verifikasi</div>,
+        selector: (row) => row.provinsi,
+        sortable: true,
+        cell: (row) => (
+          <div className="text-wrap py-2">
+            {row.status_verifikasi === "OK" ? (
+              <div className="text-white py-1 px-2 bg-green-600 rounded-md text-xs">
+                Sudah Verifikasi
+              </div>
+            ) : row.status_verifikasi === "Perlu Revisi" ? (
+              <div className="text-white py-1 px-2 bg-yellow-600 rounded-md text-xs">
+                Perlu Revisi
+              </div>
+            ) : (
+              <div className="text-white py-1 px-2 bg-red-600 rounded-md text-xs">
+                Belum Verifikasi
+              </div>
+            )}
+          </div>
+        ),
+        width: "150px",
+        omit: user.role == "3",
+      },
+      {
         name: "Aksi",
         id: "Aksi",
         cell: (row) => (

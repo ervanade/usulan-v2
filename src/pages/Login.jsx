@@ -52,7 +52,7 @@ const Login = () => {
         //   confirmButtonColor: "#3085d6",
         // });
 
-        navigate("/usulan-alkes");
+        navigate("/konfirmasi-alkes");
         return;
       })
       .catch((error) => {
