@@ -409,19 +409,23 @@ const KonfirmasiAlkes = () => {
               <div className="text-white py-1 px-2 bg-green-600 rounded-md text-xs">
                 Sudah Verifikasi
               </div>
-            ) : row.status_verifikasi === "Perlu Revisi" ? (
+            ) : row.status_verifikasi === "REVISI" ? (
               <div className="text-white py-1 px-2 bg-yellow-600 rounded-md text-xs">
                 Perlu Revisi
               </div>
-            ) : (
+            ) : row.status_verifikasi === "MENGISI" ? (
               <div className="text-white py-1 px-2 bg-red-600 rounded-md text-xs">
                 Belum Verifikasi
+              </div>
+            ) : (
+              <div className="text-white py-1 px-2 bg-slate-500 rounded-md text-xs">
+                Belum Mengisi
               </div>
             )}
           </div>
         ),
         width: "150px",
-        omit: user.role == "3",
+        // omit: user.role == "3",
       },
       {
         name: "Aksi",

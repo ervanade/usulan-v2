@@ -7,66 +7,18 @@ import { decryptId, selectThemeColors } from "../../data/utils";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
+import {
+  alasanRelokasiOptions,
+  dbData,
+  sdmList,
+  skemaRelokasiOptions,
+  strategiOptions,
+  yaTidakOptions,
+} from "./components/konfirmasi.constants";
+import FormInput from "./components/form/FormInput";
+import FormSelect from "./components/form/FormSelect";
+import ReadOnly from "./components/form/ReadOnly";
 
-/* ================== CONSTANTS ================== */
-const yaTidakOptions = [
-  { value: "Ya", label: "Ya" },
-  { value: "Tidak", label: "Tidak" },
-];
-
-const strategiOptions = [
-  { value: "Rekrutmen ASN", label: "Rekrutmen ASN (CPNS & PPPK)" },
-  { value: "Penugasan Pusat", label: "Penugasan Khusus Pusat" },
-  { value: "Penugasan Daerah", label: "Penugasan Khusus Daerah" },
-  { value: "BLUD", label: "Rekrutmen BLUD" },
-  { value: "Redistribusi", label: "Redistribusi SDMK antar fasilitas" },
-  { value: "Kemitraan", label: "Kemitraan institusi pendidikan" },
-];
-
-const sdmList = [
-  "Dokter",
-  "Dokter Gigi",
-  "Perawat",
-  "Bidan",
-  "ATLM",
-  "Terapis Gigi & Mulut",
-  "Kesling",
-  "Epidemiolog",
-  "Gizi",
-  "Kesmas",
-];
-
-const skemaRelokasiOptions = [
-  { value: "dalam_kab", label: "Dalam 1 Kab/Kota yang sama" },
-  { value: "antar_kab", label: "Antar Kab/Kota (1 Provinsi)" },
-  { value: "antar_prov", label: "Antar Provinsi" },
-];
-
-const alasanRelokasiOptions = [
-  { value: "sdm", label: "Tidak dapat memenuhi SDMK" },
-  { value: "sarpras", label: "Sarana prasarana tidak siap" },
-  { value: "alkes", label: "Alat kesehatan tersedia (relokasi)" },
-];
-
-const dbData = {
-  provinsi: "Jawa Barat",
-  kabKota: "Sukabumi",
-  puskesmas: "PALABUHANRATU",
-  kode: "32020200019",
-  alat: "Spirometer",
-  jumlah: 1,
-  sdmWajib: ["Dokter", "Perawat"],
-};
-const kabKotaOptions = [
-  { value: "Bandung", label: "Kota Bandung" },
-  { value: "Bogor", label: "Kab. Bogor" },
-];
-const puskesmasOptions = [
-  { value: "PKM A", label: "Puskesmas A" },
-  { value: "PKM B", label: "Puskesmas B" },
-];
-
-/* ================== COMPONENT ================== */
 export default function EditKonfirmasi() {
   const user = useSelector((a) => a.auth.user);
   const { id } = useParams();
@@ -99,6 +51,8 @@ export default function EditKonfirmasi() {
   const [alamatRelokasi, setAlamatRelokasi] = useState("");
   const [cpRelokasi, setCpRelokasi] = useState("");
   const [cpDinkes, setCpDinkes] = useState("");
+  const [cpHpRelokasi, setCpHpRelokasi] = useState("");
+  const [cpHpDinkes, setCpHpDinkes] = useState("");
   const [kabRelokasi, setKabRelokasi] = useState(null);
   const [pusRelokasi, setPusRelokasi] = useState(null);
 
@@ -200,19 +154,19 @@ export default function EditKonfirmasi() {
     const load = async () => {
       setLoadingKab(true);
 
-      if (skemaRelokasi.value === "dalam_kab") {
+      if (skemaRelokasi.value === "DALAM_KAB") {
         const kab = await fetchKabupatenByProvinsi(formData.id_provinsi);
         const currentKab = kab.find((k) => k.value === formData.id_kabupaten);
         setKabOptions(kab);
         setKabRelokasi(currentKab);
       }
 
-      if (skemaRelokasi.value === "antar_kab") {
+      if (skemaRelokasi.value === "ANTAR_KAB") {
         const kab = await fetchKabupatenByProvinsi(formData.id_provinsi);
         setKabOptions(kab.filter((k) => k.value !== formData.id_kabupaten));
       }
 
-      if (skemaRelokasi.value === "antar_prov") {
+      if (skemaRelokasi.value === "ANTAR_PROV") {
         const kab = await fetchAllKabupaten();
         setKabOptions(kab.filter((k) => k.value !== formData.id_kabupaten));
       }
@@ -230,9 +184,11 @@ export default function EditKonfirmasi() {
 
     const loadPuskesmas = async () => {
       setLoadingPus(true);
+      const targetProvinsi =
+        skemaRelokasi?.value !== "ANTAR_PROV" ? formData.id_provinsi : "";
 
       const list = await fetchPuskesmas({
-        id_provinsi: formData.id_provinsi || "",
+        id_provinsi: targetProvinsi || "",
         id_kabupaten: kabRelokasi.value || "",
         id_kecamatan: "",
       });
@@ -354,23 +310,23 @@ export default function EditKonfirmasi() {
   /* ================== COMPUTED ================== */
   const kesiapanSDM = useMemo(() => {
     return dbData.sdmWajib.every((x) => sdmChecked.includes(x))
-      ? "Ya"
-      : "Tidak";
+      ? "YA"
+      : "TIDAK";
   }, [sdmChecked]);
 
   const relokasi = useMemo(() => {
-    if (kesiapanSDM === "Tidak" && upayaSDM?.value === "Tidak") return "Ya";
-    if (sarpras?.value === "Tidak") return "Ya";
-    if (alkes?.value === "Ya") return "Ya";
-    return "Tidak";
+    if (kesiapanSDM === "TIDAK" && upayaSDM?.value === "TIDAK") return "YA";
+    if (sarpras?.value === "TIDAK") return "YA";
+    if (alkes?.value === "YA") return "YA";
+    return "TIDAK";
   }, [kesiapanSDM, upayaSDM, sarpras, alkes]);
 
   useMemo(() => {
     const alasan = [];
-    if (kesiapanSDM === "Tidak" && upayaSDM?.value === "Tidak")
+    if (kesiapanSDM === "TIDAK" && upayaSDM?.value === "TIDAK")
       alasan.push(alasanRelokasiOptions[0]);
-    if (sarpras?.value === "Tidak") alasan.push(alasanRelokasiOptions[1]);
-    if (alkes?.value === "Ya") alasan.push(alasanRelokasiOptions[2]);
+    if (sarpras?.value === "TIDAK") alasan.push(alasanRelokasiOptions[1]);
+    if (alkes?.value === "YA") alasan.push(alasanRelokasiOptions[2]);
     setAlasanRelokasi(alasan);
   }, [kesiapanSDM, upayaSDM, sarpras, alkes]);
 
@@ -425,7 +381,7 @@ export default function EditKonfirmasi() {
                     onChange={setStatusVerifikasi}
                     options={[
                       { value: "OK", label: "✅ OK (Data Sesuai)" },
-                      { value: "Perlu Revisi", label: "⚠️ Perlu Revisi" },
+                      { value: "REVISI", label: "⚠️ Perlu Revisi" },
                     ]}
                   />
                 </div>
@@ -490,7 +446,7 @@ export default function EditKonfirmasi() {
           </div>
 
           {/* UPAYA SDM */}
-          {kesiapanSDM === "Tidak" && (
+          {kesiapanSDM === "TIDAK" && (
             <section className="mt-6 grid grid-cols-2 gap-4">
               <FormSelect
                 label="Upaya Pemenuhan SDM"
@@ -499,7 +455,7 @@ export default function EditKonfirmasi() {
                 onChange={setUpayaSDM}
                 options={yaTidakOptions}
               />
-              {upayaSDM?.value === "Ya" && (
+              {upayaSDM?.value === "YA" && (
                 <FormSelect
                   label="Strategi Pemenuhan SDM"
                   placeholder="Pilih strategi pemenuhan SDM"
@@ -522,8 +478,9 @@ export default function EditKonfirmasi() {
               options={yaTidakOptions}
             />
             <FormSelect
-              label="Alkes Berfungsi"
-              placeholder="Apakah alat berfungsi dengan baik?"
+              label="Ketersediaan Alkes berfungsi dengan baik
+"
+              placeholder="Alkes Existing berfungsi dengan baik?"
               value={alkes}
               onChange={setAlkes}
               options={yaTidakOptions}
@@ -534,7 +491,7 @@ export default function EditKonfirmasi() {
           <section className="mt-8 bg-white p-4 rounded-md">
             <ReadOnly label="Relokasi" value={relokasi} />
 
-            {relokasi === "Ya" && (
+            {relokasi === "YA" && (
               <>
                 <FormSelect
                   label="Skema Relokasi"
@@ -555,40 +512,92 @@ export default function EditKonfirmasi() {
                   {" "}
                   <FormSelect
                     label="Kab/Kota Tujuan Relokasi"
-                    placeholder="Pilih kabupaten / kota tujuan"
+                    placeholder={
+                      !skemaRelokasi
+                        ? "Pilih Skema Relokasi Dahulu"
+                        : "Pilih kabupaten / kota tujuan"
+                    }
                     value={kabRelokasi}
                     onChange={setKabRelokasi}
                     options={kabOptions}
-                    isDisabled={skemaRelokasi?.value === "dalam_kab"}
+                    isDisabled={
+                      skemaRelokasi?.value === "DALAM_KAB" || !skemaRelokasi
+                    }
                     isLoading={loadingKab}
                   />{" "}
                   <FormSelect
                     label="Puskesmas Tujuan Relokasi"
-                    placeholder="Pilih puskesmas penerima relokasi"
+                    placeholder={
+                      !kabRelokasi
+                        ? "Pilih kabupaten / kota dahulu"
+                        : "Pilih puskesmas penerima relokasi"
+                    }
                     value={pusRelokasi}
                     onChange={setPusRelokasi}
+                    isDisabled={!kabRelokasi}
                     options={pusOptions}
                     isLoading={loadingPus}
                   />{" "}
                 </div>
 
                 <FormInput
-                  label="Alamat Puskesmas Relokasi"
+                  label={
+                    !pusRelokasi
+                      ? "Pilih puskesmas relokasi dahulu"
+                      : "Alamat Puskesmas Relokasi"
+                  }
+                  placeholder={"Alamat puskesmas penerima relokasi"}
+                  disabled={!pusRelokasi}
                   value={alamatRelokasi}
                   onChange={(e) => setAlamatRelokasi(e.target.value)}
                 />
-                <FormInput
-                  label="Contact Person Puskesmas Relokasi"
-                  value={cpRelokasi}
-                  placeholder="Contoh: 081234567890"
-                  onChange={(e) => setCpRelokasi(e.target.value)}
-                />
-                <FormInput
-                  label="Contact Person Dinkes Penerima"
-                  placeholder="Contoh: 081234567890"
-                  value={cpDinkes}
-                  onChange={(e) => setCpDinkes(e.target.value)}
-                />
+
+                <section className="grid grid-cols-2 gap-4">
+                  <FormInput
+                    label="CP Nama Puskesmas Relokasi"
+                    value={cpRelokasi}
+                    placeholder={
+                      !pusRelokasi
+                        ? "Pilih puskesmas relokasi dahulu"
+                        : "Contoh: Dr. Ahmad Fauzi"
+                    }
+                    disabled={!pusRelokasi}
+                    onChange={(e) => setCpRelokasi(e.target.value)}
+                  />
+                  <FormInput
+                    label="CP No HP Puskesmas Relokasi"
+                    value={cpHpRelokasi}
+                    placeholder={
+                      !pusRelokasi
+                        ? "Pilih puskesmas relokasi dahulu"
+                        : "Contoh: 081234567890"
+                    }
+                    disabled={!pusRelokasi}
+                    onChange={(e) => setCpHpRelokasi(e.target.value)}
+                  />
+                  <FormInput
+                    label="CP Nama Dinkes Penerima"
+                    placeholder={
+                      !pusRelokasi
+                        ? "Pilih puskesmas relokasi dahulu"
+                        : "Contoh: Dr. Ahmad Fauzi"
+                    }
+                    value={cpDinkes}
+                    disabled={!pusRelokasi}
+                    onChange={(e) => setCpDinkes(e.target.value)}
+                  />
+                  <FormInput
+                    label="CP No HP Dinkes Penerima"
+                    placeholder={
+                      !pusRelokasi
+                        ? "Pilih puskesmas relokasi dahulu"
+                        : "Contoh: 081234567890"
+                    }
+                    value={cpHpDinkes}
+                    disabled={!pusRelokasi}
+                    onChange={(e) => setCpHpDinkes(e.target.value)}
+                  />
+                </section>
               </>
             )}
           </section>
@@ -609,21 +618,10 @@ export default function EditKonfirmasi() {
             />
             <FormInput
               label="PIC Dinkes Kab/Kota"
-              placeholder="Contoh: Dr. Ahmad Fauzi"
+              placeholder="Contoh: Dr. Ahmad Fauzi_081234567890"
               value={picDinkes}
               onChange={(e) => setPicDinkes(e.target.value)}
             />
-            {/* {user?.role == "1" && (
-              <FormSelect
-                label="Status Verifikasi"
-                value={statusVerifikasi}
-                onChange={setStatusVerifikasi}
-                options={[
-                  { value: "OK", label: "OK" },
-                  { value: "Perlu Revisi", label: "Perlu Revisi" },
-                ]}
-              />
-            )} */}
           </section>
 
           {/* <section className="mt-6">
@@ -644,60 +642,6 @@ export default function EditKonfirmasi() {
           </div>
         </div>
       </Card>
-    </div>
-  );
-}
-
-/* ================== HELPERS ================== */
-function ReadOnly({ label, value }) {
-  return (
-    <div>
-      {" "}
-      <label className="text-xs text-[#3f4750] font-semibold">
-        {label}
-      </label>{" "}
-      <div className="mt-1 border rounded-md px-3 py-2 bg-white text-sm text-[#3f4750] border-[#cacaca]">
-        {" "}
-        {value}{" "}
-      </div>{" "}
-    </div>
-  );
-}
-function FormSelect({ label, placeholder, isMulti, ...props }) {
-  return (
-    <div>
-      {" "}
-      <label className="text-xs text-[#272b2f] font-semibold mb-1 block">
-        {" "}
-        {label}{" "}
-      </label>{" "}
-      <Select
-        className="text-sm"
-        theme={selectThemeColors}
-        placeholder={
-          placeholder ??
-          (isMulti ? "Pilih satu atau lebih opsi" : "Pilih salah satu")
-        }
-        isMulti={isMulti}
-        {...props}
-      />{" "}
-    </div>
-  );
-}
-function FormInput({ label, helper, type = "text", ...props }) {
-  return (
-    <div>
-      {" "}
-      <label className="text-xs text-[#272b2f] font-semibold mb-1 block">
-        {" "}
-        {label}{" "}
-      </label>{" "}
-      <input
-        type={type}
-        className="w-full border border-[#cacaca] rounded-md px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
-        {...props}
-      />{" "}
-      {helper && <p className="text-xs text-[#728294] mt-1">{helper}</p>}{" "}
     </div>
   );
 }

@@ -863,6 +863,26 @@ const KonfirmasiKabupaten = () => {
       //     width: "80px",
       //   },
       {
+        name: <div className="text-wrap">Status Konfirmasi</div>,
+        selector: (row) => row.stat,
+        sortable: true,
+        cell: (row) => (
+          <div className="text-wrap py-2">
+            {row.stat === "1" ? (
+              <div className="text-white py-1 px-2 bg-green-600 rounded-md text-xs">
+                Sudah Konfirmasi
+              </div>
+            ) : (
+              <div className="text-white py-1 px-2 bg-red-600 rounded-md text-xs">
+                Belum Konfirmasi
+              </div>
+            )}
+          </div>
+        ),
+        width: "150px",
+        omit: user.role == "3",
+      },
+      {
         name: "Aksi",
         cell: (row) => (
           <div className="flex items-center space-x-2">

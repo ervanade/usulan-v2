@@ -253,6 +253,8 @@ const EditBarang = () => {
         // handle success
         // console.log(response)
         const data = response.data.data;
+        const kriteriaIds =
+          data?.kriteria_alkes?.map((item) => item.id_kriteria) || [];
         setFormData({
           nama_alkes: data?.nama_alkes || "",
           standard_rawat_inap:
@@ -267,7 +269,9 @@ const EditBarang = () => {
           harga: formatRupiah(data?.harga?.toString()) || "", // Format harga
           keterangan: data?.keterangan || "",
           input_usulan: data?.input_usulan || false,
+          id_kriteria: kriteriaIds || [],
         });
+
         setGetLoading(false);
       });
     } catch (error) {
@@ -378,6 +382,14 @@ const EditBarang = () => {
       }
     }
   }, [formData.stat, formData.id_kriteria, formData]);
+
+  useEffect(() => {
+    if (!formData.id_kriteria.length || !dataKriteria.length) return;
+
+    setSelectedKriteria(
+      dataKriteria.filter((opt) => formData.id_kriteria.includes(opt.value))
+    );
+  }, [formData.id_kriteria, dataKriteria]);
 
   if (getLoading) {
     return (
