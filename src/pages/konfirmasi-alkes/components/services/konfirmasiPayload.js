@@ -70,6 +70,11 @@ export const buildKonfirmasiPayload = ({
 
     id_puskesmas_relokasi:
       isRelokasi && pusRelokasi?.value ? Number(pusRelokasi.value) : null,
+    nama_kab_kota_relokasi:
+      isRelokasi && kabRelokasi?.label ? kabRelokasi.label : null,
+
+    nama_puskesmas_penerima_relokasi:
+      isRelokasi && pusRelokasi?.label ? pusRelokasi.label : null,
 
     alamat_relokasi: isRelokasi ? alamatRelokasi || null : null,
 
