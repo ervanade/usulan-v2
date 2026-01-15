@@ -3,7 +3,7 @@ import Select from "react-select";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import Card from "../../components/Card/Card";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { decryptId, selectThemeColors } from "../../data/utils";
+import { decryptId, encryptId, selectThemeColors } from "../../data/utils";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
@@ -42,6 +42,8 @@ export default function EditKonfirmasi() {
     kode: "32020200019",
     alat: "Spirometer",
     jumlah: 1,
+    id_kabupaten_relokasi: "",
+    id_puskesmas_relokasi: "",
     kriteria_alkes: ["Dokter", "Perawat"],
   });
   const [loading, setLoading] = useState(false);
@@ -70,7 +72,7 @@ export default function EditKonfirmasi() {
 
   const [picNama, setPicNama] = useState("");
   const [picHp, setPicHp] = useState("");
-  const [picDinkes, setPicDinkes] = useState("");
+  const [picDinkesRelokasi, setPicDinkesRelokasi] = useState("");
   const [statusVerifikasi, setStatusVerifikasi] = useState(null);
   const [fileSurat, setFileSurat] = useState(null);
 
@@ -322,6 +324,8 @@ export default function EditKonfirmasi() {
         kode: d.kode_puskesmas,
         alat: d.nama_barang,
         jumlah: d.jumlah_barang_unit,
+        id_kabupaten_relokasi: d.id_kabupaten_relokasi,
+        id_puskesmas_relokasi: d.id_puskesmas_relokasi,
       });
 
       /* ---------- SDM WAJIB PER ALKES ---------- */
@@ -369,10 +373,19 @@ export default function EditKonfirmasi() {
               )
           : []
       );
+      setSkemaRelokasi(
+        skemaRelokasiOptions.find((o) => o.value === d.keterangan_relokasi) ||
+          null
+      );
 
+      setAlamatRelokasi(d.alamat_relokasi || "");
+      setCpRelokasi(d.pic_penerima_relokasi_nama || "");
+      setCpHpRelokasi(d.pic_penerima_relokasi_hp || "");
+      setCpDinkes(d.pic_dinkes_nama || "");
+      setCpHpDinkes(d.pic_dinkes_hp || "");
       setPicNama(d.pic_puskesmas_nama);
       setPicHp(d.pic_puskesmas_hp);
-      setPicDinkes(d.pic_dinkes_nama);
+      setPicDinkesRelokasi(d.pic_dinkes_nama);
 
       setStatusVerifikasi(
         d.status_verifikasi
@@ -418,6 +431,61 @@ export default function EditKonfirmasi() {
     setAlasanRelokasi(alasan);
   }, [kesiapanSDM, upayaSDM, sarpras, alkes]);
 
+  useEffect(() => {
+    if (!kabOptions.length || !formData?.id_kabupaten_relokasi) return;
+
+    const selectedKab = kabOptions.find(
+      (k) => k.value === formData.id_kabupaten_relokasi
+    );
+
+    if (selectedKab) {
+      setKabRelokasi(selectedKab);
+    }
+  }, [kabOptions]);
+
+  useEffect(() => {
+    if (!pusOptions.length || !formData?.id_puskesmas_relokasi) return;
+
+    const selectedPus = pusOptions.find(
+      (p) => p.value === formData.id_puskesmas_relokasi
+    );
+
+    if (selectedPus) {
+      setPusRelokasi(selectedPus);
+      setAlamatRelokasi(selectedPus.alamat || "");
+    }
+  }, [pusOptions]);
+
+  useEffect(() => {
+    if (relokasi === "YA") return;
+
+    // 🔴 RESET SEMUA FIELD TERGANTUNG RELOKASI
+    setSkemaRelokasi(null);
+    setAlasanRelokasi([]);
+    setProvRelokasi(null);
+    setKabRelokasi(null);
+    setPusRelokasi(null);
+    setAlamatRelokasi("");
+
+    setCpRelokasi("");
+    setCpHpRelokasi("");
+    setPicDinkesRelokasi("");
+    setCpDinkes("");
+    setCpHpDinkes("");
+
+    // reset options juga biar UX bersih
+    setProvOptions([]);
+    setKabOptions([]);
+    setPusOptions([]);
+  }, [relokasi]);
+  useEffect(() => {
+    if (kesiapanSDM === "TIDAK") return;
+
+    // 🔴 RESET FIELD TURUNAN SDMK
+    setUpayaSDM(null);
+    setStrategi([]);
+  }, [kesiapanSDM]);
+
   const handleSubmit = async () => {
     // 1. Build payload
     const finalStatusVerifikasi = resolveStatusVerifikasi({
@@ -433,11 +501,19 @@ export default function EditKonfirmasi() {
       sarpras,
       alkes,
       relokasi,
+      skemaRelokasi,
       alasanRelokasi,
       sdmChecked,
+      kabRelokasi,
+      pusRelokasi,
+      alamatRelokasi,
+      cpRelokasi,
+      cpHpRelokasi,
+      cpDinkes,
+      cpHpDinkes,
       picNama,
       picHp,
-      picDinkes,
+      picDinkesRelokasi,
       statusVerifikasi: finalStatusVerifikasi,
     });
 
@@ -456,8 +532,28 @@ export default function EditKonfirmasi() {
     }
 
     // 4. (sementara) console + success alert
-    await putKonfirmasi(payload);
-    await showSuccessAlert();
+    // 4. PUT ke API
+    try {
+      setLoading(true);
+
+      await putKonfirmasi({
+        id: decryptId(id),
+        payload,
+        token: user?.token,
+      });
+
+      await showSuccessAlert();
+      const encryptedId = encryptId(parseInt(formData?.id_kabupaten));
+      navigate(
+        `/konfirmasi-alkes/kabupaten/${encodeURIComponent(encryptedId)}`
+      );
+    } catch (err) {
+      await showErrorAlert("Gagal Simpan", [
+        err?.message || "Terjadi kesalahan saat menyimpan data",
+      ]);
+    } finally {
+      setLoading(false);
+    }
   };
   const isKabDisabled = useMemo(() => {
     if (!skemaRelokasi) return true;
@@ -485,7 +581,9 @@ export default function EditKonfirmasi() {
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex justify-end mb-4">
             <Link
-              to="/konfirmasi-alkes"
+              to={`/konfirmasi-alkes/kabupaten/${encryptId(
+                parseInt(formData?.id_kabupaten)
+              )}`}
               className="px-4 py-2 bg-primary text-white rounded-md font-semibold"
             >
               Back
@@ -740,26 +838,15 @@ export default function EditKonfirmasi() {
                     onChange={(e) => setCpHpRelokasi(e.target.value)}
                   />
                   <FormInput
-                    label="CP Nama Dinkes Penerima"
+                    label={`Contact Person Dinkes Kab/Kota Relokasi`}
                     placeholder={
                       !pusRelokasi
                         ? "Pilih puskesmas relokasi dahulu"
-                        : "Contoh: Dr. Ahmad Fauzi"
+                        : "Contoh: Dr. Ahmad Fauzi_081234567890"
                     }
-                    value={cpDinkes}
                     disabled={!pusRelokasi}
-                    onChange={(e) => setCpDinkes(e.target.value)}
-                  />
-                  <FormInput
-                    label="CP No HP Dinkes Penerima"
-                    placeholder={
-                      !pusRelokasi
-                        ? "Pilih puskesmas relokasi dahulu"
-                        : "Contoh: 081234567890"
-                    }
-                    value={cpHpDinkes}
-                    disabled={!pusRelokasi}
-                    onChange={(e) => setCpHpDinkes(e.target.value)}
+                    value={picDinkesRelokasi}
+                    onChange={(e) => setPicDinkesRelokasi(e.target.value)}
                   />
                 </section>
               </>
@@ -777,18 +864,28 @@ export default function EditKonfirmasi() {
               onChange={(e) => setPicNama(e.target.value)}
             />
             <FormInput
-              label="No HP PIC Puskesmas"
+              label={`No HP PIC Puskesmas${
+                skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
+              }`}
               value={picHp}
               placeholder="Contoh: 081234567890"
               onChange={(e) => setPicHp(e.target.value)}
             />
             <FormInput
-              label={`PIC Dinkes Kab/Kota ${
+              label={`Nama PIC Dinkes Kab/Kota ${
                 skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
               }`}
-              placeholder="Contoh: Dr. Ahmad Fauzi_081234567890"
-              value={picDinkes}
-              onChange={(e) => setPicDinkes(e.target.value)}
+              placeholder={"Contoh: Dr. Ahmad Fauzi"}
+              value={cpDinkes}
+              onChange={(e) => setCpDinkes(e.target.value)}
+            />
+            <FormInput
+              label={`No Hp PIC Dinkes Kab/Kota ${
+                skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
+              }`}
+              placeholder={"Contoh: 081234567890"}
+              value={cpHpDinkes}
+              onChange={(e) => setCpHpDinkes(e.target.value)}
             />
           </section>
 

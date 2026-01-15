@@ -7,12 +7,22 @@ export const buildKonfirmasiPayload = ({
   alkes,
   relokasi,
   alasanRelokasi,
+  skemaRelokasi,
   sdmChecked,
+  kabRelokasi,
+  pusRelokasi,
+  alamatRelokasi,
+  cpRelokasi,
+  cpHpRelokasi,
+  cpDinkes,
+  cpHpDinkes,
   picNama,
   picHp,
-  picDinkes,
+  picDinkesRelokasi,
   statusVerifikasi,
 }) => {
+  const isRelokasi = relokasi === "YA";
+  const isSDMTidakSiap = kesiapanSDM === "TIDAK";
   return {
     /* ===== IDENTITAS ===== */
     id_ihss: formData.id_ihss ? Number(formData.id_ihss) : null,
@@ -30,10 +40,12 @@ export const buildKonfirmasiPayload = ({
 
     /* ===== SDM ===== */
     kesiapan_sdmk: kesiapanSDM || null,
-    upaya_memenuhi_sdm: upayaSDM?.value || null,
-    strategi_pemenuhan_sdm: strategi.length
-      ? strategi.map((x) => x.value).join(", ")
-      : null,
+    upaya_memenuhi_sdm: isSDMTidakSiap ? upayaSDM?.value || null : null,
+
+    strategi_pemenuhan_sdm:
+      isSDMTidakSiap && upayaSDM?.value === "YA" && strategi.length
+        ? strategi.map((x) => x.value).join(", ")
+        : null,
 
     kriteria_puskesmas: Object.entries(sdmChecked).map(([id, val]) => ({
       id_kriteria: Number(id),
@@ -46,14 +58,32 @@ export const buildKonfirmasiPayload = ({
 
     /* ===== RELOKASI ===== */
     relokasi_status: relokasi || null,
-    alasan_relokasi: alasanRelokasi.length
-      ? alasanRelokasi.map((x) => x.value).join(", ")
-      : null,
+    alasan_relokasi:
+      isRelokasi && alasanRelokasi.length
+        ? alasanRelokasi.map((x) => x.value).join(", ")
+        : null,
+
+    keterangan_relokasi: isRelokasi ? skemaRelokasi?.value || null : null,
+
+    id_kabupaten_relokasi:
+      isRelokasi && kabRelokasi?.value ? Number(kabRelokasi.value) : null,
+
+    id_puskesmas_relokasi:
+      isRelokasi && pusRelokasi?.value ? Number(pusRelokasi.value) : null,
+
+    alamat_relokasi: isRelokasi ? alamatRelokasi || null : null,
 
     /* ===== PIC ===== */
+    pic_penerima_relokasi_nama: isRelokasi ? cpRelokasi || null : null,
+    pic_penerima_relokasi_hp: isRelokasi ? cpHpRelokasi || null : null,
+    pic_dinkes_kab_kota_relokasi_cp: isRelokasi
+      ? picDinkesRelokasi || null
+      : null,
+
     pic_puskesmas_nama: picNama || null,
     pic_puskesmas_hp: picHp || null,
-    pic_dinkes_nama: picDinkes || null,
+    pic_dinkes_nama: cpDinkes || null,
+    pic_dinkes_hp: cpHpDinkes || null,
 
     /* ===== VERIFIKASI ===== */
     status_verifikasi: statusVerifikasi || null,

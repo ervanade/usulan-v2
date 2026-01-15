@@ -59,7 +59,7 @@ export const showSuccessAlert = () => {
   return Swal.fire({
     icon: "success",
     title: "Berhasil",
-    text: "Data berhasil diproses (sementara belum dikirim ke API)",
+    text: "Data berhasil diproses",
     timer: 2000,
     showConfirmButton: false,
   });
