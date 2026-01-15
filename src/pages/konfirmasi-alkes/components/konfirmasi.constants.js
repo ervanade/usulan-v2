@@ -46,3 +46,47 @@ export const dbData = {
   jumlah: 1,
   sdmWajib: ["Dokter", "Perawat"],
 };
+
+export const checkKesiapanSDMByString = (rule, ownedObj = {}) => {
+  if (!rule || typeof rule !== "string") return false;
+
+  // jenis SDM yang dimiliki
+  const ownedJenis = Object.values(ownedObj)
+    .map((x) => x?.jenis)
+    .filter(Boolean)
+    .map((x) => x.toLowerCase().trim());
+
+  if (ownedJenis.length === 0) return false;
+
+  // normalisasi rule
+  const normalizedRule = rule.toLowerCase().replace(/\s+/g, " ").trim();
+
+  // split AND (dan)
+  const andParts = normalizedRule.split(/\sdan\s/);
+
+  return andParts.every((part) => {
+    // OR case: bidan/perawat
+    if (part.includes("/")) {
+      const orParts = part.split("/").map((x) => x.trim());
+      return orParts.some((o) => ownedJenis.includes(o));
+    }
+
+    // single
+    return ownedJenis.includes(part.trim());
+  });
+};
+
+export const resolveStatusVerifikasi = ({ role, currentStatus }) => {
+  // USER PUSKESMAS
+  if (role == "3") {
+    if (!currentStatus || currentStatus === "MENGISI") {
+      return "MENGISI";
+    }
+
+    // jika sudah diverifikasi admin → JANGAN TIMPA
+    return currentStatus;
+  }
+
+  // ADMIN (ROLE 1)
+  return currentStatus;
+};

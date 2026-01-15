@@ -9,8 +9,9 @@ import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
 import {
   alasanRelokasiOptions,
+  checkKesiapanSDMByString,
   dbData,
-  sdmList,
+  resolveStatusVerifikasi,
   skemaRelokasiOptions,
   strategiOptions,
   yaTidakOptions,
@@ -18,13 +19,23 @@ import {
 import FormInput from "./components/form/FormInput";
 import FormSelect from "./components/form/FormSelect";
 import ReadOnly from "./components/form/ReadOnly";
+import { validateKonfirmasiPayload } from "./components/services/konfirmasiValidation";
+import { putKonfirmasi } from "./components/services/konfirmasiApi";
+import { buildKonfirmasiPayload } from "./components/services/konfirmasiPayload";
+import {
+  showErrorAlert,
+  showPayloadPreview,
+  showSuccessAlert,
+} from "./components/alert";
 
 export default function EditKonfirmasi() {
   const user = useSelector((a) => a.auth.user);
   const { id } = useParams();
   const [formData, setFormData] = useState({
+    id_ihss: "1",
     id_provinsi: "32",
     id_kabupaten: "3202",
+    id_puskesmas: "3146",
     provinsi: "Jawa Barat",
     kabKota: "Sukabumi",
     puskesmas: "PALABUHANRATU",
@@ -37,9 +48,10 @@ export default function EditKonfirmasi() {
   const [error, setError] = useState(false);
   const [getLoading, setGetLoading] = useState(false);
   const navigate = useNavigate();
-  const [sdmWajib, setSdmWajib] = useState([]);
+  const [sdmWajib, setSdmWajib] = useState("");
 
-  const [sdmChecked, setSdmChecked] = useState([]);
+  const [sdmChecked, setSdmChecked] = useState({});
+  const [sdmList, setSdmList] = useState([]);
   const [sdmNama, setSdmNama] = useState({});
   const [upayaSDM, setUpayaSDM] = useState(null);
   const [strategi, setStrategi] = useState([]);
@@ -66,6 +78,32 @@ export default function EditKonfirmasi() {
   const [pusOptions, setPusOptions] = useState([]);
   const [loadingKab, setLoadingKab] = useState(false);
   const [loadingPus, setLoadingPus] = useState(false);
+  const [provRelokasi, setProvRelokasi] = useState(null);
+  const [provOptions, setProvOptions] = useState([]);
+  const [loadingProv, setLoadingProv] = useState(false);
+
+  const fetchKriteriaSDM = useCallback(async () => {
+    try {
+      const res = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/kriteria`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+
+      return res.data.data
+        .filter((x) => x.stat === 1)
+        .map((x) => ({
+          id: x.id,
+          nama: x.kriteria,
+        }));
+    } catch (err) {
+      console.error("Gagal fetch kriteria SDM", err);
+      return [];
+    }
+  }, [user?.token]);
 
   const fetchKabupatenByProvinsi = useCallback(
     async (idProvinsi) => {
@@ -92,26 +130,29 @@ export default function EditKonfirmasi() {
     },
     [user?.token]
   );
-  const fetchAllKabupaten = useCallback(async () => {
+  const fetchProvinsi = useCallback(async () => {
     try {
-      const res = await axios({
-        method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/kabupaten`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_API_URL}/api/provinsi`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
 
-      return res.data.data.map((k) => ({
-        value: k.id,
-        label: k.name,
-      }));
+      return res.data.data
+        .filter((p) => p.id !== formData.id_provinsi) // ⬅️ exclude current
+        .map((p) => ({
+          value: p.id,
+          label: p.name,
+        }));
     } catch (err) {
-      console.error("Gagal fetch semua kabupaten", err);
+      console.error("Gagal fetch provinsi", err);
       return [];
     }
-  }, [user?.token]);
+  }, [user?.token, formData.id_provinsi]);
+
   const fetchPuskesmas = useCallback(
     async ({ id_provinsi = "", id_kabupaten = "", id_kecamatan = "" }) => {
       try {
@@ -145,8 +186,10 @@ export default function EditKonfirmasi() {
   useEffect(() => {
     if (!skemaRelokasi) return;
 
+    setProvRelokasi(null);
     setKabRelokasi(null);
     setPusRelokasi(null);
+    setProvOptions([]);
     setKabOptions([]);
     setPusOptions([]);
     setAlamatRelokasi("");
@@ -167,8 +210,10 @@ export default function EditKonfirmasi() {
       }
 
       if (skemaRelokasi.value === "ANTAR_PROV") {
-        const kab = await fetchAllKabupaten();
-        setKabOptions(kab.filter((k) => k.value !== formData.id_kabupaten));
+        setLoadingProv(true);
+        const prov = await fetchProvinsi();
+        setProvOptions(prov);
+        setLoadingProv(false);
       }
 
       setLoadingKab(false);
@@ -178,6 +223,25 @@ export default function EditKonfirmasi() {
   }, [skemaRelokasi]);
 
   useEffect(() => {
+    if (!provRelokasi) return;
+
+    setKabRelokasi(null);
+    setPusRelokasi(null);
+    setKabOptions([]);
+    setPusOptions([]);
+    setAlamatRelokasi("");
+
+    const loadKab = async () => {
+      setLoadingKab(true);
+      const kab = await fetchKabupatenByProvinsi(provRelokasi.value);
+      setKabOptions(kab);
+      setLoadingKab(false);
+    };
+
+    loadKab();
+  }, [provRelokasi]);
+
+  useEffect(() => {
     if (!kabRelokasi) return;
 
     let isActive = true; // ⬅️ proteksi
@@ -185,7 +249,9 @@ export default function EditKonfirmasi() {
     const loadPuskesmas = async () => {
       setLoadingPus(true);
       const targetProvinsi =
-        skemaRelokasi?.value !== "ANTAR_PROV" ? formData.id_provinsi : "";
+        skemaRelokasi?.value === "ANTAR_PROV"
+          ? provRelokasi?.value
+          : formData.id_provinsi;
 
       const list = await fetchPuskesmas({
         id_provinsi: targetProvinsi || "",
@@ -193,8 +259,10 @@ export default function EditKonfirmasi() {
         id_kecamatan: "",
       });
 
+      const filtered = list.filter((p) => p.value !== formData.id_puskesmas);
+
       if (isActive) {
-        setPusOptions(list);
+        setPusOptions(filtered);
         setLoadingPus(false);
       }
     };
@@ -217,6 +285,14 @@ export default function EditKonfirmasi() {
     setPusOptions([]);
     setAlamatRelokasi("");
   }, [kabRelokasi]);
+  useEffect(() => {
+    if (skemaRelokasi?.value === "ANTAR_PROV") {
+      setKabRelokasi(null);
+      setPusRelokasi(null);
+      setKabOptions([]);
+      setPusOptions([]);
+    }
+  }, [provRelokasi]);
 
   const fetchKonfirmasiData = useCallback(async () => {
     try {
@@ -236,8 +312,10 @@ export default function EditKonfirmasi() {
 
       /* ---------- IDENTITAS ---------- */
       setFormData({
+        id_ihss: d.id_ihss,
         id_provinsi: d.id_provinsi,
         id_kabupaten: d.id_kabupaten,
+        id_puskesmas: d.id_puskesmas,
         provinsi: d.provinsi,
         kabKota: d.kab_kota,
         puskesmas: d.nama_puskesmas,
@@ -247,14 +325,17 @@ export default function EditKonfirmasi() {
       });
 
       /* ---------- SDM WAJIB PER ALKES ---------- */
-      const wajib = d.alkes.kriteria_alkes.map((x) => x.kriteria.kriteria);
-      setSdmWajib(wajib);
+      setSdmWajib(d.jenis_sdmk_per_alat);
 
       /* ---------- SDM DIMILIKI PUSKESMAS ---------- */
-      const pkmSDM = d.puskesmas.kriteria_puskesmas.map(
-        (x) => x.kriteria.kriteria
-      );
-      setSdmChecked(pkmSDM);
+      const checked = {};
+      d.puskesmas.kriteria_puskesmas.forEach((x) => {
+        checked[x.kriteria.id] = {
+          nama: x.nama_sdm || "",
+          jenis: x.kriteria.kriteria, // ⬅️ INI PENTING
+        };
+      });
+      setSdmChecked(checked);
 
       setSdmNama({
         Dokter: d.sdmk_nama_dokter,
@@ -306,13 +387,20 @@ export default function EditKonfirmasi() {
     fetchKonfirmasiData();
     // fetchProvinsi();
   }, []);
+  useEffect(() => {
+    const loadKriteria = async () => {
+      const list = await fetchKriteriaSDM();
+      setSdmList(list);
+    };
+
+    loadKriteria();
+  }, [fetchKriteriaSDM]);
 
   /* ================== COMPUTED ================== */
   const kesiapanSDM = useMemo(() => {
-    return dbData.sdmWajib.every((x) => sdmChecked.includes(x))
-      ? "YA"
-      : "TIDAK";
-  }, [sdmChecked]);
+    const siap = checkKesiapanSDMByString(sdmWajib, sdmChecked);
+    return siap ? "YA" : "TIDAK";
+  }, [sdmWajib, sdmChecked]);
 
   const relokasi = useMemo(() => {
     if (kesiapanSDM === "TIDAK" && upayaSDM?.value === "TIDAK") return "YA";
@@ -329,6 +417,57 @@ export default function EditKonfirmasi() {
     if (alkes?.value === "YA") alasan.push(alasanRelokasiOptions[2]);
     setAlasanRelokasi(alasan);
   }, [kesiapanSDM, upayaSDM, sarpras, alkes]);
+
+  const handleSubmit = async () => {
+    // 1. Build payload
+    const finalStatusVerifikasi = resolveStatusVerifikasi({
+      role: user?.role,
+      currentStatus: statusVerifikasi?.value || null,
+    });
+
+    const payload = buildKonfirmasiPayload({
+      formData,
+      kesiapanSDM,
+      upayaSDM,
+      strategi,
+      sarpras,
+      alkes,
+      relokasi,
+      alasanRelokasi,
+      sdmChecked,
+      picNama,
+      picHp,
+      picDinkes,
+      status_verifikasi: finalStatusVerifikasi,
+    });
+
+    // 2. Validasi
+    const validation = validateKonfirmasiPayload(payload);
+    if (!validation.isValid) {
+      await showErrorAlert("Validasi Gagal", validation.errors);
+      return;
+    }
+
+    // 3. Preview payload (SweetAlert)
+    const confirm = await showPayloadPreview(payload);
+
+    if (!confirm.isConfirmed) {
+      return; // user klik TIDAK
+    }
+
+    // 4. (sementara) console + success alert
+    await putKonfirmasi(payload);
+    await showSuccessAlert();
+  };
+  const isKabDisabled = useMemo(() => {
+    if (!skemaRelokasi) return true;
+
+    if (skemaRelokasi.value === "DALAM_KAB") return true;
+
+    if (skemaRelokasi.value === "ANTAR_PROV" && !provRelokasi) return true;
+
+    return false;
+  }, [skemaRelokasi, provRelokasi]);
 
   /* ================== UI ================== */
   if (getLoading) {
@@ -393,9 +532,7 @@ export default function EditKonfirmasi() {
           <section className="mt-6 bg-white p-4 rounded-md">
             <h2 className="font-semibold mb-2">SDM Wajib per Alat</h2>
             <ul className="list-disc ml-5 text-sm text-gray-700">
-              {sdmWajib.map((s) => (
-                <li key={s}>{s}</li>
-              ))}
+              <li>{sdmWajib}</li>
             </ul>
           </section>
 
@@ -404,34 +541,51 @@ export default function EditKonfirmasi() {
             <h2 className="font-semibold mb-3">SDM Dimiliki Puskesmas</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {sdmList.map((s) => {
-                const isChecked = sdmChecked.includes(s);
+                const isChecked = !!sdmChecked[s.id];
+
                 return (
                   <div
-                    key={s}
-                    className={`border rounded-md p-3 border-[#cacaca] ${
-                      isChecked ? "border-primary bg-primary/5" : ""
+                    key={s.id}
+                    className={`border rounded-md p-3 ${
+                      isChecked
+                        ? "border-primary bg-primary/5"
+                        : "border-[#cacaca]"
                     }`}
                   >
-                    <label className="flex items-center gap-2 text-sm font-medium">
+                    <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() =>
-                          setSdmChecked((p) =>
-                            p.includes(s) ? p.filter((x) => x !== s) : [...p, s]
-                          )
+                          setSdmChecked((prev) => {
+                            const copy = { ...prev };
+                            if (copy[s.id]) delete copy[s.id];
+                            else
+                              copy[s.id] = {
+                                nama: "",
+                                jenis: s.nama, // ⬅️ INI PENTING
+                              };
+                            return copy;
+                          })
                         }
                       />
-                      {s}
+                      {s.nama}
                     </label>
+
                     {isChecked && (
                       <input
                         type="text"
                         className="mt-2 w-full border rounded-md px-2 py-1 text-sm"
-                        placeholder={`Nama ${s}`}
-                        value={sdmNama[s] || ""}
+                        placeholder={`Nama ${s.nama}`}
+                        value={sdmChecked[s.id]?.nama || ""}
                         onChange={(e) =>
-                          setSdmNama({ ...sdmNama, [s]: e.target.value })
+                          setSdmChecked((prev) => ({
+                            ...prev,
+                            [s.id]: {
+                              ...prev[s.id],
+                              nama: e.target.value,
+                            },
+                          }))
                         }
                       />
                     )}
@@ -510,19 +664,29 @@ export default function EditKonfirmasi() {
                 />
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   {" "}
+                  {skemaRelokasi?.value === "ANTAR_PROV" && (
+                    <FormSelect
+                      label="Provinsi Tujuan Relokasi"
+                      placeholder="Pilih provinsi tujuan relokasi"
+                      value={provRelokasi}
+                      onChange={setProvRelokasi}
+                      options={provOptions}
+                      isLoading={loadingProv}
+                    />
+                  )}
                   <FormSelect
                     label="Kab/Kota Tujuan Relokasi"
                     placeholder={
                       !skemaRelokasi
-                        ? "Pilih Skema Relokasi Dahulu"
+                        ? "Pilih skema relokasi dahulu"
+                        : skemaRelokasi.value === "ANTAR_PROV" && !provRelokasi
+                        ? "Pilih provinsi tujuan terlebih dahulu"
                         : "Pilih kabupaten / kota tujuan"
                     }
                     value={kabRelokasi}
                     onChange={setKabRelokasi}
                     options={kabOptions}
-                    isDisabled={
-                      skemaRelokasi?.value === "DALAM_KAB" || !skemaRelokasi
-                    }
+                    isDisabled={isKabDisabled}
                     isLoading={loadingKab}
                   />{" "}
                   <FormSelect
@@ -605,7 +769,9 @@ export default function EditKonfirmasi() {
           {/* PIC */}
           <section className="mt-8 grid grid-cols-2 gap-4">
             <FormInput
-              label="Nama PIC Puskesmas"
+              label={`Nama PIC Puskesmas${
+                skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
+              }`}
               placeholder="Contoh: Dr. Ahmad Fauzi"
               value={picNama}
               onChange={(e) => setPicNama(e.target.value)}
@@ -617,7 +783,9 @@ export default function EditKonfirmasi() {
               onChange={(e) => setPicHp(e.target.value)}
             />
             <FormInput
-              label="PIC Dinkes Kab/Kota"
+              label={`PIC Dinkes Kab/Kota ${
+                skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
+              }`}
               placeholder="Contoh: Dr. Ahmad Fauzi_081234567890"
               value={picDinkes}
               onChange={(e) => setPicDinkes(e.target.value)}
@@ -636,7 +804,10 @@ export default function EditKonfirmasi() {
           </section> */}
 
           <div className="flex justify-end mt-8">
-            <button className="bg-primary text-white px-6 py-2 rounded-md font-semibold">
+            <button
+              className="bg-primary text-white px-6 py-2 rounded-md font-semibold"
+              onClick={handleSubmit}
+            >
               Simpan
             </button>
           </div>
