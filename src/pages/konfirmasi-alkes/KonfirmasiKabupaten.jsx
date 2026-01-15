@@ -880,7 +880,6 @@ const KonfirmasiKabupaten = () => {
           </div>
         ),
         width: "150px",
-        omit: user.role == "3",
       },
       {
         name: "Aksi",
