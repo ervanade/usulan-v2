@@ -438,7 +438,7 @@ export default function EditKonfirmasi() {
       picNama,
       picHp,
       picDinkes,
-      status_verifikasi: finalStatusVerifikasi,
+      statusVerifikasi: finalStatusVerifikasi,
     });
 
     // 2. Validasi

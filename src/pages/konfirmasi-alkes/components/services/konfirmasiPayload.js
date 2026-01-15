@@ -56,6 +56,6 @@ export const buildKonfirmasiPayload = ({
     pic_dinkes_nama: picDinkes || null,
 
     /* ===== VERIFIKASI ===== */
-    status_verifikasi: statusVerifikasi?.value || null,
+    status_verifikasi: statusVerifikasi || null,
   };
 };
