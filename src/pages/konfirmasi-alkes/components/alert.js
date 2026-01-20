@@ -2,17 +2,40 @@ import Swal from "sweetalert2";
 
 export const showErrorAlert = (title, errors = []) => {
   return Swal.fire({
-    icon: "error",
-    title,
+    icon: "warning",
+    title: title || "Data Belum Lengkap",
     html: `
-      <div style="text-align:left;font-size:13px;">
-        <ul style="padding-left:16px;margin:0;">
-          ${errors.map((e) => `<li>${e}</li>`).join("")}
+      <div style="
+        text-align:left;
+        font-size:13px;
+        line-height:1.6;
+        color:#374151;
+      ">
+        <p style="margin-bottom:8px;">
+          Mohon lengkapi beberapa informasi berikut sebelum melanjutkan:
+        </p>
+
+        <ul style="
+          padding-left:18px;
+          margin:0;
+          list-style-type:disc;
+        ">
+          ${errors
+            .map(
+              (e) => `
+            <li style="margin-bottom:4px;">
+              ${e}
+            </li>
+          `,
+            )
+            .join("")}
         </ul>
       </div>
     `,
-    confirmButtonText: "OK",
-    width: 420,
+    confirmButtonText: "Saya Mengerti",
+    confirmButtonColor: "#ef4444",
+    width: 440,
+    focusConfirm: true,
   });
 };
 

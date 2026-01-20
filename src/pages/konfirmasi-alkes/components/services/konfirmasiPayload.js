@@ -9,6 +9,7 @@ export const buildKonfirmasiPayload = ({
   alasanRelokasi,
   skemaRelokasi,
   sdmChecked,
+  provRelokasi,
   kabRelokasi,
   pusRelokasi,
   alamatRelokasi,
@@ -65,6 +66,8 @@ export const buildKonfirmasiPayload = ({
 
     keterangan_relokasi: isRelokasi ? skemaRelokasi?.value || null : null,
 
+    id_provinsi_relokasi:
+      isRelokasi && provRelokasi?.value ? Number(provRelokasi.value) : null,
     id_kabupaten_relokasi:
       isRelokasi && kabRelokasi?.value ? Number(kabRelokasi.value) : null,
 

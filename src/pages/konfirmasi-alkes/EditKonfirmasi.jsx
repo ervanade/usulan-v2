@@ -27,6 +27,7 @@ import {
   showPayloadPreview,
   showSuccessAlert,
 } from "./components/alert";
+import KonfirmasiSkeleton from "./components/konfirmasiSkeleton";
 
 export default function EditKonfirmasi() {
   const user = useSelector((a) => a.auth.user);
@@ -42,6 +43,7 @@ export default function EditKonfirmasi() {
     kode: "32020200019",
     alat: "Spirometer",
     jumlah: 1,
+    id_provinsi_relokasi: "",
     id_kabupaten_relokasi: "",
     id_puskesmas_relokasi: "",
     kriteria_alkes: ["Dokter", "Perawat"],
@@ -130,7 +132,7 @@ export default function EditKonfirmasi() {
         return [];
       }
     },
-    [user?.token]
+    [user?.token],
   );
   const fetchProvinsi = useCallback(async () => {
     try {
@@ -140,7 +142,7 @@ export default function EditKonfirmasi() {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
-        }
+        },
       );
 
       return res.data.data
@@ -160,7 +162,7 @@ export default function EditKonfirmasi() {
       try {
         const res = await axios({
           method: "post",
-          url: `${import.meta.env.VITE_APP_API_URL}/api/puskesmas/filter`,
+          url: `${import.meta.env.VITE_APP_API_URL}/api/puskesmas/all`,
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${user?.token}`,
@@ -182,20 +184,44 @@ export default function EditKonfirmasi() {
         return [];
       }
     },
-    [user?.token]
+    [user?.token],
+  );
+
+  const defaultProvinsi = useMemo(
+    () => ({
+      value: formData.id_provinsi,
+      label: formData.provinsi,
+    }),
+    [formData.id_provinsi, formData.provinsi],
   );
 
   useEffect(() => {
     if (!skemaRelokasi) return;
 
-    setProvRelokasi(null);
+    // setProvRelokasi(null);
     setKabRelokasi(null);
     setPusRelokasi(null);
-    setProvOptions([]);
+    // setProvOptions([]);
     setKabOptions([]);
     setPusOptions([]);
     setAlamatRelokasi("");
 
+    if (
+      skemaRelokasi.value === "DALAM_KAB" ||
+      skemaRelokasi.value === "ANTAR_KAB"
+    ) {
+      setProvRelokasi(defaultProvinsi);
+      setProvOptions([defaultProvinsi]); // hanya 1 opsi
+    }
+
+    if (skemaRelokasi.value === "ANTAR_PROV") {
+      setProvRelokasi(null);
+      setLoadingProv(true);
+      fetchProvinsi().then((prov) => {
+        setProvOptions(prov);
+        setLoadingProv(false);
+      });
+    }
     const load = async () => {
       setLoadingKab(true);
 
@@ -222,7 +248,7 @@ export default function EditKonfirmasi() {
     };
 
     load();
-  }, [skemaRelokasi]);
+  }, [skemaRelokasi, defaultProvinsi]);
 
   useEffect(() => {
     if (!provRelokasi) return;
@@ -298,6 +324,7 @@ export default function EditKonfirmasi() {
 
   const fetchKonfirmasiData = useCallback(async () => {
     try {
+      setGetLoading(true);
       const decryptedId = decryptId(id);
       if (!decryptedId) return navigate("/not-found");
 
@@ -307,7 +334,7 @@ export default function EditKonfirmasi() {
         }/api/konfirmasidetail/${decryptedId}`,
         {
           headers: { Authorization: `Bearer ${user.token}` },
-        }
+        },
       );
 
       const d = res.data.data;
@@ -324,6 +351,7 @@ export default function EditKonfirmasi() {
         kode: d.kode_puskesmas,
         alat: d.nama_barang,
         jumlah: d.jumlah_barang_unit,
+        id_provinsi_relokasi: d.id_provinsi_relokasi,
         id_kabupaten_relokasi: d.id_kabupaten_relokasi,
         id_puskesmas_relokasi: d.id_puskesmas_relokasi,
       });
@@ -351,7 +379,7 @@ export default function EditKonfirmasi() {
 
       /* ---------- SELECT VALUE ---------- */
       setSarpras(
-        yaTidakOptions.find((o) => o.value === d.siap_sarana_prasarana)
+        yaTidakOptions.find((o) => o.value === d.siap_sarana_prasarana),
       );
       setAlkes(yaTidakOptions.find((o) => o.value === d.kondisi_alkes_baik));
       setUpayaSDM(yaTidakOptions.find((o) => o.value === d.upaya_memenuhi_sdm));
@@ -361,7 +389,7 @@ export default function EditKonfirmasi() {
           ? d.strategi_pemenuhan_sdm
               .split(",")
               .map((x) => strategiOptions.find((o) => o.value === x.trim()))
-          : []
+          : [],
       );
 
       setAlasanRelokasi(
@@ -369,13 +397,13 @@ export default function EditKonfirmasi() {
           ? d.alasan_relokasi
               .split(",")
               .map((x) =>
-                alasanRelokasiOptions.find((o) => o.value === x.trim())
+                alasanRelokasiOptions.find((o) => o.value === x.trim()),
               )
-          : []
+          : [],
       );
       setSkemaRelokasi(
         skemaRelokasiOptions.find((o) => o.value === d.keterangan_relokasi) ||
-          null
+          null,
       );
 
       setAlamatRelokasi(d.alamat_relokasi || "");
@@ -390,7 +418,7 @@ export default function EditKonfirmasi() {
       setStatusVerifikasi(
         d.status_verifikasi
           ? { value: d.status_verifikasi, label: d.status_verifikasi }
-          : null
+          : null,
       );
     } finally {
       setGetLoading(false);
@@ -432,10 +460,23 @@ export default function EditKonfirmasi() {
   }, [kesiapanSDM, upayaSDM, sarpras, alkes]);
 
   useEffect(() => {
+    if (!provOptions.length || !formData?.id_provinsi_relokasi || provRelokasi)
+      return;
+
+    const selectedProv = provOptions.find(
+      (p) => p.value === formData.id_provinsi_relokasi,
+    );
+
+    if (selectedProv) {
+      setProvRelokasi(selectedProv);
+    }
+  }, [provOptions, formData.id_provinsi_relokasi]);
+
+  useEffect(() => {
     if (!kabOptions.length || !formData?.id_kabupaten_relokasi) return;
 
     const selectedKab = kabOptions.find(
-      (k) => k.value === formData.id_kabupaten_relokasi
+      (k) => k.value === formData.id_kabupaten_relokasi,
     );
 
     if (selectedKab) {
@@ -447,7 +488,7 @@ export default function EditKonfirmasi() {
     if (!pusOptions.length || !formData?.id_puskesmas_relokasi) return;
 
     const selectedPus = pusOptions.find(
-      (p) => p.value === formData.id_puskesmas_relokasi
+      (p) => p.value === formData.id_puskesmas_relokasi,
     );
 
     if (selectedPus) {
@@ -486,7 +527,8 @@ export default function EditKonfirmasi() {
     setStrategi([]);
   }, [kesiapanSDM]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     // 1. Build payload
     const finalStatusVerifikasi = resolveStatusVerifikasi({
       role: user?.role,
@@ -504,6 +546,7 @@ export default function EditKonfirmasi() {
       skemaRelokasi,
       alasanRelokasi,
       sdmChecked,
+      provRelokasi,
       kabRelokasi,
       pusRelokasi,
       alamatRelokasi,
@@ -520,7 +563,7 @@ export default function EditKonfirmasi() {
     // 2. Validasi
     const validation = validateKonfirmasiPayload(payload);
     if (!validation.isValid) {
-      await showErrorAlert("Validasi Gagal", validation.errors);
+      await showErrorAlert("Lengkapi semua form nya!", validation.errors);
       return;
     }
 
@@ -545,7 +588,7 @@ export default function EditKonfirmasi() {
       await showSuccessAlert();
       const encryptedId = encryptId(parseInt(formData?.id_kabupaten));
       navigate(
-        `/konfirmasi-alkes/kabupaten/${encodeURIComponent(encryptedId)}`
+        `/konfirmasi-alkes/kabupaten/${encodeURIComponent(encryptedId)}`,
       );
     } catch (err) {
       await showErrorAlert("Gagal Simpan", [
@@ -568,9 +611,16 @@ export default function EditKonfirmasi() {
   /* ================== UI ================== */
   if (getLoading) {
     return (
-      <div className="flex justify-center items-center">
-        <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
-        <span className="ml-2">Loading...</span>
+      <div>
+        <Breadcrumb
+          title="Konfirmasi Ulang Alkes"
+          pageName="Konfirmasi Alkes"
+        />
+        <Card>
+          <div className="max-w-7xl mx-auto px-6 py-6">
+            <KonfirmasiSkeleton />
+          </div>
+        </Card>
       </div>
     );
   }
@@ -582,7 +632,7 @@ export default function EditKonfirmasi() {
           <div className="flex justify-end mb-4">
             <Link
               to={`/konfirmasi-alkes/kabupaten/${encryptId(
-                parseInt(formData?.id_kabupaten)
+                parseInt(formData?.id_kabupaten),
               )}`}
               className="px-4 py-2 bg-primary text-white rounded-md font-semibold"
             >
@@ -591,7 +641,7 @@ export default function EditKonfirmasi() {
           </div>
 
           {/* IDENTITAS */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-white p-4 rounded-md">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-4 bg-white p-4 rounded-md">
             <ReadOnly label="Provinsi" value={formData.provinsi} />
             <ReadOnly label="Kab/Kota" value={formData.kabKota} />
             <ReadOnly label="Kode Puskesmas" value={formData.kode} />
@@ -625,271 +675,276 @@ export default function EditKonfirmasi() {
               </div>
             </section>
           )}
+          <form onSubmit={handleSubmit}>
+            {/* SDM WAJIB */}
+            <section className="mt-6 bg-white p-4 rounded-md">
+              <h2 className="font-semibold mb-2">SDM Wajib per Alat</h2>
+              <ul className="list-disc ml-5 text-sm text-gray-700">
+                <li>{sdmWajib}</li>
+              </ul>
+            </section>
 
-          {/* SDM WAJIB */}
-          <section className="mt-6 bg-white p-4 rounded-md">
-            <h2 className="font-semibold mb-2">SDM Wajib per Alat</h2>
-            <ul className="list-disc ml-5 text-sm text-gray-700">
-              <li>{sdmWajib}</li>
-            </ul>
-          </section>
+            {/* SDM DIMILIKI */}
+            <section className="mt-8">
+              <h2 className="font-semibold mb-3">SDM Dimiliki Puskesmas</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-3">
+                {sdmList.map((s) => {
+                  const isChecked = !!sdmChecked[s.id];
 
-          {/* SDM DIMILIKI */}
-          <section className="mt-8">
-            <h2 className="font-semibold mb-3">SDM Dimiliki Puskesmas</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {sdmList.map((s) => {
-                const isChecked = !!sdmChecked[s.id];
+                  return (
+                    <div
+                      key={s.id}
+                      className={`border rounded-md p-3 ${
+                        isChecked
+                          ? "border-primary bg-primary/5"
+                          : "border-[#cacaca]"
+                      }`}
+                    >
+                      <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() =>
+                            setSdmChecked((prev) => {
+                              const copy = { ...prev };
+                              if (copy[s.id]) delete copy[s.id];
+                              else
+                                copy[s.id] = {
+                                  nama: "",
+                                  jenis: s.nama, // ⬅️ INI PENTING
+                                };
+                              return copy;
+                            })
+                          }
+                        />
+                        {s.nama}
+                      </label>
 
-                return (
-                  <div
-                    key={s.id}
-                    className={`border rounded-md p-3 ${
-                      isChecked
-                        ? "border-primary bg-primary/5"
-                        : "border-[#cacaca]"
-                    }`}
-                  >
-                    <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() =>
-                          setSdmChecked((prev) => {
-                            const copy = { ...prev };
-                            if (copy[s.id]) delete copy[s.id];
-                            else
-                              copy[s.id] = {
-                                nama: "",
-                                jenis: s.nama, // ⬅️ INI PENTING
-                              };
-                            return copy;
-                          })
-                        }
-                      />
-                      {s.nama}
-                    </label>
+                      {isChecked && (
+                        <input
+                          type="text"
+                          className="mt-2 w-full border rounded-md px-2 py-1 text-sm"
+                          placeholder={`Nama ${s.nama}`}
+                          required
+                          value={sdmChecked[s.id]?.nama || ""}
+                          onChange={(e) =>
+                            setSdmChecked((prev) => ({
+                              ...prev,
+                              [s.id]: {
+                                ...prev[s.id],
+                                nama: e.target.value,
+                              },
+                            }))
+                          }
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
 
-                    {isChecked && (
-                      <input
-                        type="text"
-                        className="mt-2 w-full border rounded-md px-2 py-1 text-sm"
-                        placeholder={`Nama ${s.nama}`}
-                        value={sdmChecked[s.id]?.nama || ""}
-                        onChange={(e) =>
-                          setSdmChecked((prev) => ({
-                            ...prev,
-                            [s.id]: {
-                              ...prev[s.id],
-                              nama: e.target.value,
-                            },
-                          }))
-                        }
-                      />
-                    )}
-                  </div>
-                );
-              })}
+            <div className="mt-4">
+              <ReadOnly label="Kesiapan SDMK" value={kesiapanSDM} />
             </div>
-          </section>
 
-          <div className="mt-4">
-            <ReadOnly label="Kesiapan SDMK" value={kesiapanSDM} />
-          </div>
+            {/* UPAYA SDM */}
+            {kesiapanSDM === "TIDAK" && (
+              <section className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormSelect
+                  label="Upaya Pemenuhan SDM"
+                  placeholder="Apakah akan dilakukan upaya pemenuhan SDM?"
+                  value={upayaSDM}
+                  onChange={setUpayaSDM}
+                  options={yaTidakOptions}
+                />
+                {upayaSDM?.value === "YA" && (
+                  <FormSelect
+                    label="Strategi Pemenuhan SDM"
+                    placeholder="Pilih strategi pemenuhan SDM"
+                    isMulti
+                    value={strategi}
+                    onChange={setStrategi}
+                    options={strategiOptions}
+                  />
+                )}
+              </section>
+            )}
 
-          {/* UPAYA SDM */}
-          {kesiapanSDM === "TIDAK" && (
-            <section className="mt-6 grid grid-cols-2 gap-4">
+            {/* SARPRAS */}
+            <section className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormSelect
-                label="Upaya Pemenuhan SDM"
-                placeholder="Apakah akan dilakukan upaya pemenuhan SDM?"
-                value={upayaSDM}
-                onChange={setUpayaSDM}
+                label="Kesiapan Sarpras"
+                placeholder="Pilih kesiapan sarana & prasarana"
+                value={sarpras}
+                onChange={setSarpras}
                 options={yaTidakOptions}
               />
-              {upayaSDM?.value === "YA" && (
-                <FormSelect
-                  label="Strategi Pemenuhan SDM"
-                  placeholder="Pilih strategi pemenuhan SDM"
-                  isMulti
-                  value={strategi}
-                  onChange={setStrategi}
-                  options={strategiOptions}
-                />
-              )}
-            </section>
-          )}
-
-          {/* SARPRAS */}
-          <section className="mt-6 grid grid-cols-2 gap-4">
-            <FormSelect
-              label="Kesiapan Sarpras"
-              placeholder="Pilih kesiapan sarana & prasarana"
-              value={sarpras}
-              onChange={setSarpras}
-              options={yaTidakOptions}
-            />
-            <FormSelect
-              label="Ketersediaan Alkes berfungsi dengan baik
+              <FormSelect
+                label="Ketersediaan Alkes berfungsi dengan baik
 "
-              placeholder="Alkes Existing berfungsi dengan baik?"
-              value={alkes}
-              onChange={setAlkes}
-              options={yaTidakOptions}
-            />
-          </section>
+                placeholder="Alkes Existing berfungsi dengan baik?"
+                value={alkes}
+                onChange={setAlkes}
+                options={yaTidakOptions}
+              />
+            </section>
 
-          {/* RELOKASI */}
-          <section className="mt-8 bg-white p-4 rounded-md">
-            <ReadOnly label="Relokasi" value={relokasi} />
+            {/* RELOKASI */}
+            <section className="mt-8 bg-white p-4 rounded-md">
+              <ReadOnly label="Relokasi" value={relokasi} />
 
-            {relokasi === "YA" && (
-              <>
-                <FormSelect
-                  label="Skema Relokasi"
-                  placeholder="Pilih Skema Relokasi"
-                  value={skemaRelokasi}
-                  onChange={setSkemaRelokasi}
-                  options={skemaRelokasiOptions}
-                />
-                <FormSelect
-                  label="Alasan Relokasi"
-                  placeholder="Pilih Alasan Relokasi"
-                  isMulti
-                  value={alasanRelokasi}
-                  onChange={setAlasanRelokasi}
-                  options={alasanRelokasiOptions}
-                />
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  {" "}
-                  {skemaRelokasi?.value === "ANTAR_PROV" && (
+              {relokasi === "YA" && (
+                <>
+                  <FormSelect
+                    label="Skema Relokasi"
+                    placeholder="Pilih Skema Relokasi"
+                    value={skemaRelokasi}
+                    onChange={setSkemaRelokasi}
+                    options={skemaRelokasiOptions}
+                  />
+                  <FormSelect
+                    label="Alasan Relokasi"
+                    placeholder="Pilih Alasan Relokasi"
+                    isMulti
+                    value={alasanRelokasi}
+                    onChange={setAlasanRelokasi}
+                    options={alasanRelokasiOptions}
+                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    {" "}
                     <FormSelect
                       label="Provinsi Tujuan Relokasi"
                       placeholder="Pilih provinsi tujuan relokasi"
                       value={provRelokasi}
                       onChange={setProvRelokasi}
                       options={provOptions}
+                      isDisabled={
+                        skemaRelokasi?.value === "DALAM_KAB" ||
+                        skemaRelokasi?.value === "ANTAR_KAB"
+                      }
                       isLoading={loadingProv}
                     />
-                  )}
-                  <FormSelect
-                    label="Kab/Kota Tujuan Relokasi"
-                    placeholder={
-                      !skemaRelokasi
-                        ? "Pilih skema relokasi dahulu"
-                        : skemaRelokasi.value === "ANTAR_PROV" && !provRelokasi
-                        ? "Pilih provinsi tujuan terlebih dahulu"
-                        : "Pilih kabupaten / kota tujuan"
-                    }
-                    value={kabRelokasi}
-                    onChange={setKabRelokasi}
-                    options={kabOptions}
-                    isDisabled={isKabDisabled}
-                    isLoading={loadingKab}
-                  />{" "}
-                  <FormSelect
-                    label="Puskesmas Tujuan Relokasi"
-                    placeholder={
-                      !kabRelokasi
-                        ? "Pilih kabupaten / kota dahulu"
-                        : "Pilih puskesmas penerima relokasi"
-                    }
-                    value={pusRelokasi}
-                    onChange={setPusRelokasi}
-                    isDisabled={!kabRelokasi}
-                    options={pusOptions}
-                    isLoading={loadingPus}
-                  />{" "}
-                </div>
+                    <FormSelect
+                      label="Kab/Kota Tujuan Relokasi"
+                      placeholder={
+                        loadingKab
+                          ? "Memuat data kabupaten..."
+                          : !skemaRelokasi
+                            ? "Pilih skema relokasi terlebih dahulu"
+                            : skemaRelokasi.value === "ANTAR_PROV" &&
+                                !provRelokasi
+                              ? "Pilih provinsi tujuan terlebih dahulu"
+                              : "Pilih kabupaten / kota tujuan"
+                      }
+                      value={kabRelokasi}
+                      onChange={setKabRelokasi}
+                      options={kabOptions}
+                      isDisabled={isKabDisabled}
+                      isLoading={loadingKab}
+                    />{" "}
+                    <FormSelect
+                      label="Puskesmas Tujuan Relokasi"
+                      placeholder={
+                        !kabRelokasi
+                          ? "Pilih kabupaten / kota dahulu"
+                          : "Pilih puskesmas penerima relokasi"
+                      }
+                      value={pusRelokasi}
+                      onChange={setPusRelokasi}
+                      isDisabled={!kabRelokasi}
+                      options={pusOptions}
+                      isLoading={loadingPus}
+                    />{" "}
+                    <FormInput
+                      label={
+                        !pusRelokasi
+                          ? "Pilih puskesmas relokasi dahulu"
+                          : "Alamat Puskesmas Relokasi"
+                      }
+                      placeholder={"Alamat puskesmas penerima relokasi"}
+                      disabled={!pusRelokasi}
+                      value={alamatRelokasi}
+                      onChange={(e) => setAlamatRelokasi(e.target.value)}
+                    />
+                  </div>
 
-                <FormInput
-                  label={
-                    !pusRelokasi
-                      ? "Pilih puskesmas relokasi dahulu"
-                      : "Alamat Puskesmas Relokasi"
-                  }
-                  placeholder={"Alamat puskesmas penerima relokasi"}
-                  disabled={!pusRelokasi}
-                  value={alamatRelokasi}
-                  onChange={(e) => setAlamatRelokasi(e.target.value)}
-                />
+                  <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormInput
+                      label="CP Nama Puskesmas Relokasi"
+                      value={cpRelokasi}
+                      placeholder={
+                        !pusRelokasi
+                          ? "Pilih puskesmas relokasi dahulu"
+                          : "Contoh: Dr. Ahmad Fauzi"
+                      }
+                      disabled={!pusRelokasi}
+                      onChange={(e) => setCpRelokasi(e.target.value)}
+                    />
+                    <FormInput
+                      label="CP No HP Puskesmas Relokasi"
+                      value={cpHpRelokasi}
+                      placeholder={
+                        !pusRelokasi
+                          ? "Pilih puskesmas relokasi dahulu"
+                          : "Contoh: 081234567890"
+                      }
+                      disabled={!pusRelokasi}
+                      onChange={(e) => setCpHpRelokasi(e.target.value)}
+                    />
+                    <FormInput
+                      label={`Contact Person Dinkes Kab/Kota Relokasi`}
+                      placeholder={
+                        !pusRelokasi
+                          ? "Pilih puskesmas relokasi dahulu"
+                          : "Contoh: Dr. Ahmad Fauzi_081234567890"
+                      }
+                      disabled={!pusRelokasi}
+                      value={picDinkesRelokasi}
+                      onChange={(e) => setPicDinkesRelokasi(e.target.value)}
+                    />
+                  </section>
+                </>
+              )}
+            </section>
 
-                <section className="grid grid-cols-2 gap-4">
-                  <FormInput
-                    label="CP Nama Puskesmas Relokasi"
-                    value={cpRelokasi}
-                    placeholder={
-                      !pusRelokasi
-                        ? "Pilih puskesmas relokasi dahulu"
-                        : "Contoh: Dr. Ahmad Fauzi"
-                    }
-                    disabled={!pusRelokasi}
-                    onChange={(e) => setCpRelokasi(e.target.value)}
-                  />
-                  <FormInput
-                    label="CP No HP Puskesmas Relokasi"
-                    value={cpHpRelokasi}
-                    placeholder={
-                      !pusRelokasi
-                        ? "Pilih puskesmas relokasi dahulu"
-                        : "Contoh: 081234567890"
-                    }
-                    disabled={!pusRelokasi}
-                    onChange={(e) => setCpHpRelokasi(e.target.value)}
-                  />
-                  <FormInput
-                    label={`Contact Person Dinkes Kab/Kota Relokasi`}
-                    placeholder={
-                      !pusRelokasi
-                        ? "Pilih puskesmas relokasi dahulu"
-                        : "Contoh: Dr. Ahmad Fauzi_081234567890"
-                    }
-                    disabled={!pusRelokasi}
-                    value={picDinkesRelokasi}
-                    onChange={(e) => setPicDinkesRelokasi(e.target.value)}
-                  />
-                </section>
-              </>
-            )}
-          </section>
+            {/* PIC */}
+            <section className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormInput
+                label={`Nama PIC Puskesmas${
+                  skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
+                }`}
+                placeholder="Contoh: Dr. Ahmad Fauzi"
+                value={picNama}
+                onChange={(e) => setPicNama(e.target.value)}
+              />
+              <FormInput
+                label={`No HP PIC Puskesmas${
+                  skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
+                }`}
+                value={picHp}
+                placeholder="Contoh: 081234567890"
+                onChange={(e) => setPicHp(e.target.value)}
+              />
+              <FormInput
+                label={`Nama PIC Dinkes Kab/Kota ${
+                  skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
+                }`}
+                placeholder={"Contoh: Dr. Ahmad Fauzi"}
+                value={cpDinkes}
+                onChange={(e) => setCpDinkes(e.target.value)}
+              />
+              <FormInput
+                label={`No Hp PIC Dinkes Kab/Kota ${
+                  skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
+                }`}
+                placeholder={"Contoh: 081234567890"}
+                value={cpHpDinkes}
+                onChange={(e) => setCpHpDinkes(e.target.value)}
+              />
+            </section>
 
-          {/* PIC */}
-          <section className="mt-8 grid grid-cols-2 gap-4">
-            <FormInput
-              label={`Nama PIC Puskesmas${
-                skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
-              }`}
-              placeholder="Contoh: Dr. Ahmad Fauzi"
-              value={picNama}
-              onChange={(e) => setPicNama(e.target.value)}
-            />
-            <FormInput
-              label={`No HP PIC Puskesmas${
-                skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
-              }`}
-              value={picHp}
-              placeholder="Contoh: 081234567890"
-              onChange={(e) => setPicHp(e.target.value)}
-            />
-            <FormInput
-              label={`Nama PIC Dinkes Kab/Kota ${
-                skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
-              }`}
-              placeholder={"Contoh: Dr. Ahmad Fauzi"}
-              value={cpDinkes}
-              onChange={(e) => setCpDinkes(e.target.value)}
-            />
-            <FormInput
-              label={`No Hp PIC Dinkes Kab/Kota ${
-                skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
-              }`}
-              placeholder={"Contoh: 081234567890"}
-              value={cpHpDinkes}
-              onChange={(e) => setCpHpDinkes(e.target.value)}
-            />
-          </section>
-
-          {/* <section className="mt-6">
+            {/* <section className="mt-6">
             <label className="text-xs font-semibold block mb-1">
               Upload Surat Balasan (PDF)
             </label>
@@ -900,14 +955,15 @@ export default function EditKonfirmasi() {
             />
           </section> */}
 
-          <div className="flex justify-end mt-8">
-            <button
-              className="bg-primary text-white px-6 py-2 rounded-md font-semibold"
-              onClick={handleSubmit}
-            >
-              Simpan
-            </button>
-          </div>
+            <div className="flex justify-end mt-8">
+              <button
+                className="bg-primary text-white px-6 py-2 rounded-md font-semibold"
+                // onClick={handleSubmit}
+              >
+                Simpan
+              </button>
+            </div>
+          </form>
         </div>
       </Card>
     </div>
