@@ -23,7 +23,8 @@ import GenerateDokumen from "../../components/Dokumen/GenerateDokumen.jsx";
 import ModalUploadDokumen from "../../components/Modal/ModalUploadDokumen.jsx";
 import ModalTTENew from "../../components/Modal/ModalTTENew.jsx";
 import GenerateVerif from "../../components/Dokumen/GenerateVerif.jsx";
-import { allowedKabupaten } from "../../data/data.js";
+import { allowedKabupaten, EXCEL_HEADER } from "../../data/data.js";
+import { MdClose } from "react-icons/md";
 
 const KonfirmasiKabupaten = () => {
   const user = useSelector((a) => a.auth.user);
@@ -48,6 +49,12 @@ const KonfirmasiKabupaten = () => {
   const [dataKecamatan, setDataKecamatan] = useState([]);
   const [dataPeriode, setDataPeriode] = useState([]);
 
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [selectedProvinsiLaporan, setSelectedProvinsiLaporan] = useState(null);
+  const [exportAll, setExportAll] = useState(false);
+  const [exportLimit, setExportLimit] = useState(1000);
+  const [exportLoading, setExportLoading] = useState(false);
+
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
   const [selectedKota, setSelectedKota] = useState(null);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
@@ -67,16 +74,33 @@ const KonfirmasiKabupaten = () => {
   const [selectedRows, setSelectedRows] = React.useState([]);
   const [toggleCleared, setToggleCleared] = React.useState(false);
 
-  const handleTTE = async (id, nama_dokumen, dokumen_array, kabupaten) => {
-    // e.preventDefault();
-    // setShowModal(true);
-    setShowPopup(true);
-    setJsonData({
-      id: id,
-      nama_dokumen: nama_dokumen,
-      dokumen_array: dokumen_array,
-      kabupaten: kabupaten,
+  const showExportProgress = () => {
+    Swal.fire({
+      title: "Sedang Mengekspor Data",
+      html: `
+      <div style="width:100%; background:#e5e7eb; border-radius:6px; height:8px; overflow:hidden">
+        <div id="export-progress" style="
+          height:8px;
+          width:0%;
+          background:#2563eb;
+          transition: width .3s ease;
+        "></div>
+      </div>
+      <p style="font-size:12px;color:#64748b;margin-top:8px">
+        Progress: <span id="progress-text">0%</span>
+      </p>
+    `,
+      allowOutsideClick: false,
+      showConfirmButton: false,
     });
+  };
+
+  const updateProgress = (percent) => {
+    const bar = document.getElementById("export-progress");
+    const text = document.getElementById("progress-text");
+
+    if (bar) bar.style.width = `${percent}%`;
+    if (text) text.innerText = `${percent}%`;
   };
 
   const handleModalDokumen = async (
@@ -84,7 +108,7 @@ const KonfirmasiKabupaten = () => {
     id,
     nama_dokumen,
     kabupaten,
-    type = null
+    type = null,
   ) => {
     e.preventDefault();
     setShowModalUpload(true);
@@ -198,7 +222,7 @@ const KonfirmasiKabupaten = () => {
         setDataKota([]);
       }
     },
-    [dataKota.length, selectedProvinsi?.value, user?.token]
+    [dataKota.length, selectedProvinsi?.value, user?.token],
   );
 
   // Fetch subdistricts based on the selected city
@@ -228,7 +252,7 @@ const KonfirmasiKabupaten = () => {
         setDataKecamatan([]);
       }
     },
-    [dataKecamatan.length, selectedKota?.value, user?.token]
+    [dataKecamatan.length, selectedKota?.value, user?.token],
   );
 
   const fetchPeriode = async () => {
@@ -375,7 +399,7 @@ const KonfirmasiKabupaten = () => {
           selectedStatus.value == 0
             ? dataResponse.filter((a) => a.status_tte == "0")
             : dataResponse.filter(
-                (a) => a.status_tte == "1" || a.status_tte == "2"
+                (a) => a.status_tte == "1" || a.status_tte == "2",
               );
       }
 
@@ -418,7 +442,7 @@ const KonfirmasiKabupaten = () => {
       dataProvinsi.length > 0
     ) {
       const initialOption = dataProvinsi.find(
-        (prov) => prov.value == user.provinsi
+        (prov) => prov.value == user.provinsi,
       );
       if (initialOption) {
         setSelectedProvinsi({
@@ -429,7 +453,7 @@ const KonfirmasiKabupaten = () => {
     }
     if (user.role == "3" && user.kabupaten && dataKota.length > 0) {
       const initialOption = dataKota.find(
-        (prov) => prov.value == user.kabupaten
+        (prov) => prov.value == user.kabupaten,
       );
       if (initialOption) {
         setSelectedKota({
@@ -804,7 +828,7 @@ const KonfirmasiKabupaten = () => {
                       row.id,
                       `Dokumen Konfirmasi ${row.nama_kabupaten}`,
                       row.nama_kabupaten,
-                      "konfirmasi"
+                      "konfirmasi",
                     )
                   }
                 >
@@ -824,7 +848,7 @@ const KonfirmasiKabupaten = () => {
                         row.id,
                         `Dokumen Konfirmasi ${row.nama_kabupaten}`,
                         row.nama_kabupaten,
-                        "konfirmasi"
+                        "konfirmasi",
                       )
                     }
                   >
@@ -891,18 +915,18 @@ const KonfirmasiKabupaten = () => {
               onClick={() => {
                 navigate(
                   `/konfirmasi-alkes/kabupaten/${encodeURIComponent(
-                    encryptId(row.id_kabupaten)
+                    encryptId(row.id_kabupaten),
                   )}`,
                   {
                     replace: true,
-                  }
+                  },
                 );
               }}
             >
               <Link
                 className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
                 to={`/konfirmasi-alkes/kabupaten/${encodeURIComponent(
-                  encryptId(row.id_kabupaten)
+                  encryptId(row.id_kabupaten),
                 )}`}
               >
                 Detail
@@ -915,51 +939,137 @@ const KonfirmasiKabupaten = () => {
         button: true,
       },
     ],
-    []
+    [],
   );
 
-  const handleExport = async () => {
-    // Lazy load library xlsx
+  const mapResponseToExcel = (data) => {
+    return data.map((item, index) => ({
+      No: index + 1,
+      Provinsi: item.provinsi,
+      "Kab/Kota": item.kab_kota,
+      Kecamatan: item.kecamatan || "",
+      "Kode Puskesmas": item.kode_puskesmas,
+      "Nama Puskesmas": item.nama_puskesmas,
+      "Alamat Puskesmas": item.alamat_puskesmas || "",
+      "Alat Kesehatan": item.nama_barang,
+      "Jumlah Alat": item.jumlah_barang_unit,
+      "Status Surat": item.submit_surat_balasan ? "Sudah submit" : "Belum",
+      "Status Lokus": item.relokasi_status || "Lokus",
+      "Status SDMK": item.kesiapan_sdmk || "",
+      "Alasan Relokasi": item.alasan_relokasi || "",
+      "Nama Puskesmas PENERIMA RELOKASI":
+        item.nama_puskesmas_penerima_relokasi || "",
+      "Alamat Puskesmas Penerima Relokasi":
+        item.alamat_puskesmas_relokasi || "",
+      "Kecamatan Penerima Relokasi": item.kecamatan_relokasi || "",
+      "Kabupaten Penerima Relokasi": item.nama_kab_kota_relokasi || "",
+      "Kontak Puskesmas Penerima Relokasi": `${item.pic_penerima_relokasi_nama || ""} ${
+        item.pic_penerima_relokasi_hp || ""
+      }`,
+      "Status RC Puskesmas Relokasi": item.status_verifikasi || "",
+      "Tindak lanjut/ Keterangan Relokasi": item.keterangan_relokasi || "",
+      "PIC Puskesmas (Petugas ASPAK)": `${item.pic_puskesmas_nama || ""} (${item.pic_puskesmas_hp || ""})`,
+      "PIC Dinkes Kesehatan Kab/Kota": `${item.pic_dinkes_nama || ""} (${item.pic_dinkes_hp || ""})`,
+      "PIC Dinas Kesehatan Provinsi": "",
+      "Surat Balasan": item.template_dokumen || "",
+      "Status SDM": item.kesiapan_sdmk || "",
+    }));
+  };
+  const exportToExcel = async (rows) => {
     const XLSX = await import("xlsx");
 
-    // Implementasi untuk mengekspor data (misalnya ke CSV)
-    const exportData = filteredData?.map((item) => ({
-      Provinsi: item?.provinsi,
-      Kabupaten_Kota: item?.kabupaten,
-      Tanggal_Download: item?.tgl_download,
-      Tanggal_Upload: item?.tgl_upload,
-      Tanggal_Upload_CHR: item?.tgl_chr,
-      Tanggal_Upload_CHP: item?.tgl_chp,
-      Tanggal_BA_Verifikasi: item?.tgl_verifikasi,
-      Periode: item?.periode_name,
+    const worksheet = XLSX.utils.json_to_sheet(rows, {
+      header: EXCEL_HEADER,
+    });
+
+    // === SET LEBAR KOLOM ===
+    worksheet["!cols"] = EXCEL_HEADER.map((h) => ({
+      wch: Math.max(h.length + 5, 10),
     }));
 
-    const ws = XLSX.utils.json_to_sheet(exportData);
+    // === STYLE HEADER ===
+    EXCEL_HEADER.forEach((_, idx) => {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: idx })];
+      if (cell) {
+        cell.s = {
+          font: { bold: true, color: { rgb: "FFFFFF" } },
+          fill: { fgColor: { rgb: "2563EB" } },
+          alignment: {
+            horizontal: "center",
+            vertical: "center",
+            wrapText: true,
+          },
+        };
+      }
+    });
 
-    ws["!cols"] = [
-      { wch: 20 }, // Kolom 1 (Provinsi)
-      { wch: 20 }, // Kolom 2 (Kabupaten_Kota)
-      { wch: 20 }, // Kolom 3 (Kecamatan)
-      { wch: 25 }, // Kolom 4 (Puskesmas)
-      { wch: 20 }, // Kolom 5 (Dokumen)
-      { wch: 15 }, // Kolom 6 (Program)
-      { wch: 10 }, // Kolom 7 (Batch)
-      { wch: 15 }, // Kolom 8 (Tahun_Lokus)
-      { wch: 15 }, // Kolom 9 (BAST)
-      { wch: 15 }, // Kolom 10 (Tanggal_Kirim)
-      { wch: 15 }, // Kolom 11 (Tanggal_Terima)
-      { wch: 10 }, // Kolom 12 (Jumlah_Kirim)
-      { wch: 10 }, // Kolom 13 (Jumlah_Terima)
-      { wch: 20 }, // Kolom 14 (Ket_Daerah)
-      { wch: 20 }, // Kolom 15 (Ket_Ppk)
-      { wch: 20 }, // Kolom 16 (Konfirmasi_Daerah)
-      { wch: 20 }, // Kolom 17 (Konfirmasi_Ppk)
-    ];
+    worksheet["!rows"] = [{ hpt: 30 }]; // tinggi header
 
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `Data PDF Usulan`);
-    XLSX.writeFile(wb, "Data PDF Usulan.xlsx");
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Konfirmasi Alkes");
+
+    XLSX.writeFile(workbook, `Konfirmasi_Alkes_${Date.now()}.xlsx`);
   };
+
+  const handleExport = async () => {
+    if (!exportAll && !selectedProvinsiLaporan) {
+      Swal.fire("Pilih Provinsi", "Silakan pilih provinsi", "warning");
+      return;
+    }
+
+    showExportProgress();
+
+    try {
+      updateProgress(10);
+
+      const payload = {
+        id_provinsi: exportAll ? 0 : selectedProvinsiLaporan.value,
+        id_kabupaten: 0,
+        limit: exportLimit,
+      };
+
+      const res = await fetch(
+        "https://api.alkesihss.com/api/laporan/konfirmasi",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      updateProgress(30);
+
+      const json = await res.json();
+      if (!json.success) throw new Error("Gagal export");
+
+      updateProgress(50);
+
+      // mapping data
+      const excelData = mapResponseToExcel(json.data.data);
+
+      updateProgress(70);
+
+      await exportToExcel(excelData);
+
+      updateProgress(100);
+
+      Swal.fire({
+        icon: "success",
+        title: "Export Selesai",
+        text: "File Excel berhasil dibuat",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      Swal.fire("Error", err.message, "error");
+    } finally {
+      setIsExportModalOpen(false);
+    }
+  };
+
   // if (getLoading) {
   //   return (
   //     <div className="flex justify-center items-center">
@@ -975,6 +1085,86 @@ const KonfirmasiKabupaten = () => {
         pageName="Konfirmasi Kabupaten"
         linkBack="/pdf-usulan-alkes"
       />
+      {isExportModalOpen && (
+        <div className="fixed inset-0 z-999 bg-black/30 flex items-center justify-center">
+          <div className="bg-white rounded-lg w-full max-w-lg shadow-lg">
+            {/* Header */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-semibold text-primary">
+                Export Konfirmasi Alkes
+              </h3>
+              <button onClick={() => setIsExportModalOpen(false)}>
+                <MdClose size={20} />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-4 space-y-4">
+              {/* Export All */}
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={exportAll}
+                  onChange={(e) => {
+                    setExportAll(e.target.checked);
+                    if (e.target.checked) setSelectedProvinsiLaporan(null);
+                  }}
+                />
+                Export Semua Provinsi
+              </label>
+
+              {/* Provinsi */}
+              {!exportAll && (
+                <div>
+                  <label className="block mb-1 text-sm">Provinsi</label>
+                  <Select
+                    options={dataProvinsi}
+                    value={selectedProvinsiLaporan}
+                    onChange={setSelectedProvinsiLaporan}
+                    placeholder="Pilih Provinsi"
+                  />
+                </div>
+              )}
+
+              {/* Limit */}
+              <div>
+                <label className="block mb-1 text-sm">Limit Data</label>
+                <select
+                  value={exportLimit}
+                  onChange={(e) => setExportLimit(Number(e.target.value))}
+                  className="w-full border rounded px-3 py-2"
+                >
+                  <option value={100}>100</option>
+                  <option value={500}>500</option>
+                  <option value={1000}>1.000</option>
+                  <option value={10000}>10.000</option>
+                  <option value={100000}>Semua Data</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end gap-2 p-4 border-t">
+              <button
+                className="px-4 py-2 rounded bg-gray-300"
+                onClick={() => setIsExportModalOpen(false)}
+              >
+                Batal
+              </button>
+              <button
+                disabled={exportLoading}
+                onClick={handleExport}
+                className={`px-4 py-2 rounded text-white ${
+                  exportLoading ? "bg-gray-400" : "bg-primary"
+                }`}
+              >
+                {exportLoading ? "Mengekspor..." : "Export Excel"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col items-center justify-center w-full tracking-tight mb-6">
         <h1 className="font-normal mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
           Konfirmasi Ulang Alkes
@@ -1134,14 +1324,17 @@ const KonfirmasiKabupaten = () => {
             />
           </div>
           <div className="div flex gap-2 flex-row font-semibold">
-            <button
-              title="Export Data Distribusi"
-              className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
-              onClick={handleExport}
-            >
-              <BiExport />
-              <span className="hidden sm:block">Export</span>
-            </button>
+            {user?.role == "1" && (
+              <button
+                title="Export Data Distribusi"
+                className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
+                onClick={() => setIsExportModalOpen(true)}
+              >
+                <BiExport />
+                <span className="hidden sm:block">Export Konfirmasi</span>
+              </button>
+            )}
+
             {/* {user.role == "1" ? (
               <button
                 title="Tambah Data Dokumen"

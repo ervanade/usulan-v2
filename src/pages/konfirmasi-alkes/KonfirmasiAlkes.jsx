@@ -180,7 +180,7 @@ const KonfirmasiAlkes = () => {
         setDataKota([]);
       }
     },
-    [dataKota.length, selectedProvinsi?.value, user?.token]
+    [dataKota.length, selectedProvinsi?.value, user?.token],
   );
 
   // Fetch subdistricts based on the selected city
@@ -210,7 +210,7 @@ const KonfirmasiAlkes = () => {
         setDataKecamatan([]);
       }
     },
-    [dataKecamatan.length, selectedKota?.value, user?.token]
+    [dataKecamatan.length, selectedKota?.value, user?.token],
   );
 
   const fetchBarang = useCallback(async () => {
@@ -438,17 +438,17 @@ const KonfirmasiAlkes = () => {
               onClick={() => {
                 navigate(
                   `/konfirmasi-alkes/edit/${encodeURIComponent(
-                    encryptId(row.id)
+                    encryptId(row.id),
                   )}`,
                   {
                     replace: true,
-                  }
+                  },
                 );
               }}
             >
               <Link
                 to={`/konfirmasi-alkes/edit/${encodeURIComponent(
-                  encryptId(row.id)
+                  encryptId(row.id),
                 )}`}
               >
                 Konfirmasi Ulang
@@ -465,7 +465,7 @@ const KonfirmasiAlkes = () => {
           user.role == "3" ? row.konfirmasi_daerah : row.konfirmasi_ppk,
       },
     ],
-    []
+    [],
   );
 
   useEffect(() => {
@@ -497,7 +497,7 @@ const KonfirmasiAlkes = () => {
       dataProvinsi.length > 0
     ) {
       const initialOption = dataProvinsi.find(
-        (prov) => prov.value == user.provinsi
+        (prov) => prov.value == user.provinsi,
       );
       if (initialOption) {
         setSelectedProvinsi({
@@ -508,7 +508,7 @@ const KonfirmasiAlkes = () => {
     }
     if (user.role == "3" && user.kabupaten && dataKota.length > 0) {
       const initialOption = dataKota.find(
-        (prov) => prov.value == user.kabupaten
+        (prov) => prov.value == user.kabupaten,
       );
       if (initialOption) {
         setSelectedKota({
@@ -695,14 +695,14 @@ const KonfirmasiAlkes = () => {
             />
           </div>
           <div className="div flex gap-2 flex-row">
-            <button
+            {/* <button
               title="Export Data Usulan Alkes"
               className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white px-4 py-2 bg-primary rounded-md tracking-tight"
               onClick={handleExport}
             >
               <BiExport />
               <span className="hidden sm:block">Export</span>
-            </button>
+            </button> */}
             {/* {user.role == "1" ? (
               <button
                 title="Tambah Usulan Alkes"
@@ -787,11 +787,11 @@ const KonfirmasiAlkes = () => {
               onRowClicked={(row) => {
                 navigate(
                   `/konfirmasi-alkes/edit/${encodeURIComponent(
-                    encryptId(row.id)
+                    encryptId(row.id),
                   )}`,
                   {
                     replace: true,
-                  }
+                  },
                 );
               }}
             />
