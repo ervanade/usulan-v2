@@ -954,7 +954,7 @@ const KonfirmasiKabupaten = () => {
       "Alat Kesehatan": item.nama_barang,
       "Jumlah Alat": item.jumlah_barang_unit,
       "Status Surat": item.submit_surat_balasan ? "Sudah submit" : "Belum",
-      "Status Lokus": item.relokasi_status || "Lokus",
+      "Status Relokasi": item.relokasi_status || "Lokus",
       "Status SDMK": item.kesiapan_sdmk || "",
       "Alasan Relokasi": item.alasan_relokasi || "",
       "Nama Puskesmas PENERIMA RELOKASI":
