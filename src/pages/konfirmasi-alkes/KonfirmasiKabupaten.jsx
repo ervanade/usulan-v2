@@ -48,6 +48,7 @@ const KonfirmasiKabupaten = () => {
   const [dataKota, setDataKota] = useState([]);
   const [dataKecamatan, setDataKecamatan] = useState([]);
   const [dataPeriode, setDataPeriode] = useState([]);
+  const [dataBarang, setDataBarang] = useState([]);
 
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [selectedProvinsiLaporan, setSelectedProvinsiLaporan] = useState(null);
@@ -58,8 +59,11 @@ const KonfirmasiKabupaten = () => {
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
   const [selectedKota, setSelectedKota] = useState(null);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+  const [selectedBarang, setSelectedBarang] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [selectedPeriode, setSelectedPeriode] = useState(null);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   const [showModal, setShowModal] = useState(false);
   const [uploadTypeModal, setUploadTypeModal] = useState(null); // State untuk tipe upload modal
@@ -141,9 +145,35 @@ const KonfirmasiKabupaten = () => {
       setLoading(false);
     }
   };
+  const fetchBarang = useCallback(async () => {
+    if (dataBarang.length > 0) return;
+
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${import.meta.env.VITE_APP_API_URL}/api/alkes`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+
+      setDataBarang([
+        { label: "Semua Barang", value: "" },
+        ...response.data.data.map((item) => ({
+          label: item.nama_alkes,
+          value: item.id,
+        })),
+      ]);
+    } catch (error) {
+      setError(true);
+      setDataBarang([]);
+    }
+  }, [dataBarang.length, user?.token]);
 
   useEffect(() => {
     fetchDokumenData();
+    fetchBarang();
   }, []);
 
   const fetchUserData = useCallback(async () => {
@@ -312,6 +342,10 @@ const KonfirmasiKabupaten = () => {
     setSelectedKecamatan(selectedOption);
   };
 
+  const handleBarangChange = (selectedOption) => {
+    setSelectedBarang(selectedOption);
+  };
+
   const deleteDokumen = async (id) => {
     await axios({
       method: "delete",
@@ -390,6 +424,9 @@ const KonfirmasiKabupaten = () => {
           id_provinsi: selectedProvinsi?.value.toString() || "",
           id_kabupaten: selectedKota?.value.toString() || "",
           periode_id: selectedPeriode?.value.toString() || "",
+          id_alkes: selectedBarang?.value.toString() || "",
+          tanggal_from: dateFrom || "",
+          tanggal_to: dateTo || "",
         },
       });
       let dataResponse = response.data.data;
@@ -783,6 +820,20 @@ const KonfirmasiKabupaten = () => {
         minWidth: "120px",
         sortable: true,
       },
+      {
+        name: <div className="text-wrap">Nama Alkes</div>,
+        selector: (row) => row.nama_barang,
+        cell: (row) => <div className="text-wrap py-2">{row.nama_barang}</div>,
+        minWidth: "110px",
+        sortable: true,
+      },
+      {
+        name: <div className="text-wrap">Periode</div>,
+        selector: (row) => row.nama_barang,
+        cell: (row) => <div className="text-wrap py-2">{row.periode}</div>,
+        minWidth: "110px",
+        sortable: true,
+      },
 
       {
         name: <div className="text-wrap px-1">Dokumen Konfirmasi</div>,
@@ -809,11 +860,12 @@ const KonfirmasiKabupaten = () => {
       {
         name: <div className="text-wrap px-1">Upload Dokumen Konfirmasi</div>,
         selector: (row) =>
-          row?.tgl_verifikasi && row?.file_verifikasi ? "Sudah" : "Belum",
+          row?.doc_konfirmasi && row?.doc_konfirmasi ? "Sudah" : "Belum",
         sortable: true,
         cell: (row) => {
           const isAllowed =
-            user?.role == "1" || allowedKabupaten.includes(row.id_kabupaten);
+            (user?.role == "1" && row?.stat) ||
+            (allowedKabupaten.includes(row.id_kabupaten) && row?.stat);
           return (
             <div className="flex flex-col items-center space-y-1">
               {!row?.doc_konfirmasi ? (
@@ -1186,7 +1238,7 @@ const KonfirmasiKabupaten = () => {
                 options={dataProvinsi}
                 value={selectedProvinsi}
                 onChange={handleProvinsiChange}
-                className="w-64 sm:w-32 xl:w-60 bg-slate-500 my-react-select-container"
+                className="w-64 sm:w-32 xl:w-52 bg-slate-500 my-react-select-container"
                 classNamePrefix="my-react-select"
                 placeholder="Pilih Provinsi"
                 theme={(theme) => ({
@@ -1200,6 +1252,68 @@ const KonfirmasiKabupaten = () => {
                 isDisabled={user.role == "3" || user.role == "5"}
               />
             </div>
+
+            <div>
+              <label
+                className="block text-[#728294] text-base font-normal mb-2"
+                htmlFor="barang"
+              >
+                Alkes
+              </label>
+              <Select
+                options={dataBarang}
+                value={selectedBarang}
+                onChange={handleBarangChange}
+                className="w-64 sm:w-32 xl:w-48"
+                theme={(theme) => ({
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    primary25: "lightgrey",
+                    primary: "grey",
+                  },
+                })}
+                placeholder={"Pilih Alkes"}
+              />
+            </div>
+            {user?.role == "1" && (
+              <>
+                <div>
+                  <label className="block text-[#728294] text-base font-normal mb-2">
+                    Tanggal Dari
+                  </label>
+                  <input
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setDateFrom(val);
+
+                      // kalau from > to, reset to
+                      if (dateTo && val > dateTo) {
+                        setDateTo("");
+                      }
+                    }}
+                    max={dateTo || undefined}
+                    className="w-64 sm:w-32 xl:w-36 border border-[#c9d1da] rounded-md px-3 py-2 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#728294] text-base font-normal mb-2">
+                    Tanggal Sampai
+                  </label>
+                  <input
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    min={dateFrom || undefined}
+                    className="w-64 sm:w-32 xl:w-36 border border-[#c9d1da] rounded-md px-3 py-2 text-sm"
+                  />
+                </div>
+              </>
+            )}
+
             {/* <div>
               <label
                 className="block text-[#728294] text-base font-normal mb-2"

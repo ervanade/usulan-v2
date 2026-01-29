@@ -25,6 +25,7 @@ import { buildKonfirmasiPayload } from "./components/services/konfirmasiPayload"
 import {
   showErrorAlert,
   showPayloadPreview,
+  showPayloadPreviewUser,
   showSuccessAlert,
 } from "./components/alert";
 import KonfirmasiSkeleton from "./components/konfirmasiSkeleton";
@@ -568,7 +569,10 @@ export default function EditKonfirmasi() {
     }
 
     // 3. Preview payload (SweetAlert)
-    const confirm = await showPayloadPreview(payload);
+    const confirm =
+      user?.role === 1
+        ? await showPayloadPreviewUser(payload)
+        : await showPayloadPreviewUser(payload);
 
     if (!confirm.isConfirmed) {
       return; // user klik TIDAK
@@ -889,6 +893,8 @@ export default function EditKonfirmasi() {
                           ? "Pilih puskesmas relokasi dahulu"
                           : "Contoh: 081234567890"
                       }
+                      onlyNumber
+                      helper="Hanya angka, tanpa spasi atau tanda baca"
                       disabled={!pusRelokasi}
                       onChange={(e) => setCpHpRelokasi(e.target.value)}
                     />
@@ -923,6 +929,8 @@ export default function EditKonfirmasi() {
                   skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
                 }`}
                 value={picHp}
+                onlyNumber
+                helper="Hanya angka, tanpa spasi atau tanda baca"
                 placeholder="Contoh: 081234567890"
                 onChange={(e) => setPicHp(e.target.value)}
               />
@@ -939,6 +947,8 @@ export default function EditKonfirmasi() {
                   skemaRelokasi?.value == "ANTAR_KAB" ? "  (lokus awal)" : ""
                 }`}
                 placeholder={"Contoh: 081234567890"}
+                onlyNumber
+                helper="Hanya angka, tanpa spasi atau tanda baca"
                 value={cpHpDinkes}
                 onChange={(e) => setCpHpDinkes(e.target.value)}
               />
