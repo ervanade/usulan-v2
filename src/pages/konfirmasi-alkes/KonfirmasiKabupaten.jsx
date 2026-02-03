@@ -968,7 +968,7 @@ const KonfirmasiKabupaten = () => {
                 navigate(
                   `/konfirmasi-alkes/kabupaten/${encodeURIComponent(
                     encryptId(row.id_kabupaten),
-                  )}`,
+                  )}/${encodeURIComponent(encryptId(row.id_alkes))}`,
                   {
                     replace: true,
                   },

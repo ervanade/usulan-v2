@@ -20,7 +20,7 @@ import Swal from "sweetalert2";
 
 const KonfirmasiAlkes = () => {
   const user = useSelector((a) => a.auth.user);
-  const { id } = useParams();
+  const { id, idBarang } = useParams();
   const [search, setSearch] = useState(""); // Initialize search state with an empty string
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -253,6 +253,7 @@ const KonfirmasiAlkes = () => {
         },
         data: {
           id_kabupaten: decryptId(id).toString() || "",
+          id_alkes: decryptId(idBarang).toString() || "",
         },
       });
 
@@ -299,7 +300,6 @@ const KonfirmasiAlkes = () => {
     fetchKecamatan(decryptId(id).toString());
     fetchBarang();
   }, []);
-
   const handleProvinsiChange = (selectedOption) => {
     setSelectedProvinsi(selectedOption);
     setSelectedKota(null);
@@ -519,6 +519,23 @@ const KonfirmasiAlkes = () => {
     }
   }, [user.role, user.provinsi, user.kabupaten, dataProvinsi, dataKota]);
 
+  useEffect(() => {
+    if (dataBarang.length > 0) {
+      const idAlkesDecrypted = decryptId(idBarang).toString();
+
+      // 2. Cari di dataBarang (Ingat: key-nya sekarang adalah 'value', bukan 'id')
+      const initialOption = dataBarang.find(
+        (barang) => barang.value.toString() === idAlkesDecrypted,
+      );
+      if (initialOption) {
+        setSelectedBarang({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
+  }, [dataBarang]);
+
   if (getLoading) {
     return (
       <div className="flex justify-center items-center">
@@ -632,6 +649,7 @@ const KonfirmasiAlkes = () => {
                 options={dataBarang}
                 value={selectedBarang}
                 onChange={handleBarangChange}
+                isDisabled
                 className="w-64 sm:w-32 xl:w-60"
                 theme={(theme) => ({
                   ...theme,

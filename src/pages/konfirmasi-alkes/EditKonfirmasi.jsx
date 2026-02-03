@@ -38,6 +38,7 @@ export default function EditKonfirmasi() {
     id_provinsi: "32",
     id_kabupaten: "3202",
     id_puskesmas: "3146",
+    id_alkes: "24",
     provinsi: "Jawa Barat",
     kabKota: "Sukabumi",
     puskesmas: "PALABUHANRATU",
@@ -86,6 +87,15 @@ export default function EditKonfirmasi() {
   const [provRelokasi, setProvRelokasi] = useState(null);
   const [provOptions, setProvOptions] = useState([]);
   const [loadingProv, setLoadingProv] = useState(false);
+
+  const backUrl = useMemo(() => {
+    if (!formData?.id_kabupaten || !formData?.id_alkes) return "#";
+
+    const kabId = encryptId(parseInt(formData.id_kabupaten));
+    const alkesId = encryptId(parseInt(formData.id_alkes));
+
+    return `/konfirmasi-alkes/kabupaten/${encodeURIComponent(kabId)}/${encodeURIComponent(alkesId)}`;
+  }, [formData.id_kabupaten, formData.id_alkes]);
 
   const fetchKriteriaSDM = useCallback(async () => {
     try {
@@ -346,6 +356,7 @@ export default function EditKonfirmasi() {
         id_provinsi: d.id_provinsi,
         id_kabupaten: d.id_kabupaten,
         id_puskesmas: d.id_puskesmas,
+        id_alkes: d.id_alkes,
         provinsi: d.provinsi,
         kabKota: d.kab_kota,
         puskesmas: d.nama_puskesmas,
@@ -591,9 +602,7 @@ export default function EditKonfirmasi() {
 
       await showSuccessAlert();
       const encryptedId = encryptId(parseInt(formData?.id_kabupaten));
-      navigate(
-        `/konfirmasi-alkes/kabupaten/${encodeURIComponent(encryptedId)}`,
-      );
+      navigate(backUrl);
     } catch (err) {
       await showErrorAlert("Gagal Simpan", [
         err?.message || "Terjadi kesalahan saat menyimpan data",
@@ -635,9 +644,7 @@ export default function EditKonfirmasi() {
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex justify-end mb-4">
             <Link
-              to={`/konfirmasi-alkes/kabupaten/${encryptId(
-                parseInt(formData?.id_kabupaten),
-              )}`}
+              to={backUrl}
               className="px-4 py-2 bg-primary text-white rounded-md font-semibold"
             >
               Back

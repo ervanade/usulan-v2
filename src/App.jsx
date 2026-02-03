@@ -91,7 +91,7 @@ function App() {
                 element={<KonfirmasiKabupaten />}
               />
               <Route
-                path="konfirmasi-alkes/kabupaten/:id"
+                path="konfirmasi-alkes/kabupaten/:id/:idBarang"
                 element={<KonfirmasiAlkes />}
               />
               <Route
