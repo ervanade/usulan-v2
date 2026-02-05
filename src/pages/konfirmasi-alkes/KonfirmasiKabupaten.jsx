@@ -864,7 +864,7 @@ const KonfirmasiKabupaten = () => {
         sortable: true,
         cell: (row) => {
           const isAllowed =
-            (user?.role == "1" && row?.stat) ||
+            row?.stat ||
             (allowedKabupaten.includes(row.id_kabupaten) && row?.stat);
           return (
             <div className="flex flex-col items-center space-y-1">
