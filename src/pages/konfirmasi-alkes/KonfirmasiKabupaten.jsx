@@ -944,7 +944,7 @@ const KonfirmasiKabupaten = () => {
         sortable: true,
         cell: (row) => (
           <div className="text-wrap py-2">
-            {row.stat === "1" ? (
+            {row.stat == "1" ? (
               <div className="text-white py-1 px-2 bg-green-600 rounded-md text-xs">
                 Sudah Konfirmasi
               </div>
@@ -1005,7 +1005,7 @@ const KonfirmasiKabupaten = () => {
       "Alamat Puskesmas": item.alamat_puskesmas || "",
       "Alat Kesehatan": item.nama_barang,
       "Jumlah Alat": item.jumlah_barang_unit,
-      "Status Surat": item.submit_surat_balasan ? "Sudah submit" : "Belum",
+      "Status Surat": item.doc_konfirmasi ? "Sudah submit" : "Belum",
       "Status Relokasi": item.relokasi_status || "Lokus",
       "Status SDMK": item.kesiapan_sdmk || "",
       "Alasan Relokasi": item.alasan_relokasi || "",
@@ -1023,7 +1023,7 @@ const KonfirmasiKabupaten = () => {
       "PIC Puskesmas (Petugas ASPAK)": `${item.pic_puskesmas_nama || ""} (${item.pic_puskesmas_hp || ""})`,
       "PIC Dinkes Kesehatan Kab/Kota": `${item.pic_dinkes_nama || ""} (${item.pic_dinkes_hp || ""})`,
       "PIC Dinas Kesehatan Provinsi": "",
-      "Surat Balasan": item.template_dokumen || "",
+      "Surat Balasan": item.document_link ? item.document_link : "Belum",
       "Status SDM": item.kesiapan_sdmk || "",
     }));
   };
