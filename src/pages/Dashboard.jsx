@@ -51,7 +51,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    navigate("/usulan-alkes");
+    navigate("/konfirmasi-alkes");
     return;
     // fetchDashboardData();
   }, []);
