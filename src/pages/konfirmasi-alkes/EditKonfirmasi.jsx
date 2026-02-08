@@ -77,6 +77,7 @@ export default function EditKonfirmasi() {
   const [picNama, setPicNama] = useState("");
   const [picHp, setPicHp] = useState("");
   const [picDinkesRelokasi, setPicDinkesRelokasi] = useState("");
+  const [picHpDinkesRelokasi, setPicHpDinkesRelokasi] = useState("");
   const [statusVerifikasi, setStatusVerifikasi] = useState(null);
   const [fileSurat, setFileSurat] = useState(null);
 
@@ -425,7 +426,8 @@ export default function EditKonfirmasi() {
       setCpHpDinkes(d.pic_dinkes_hp || "");
       setPicNama(d.pic_puskesmas_nama);
       setPicHp(d.pic_puskesmas_hp);
-      setPicDinkesRelokasi(d.pic_dinkes_nama);
+      setPicDinkesRelokasi(d.pic_dinkes_kab_kota_relokasi_cp);
+      setPicHpDinkesRelokasi(d.pic_dinkes_kab_kota_relokasi_hp);
 
       setStatusVerifikasi(
         d.status_verifikasi
@@ -523,8 +525,7 @@ export default function EditKonfirmasi() {
     setCpRelokasi("");
     setCpHpRelokasi("");
     setPicDinkesRelokasi("");
-    setCpDinkes("");
-    setCpHpDinkes("");
+    setPicHpDinkesRelokasi("");
 
     // reset options juga biar UX bersih
     setProvOptions([]);
@@ -569,6 +570,7 @@ export default function EditKonfirmasi() {
       picNama,
       picHp,
       picDinkesRelokasi,
+      picHpDinkesRelokasi,
       statusVerifikasi: finalStatusVerifikasi,
     });
 
@@ -906,7 +908,7 @@ export default function EditKonfirmasi() {
                       onChange={(e) => setCpHpRelokasi(e.target.value)}
                     />
                     <FormInput
-                      label={`Contact Person Dinkes Kab/Kota Relokasi`}
+                      label={`CP Nama Dinkes Kab/Kota Relokasi`}
                       placeholder={
                         !pusRelokasi
                           ? "Pilih puskesmas relokasi dahulu"
@@ -915,6 +917,19 @@ export default function EditKonfirmasi() {
                       disabled={!pusRelokasi}
                       value={picDinkesRelokasi}
                       onChange={(e) => setPicDinkesRelokasi(e.target.value)}
+                    />
+                    <FormInput
+                      label="CP No HP Dinkes Kab/Kota Relokasi"
+                      value={picHpDinkesRelokasi}
+                      placeholder={
+                        !pusRelokasi
+                          ? "Pilih puskesmas relokasi dahulu"
+                          : "Contoh: 081234567890"
+                      }
+                      onlyNumber
+                      helper="Hanya angka, tanpa spasi atau tanda baca"
+                      disabled={!pusRelokasi}
+                      onChange={(e) => setPicHpDinkesRelokasi(e.target.value)}
                     />
                   </section>
                 </>

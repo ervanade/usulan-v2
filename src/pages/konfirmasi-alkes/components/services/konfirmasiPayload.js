@@ -20,6 +20,7 @@ export const buildKonfirmasiPayload = ({
   picNama,
   picHp,
   picDinkesRelokasi,
+  picHpDinkesRelokasi,
   statusVerifikasi,
 }) => {
   const isRelokasi = relokasi === "YA";
@@ -87,7 +88,9 @@ export const buildKonfirmasiPayload = ({
     pic_dinkes_kab_kota_relokasi_cp: isRelokasi
       ? picDinkesRelokasi || null
       : null,
-
+    pic_dinkes_kab_kota_relokasi_hp: isRelokasi
+      ? picHpDinkesRelokasi || null
+      : null,
     pic_puskesmas_nama: picNama || null,
     pic_puskesmas_hp: picHp || null,
     pic_dinkes_nama: cpDinkes || null,

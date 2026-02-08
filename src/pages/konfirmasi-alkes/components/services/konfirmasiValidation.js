@@ -98,6 +98,9 @@ export const validateKonfirmasiPayload = (payload) => {
     /* CP Dinkes Tujuan */
     if (!payload.pic_dinkes_kab_kota_relokasi_cp)
       errors.push("Contact Person Dinkes tujuan relokasi wajib diisi");
+
+    if (!payload.pic_dinkes_kab_kota_relokasi_hp)
+      errors.push("CP No Hp Dinkes tujuan relokasi wajib diisi");
   }
 
   /* =====================================================

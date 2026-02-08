@@ -164,13 +164,20 @@ export const buildHumanPreview = (payload) => {
     },
 
     isRelokasi && {
-      label: "Tujuan Relokasi",
+      label: "Puskesmas Relokasi",
       value: payload.nama_puskesmas_penerima_relokasi || "-",
     },
 
     isRelokasi && {
       label: "Alamat Relokasi",
       value: payload.alamat_relokasi || "-",
+    },
+
+    isRelokasi && {
+      label: "PIC Puskesmas Relokasi",
+      value: payload.pic_penerima_relokasi_nama
+        ? `${payload.pic_penerima_relokasi_nama} (${payload.pic_penerima_relokasi_hp})`
+        : "-",
     },
 
     /* ===== PIC ===== */
