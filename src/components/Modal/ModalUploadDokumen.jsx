@@ -88,7 +88,7 @@ const ModalUploadDokumen = ({
         Swal.fire(
           "Gagal Upload Dokumen!",
           "Silahkan Coba Beberapa Saat Lagi!",
-          "error"
+          "error",
         );
         setLoading(false);
         setSetuju(false);
@@ -108,8 +108,8 @@ const ModalUploadDokumen = ({
         Swal.fire("Error", "File type harus PDF", "error");
         return;
       }
-      if (file.size > 100 * 1024 * 1024) {
-        Swal.fire("Error", "File size harus dibawah 100 MB", "error");
+      if (file.size > 5 * 1024 * 1024) {
+        Swal.fire("Error", "File size harus dibawah 5 MB", "error");
         return;
       }
       setFormData((prev) => ({
@@ -123,7 +123,7 @@ const ModalUploadDokumen = ({
   };
 
   const handleSave = () => {
-    if (!validateFileFormat(formData.fileDokumen, ["pdf"], 100, "File Dokumen"))
+    if (!validateFileFormat(formData.fileDokumen, ["pdf"], 5, "File Dokumen"))
       return;
     if (!setuju) {
       Swal.fire("Warning", "Anda Belum Menyetujui Upload", "warning");
@@ -159,35 +159,35 @@ const ModalUploadDokumen = ({
       setUploadApiUrl(
         `${import.meta.env.VITE_APP_API_URL}/api/usulan/uploadchr/${
           formData.id_dokumen
-        }`
+        }`,
       );
     } else if (uploadType === "chp") {
       setModalTitle(`Upload Dokumen CHP ${jsonData?.kabupaten}`);
       setUploadApiUrl(
         `${import.meta.env.VITE_APP_API_URL}/api/usulan/uploadchp/${
           formData.id_dokumen
-        }`
+        }`,
       );
     } else if (uploadType === "baverif") {
       setModalTitle(`Upload BA Verifikasi ${jsonData?.kabupaten}`);
       setUploadApiUrl(
         `${import.meta.env.VITE_APP_API_URL}/api/usulan/uploadverif/${
           formData.id_dokumen
-        }`
+        }`,
       );
     } else if (uploadType === "konfirmasi") {
       setModalTitle(`Upload Dokumen Konfirmasi ${jsonData?.kabupaten}`);
       setUploadApiUrl(
         `${import.meta.env.VITE_APP_API_URL}/api/konfirmasiheader/${
           formData.id_dokumen
-        }`
+        }`,
       );
     } else {
       setModalTitle(`Upload Dokumen ${jsonData?.kabupaten}`);
       setUploadApiUrl(
         `${import.meta.env.VITE_APP_API_URL}/api/usulan/upload/${
           formData.id_dokumen
-        }`
+        }`,
       );
     }
   }, [uploadType, formData.id_dokumen, jsonData?.kabupaten]);
@@ -366,7 +366,7 @@ const ModalUploadDokumen = ({
                           or drag and drop
                         </p>
                       )}
-                      <p>(File PDF, Max: 100MB)</p>
+                      <p>(File PDF, Max: 5MB)</p>
                     </div>
                   </div>
                 </div>
