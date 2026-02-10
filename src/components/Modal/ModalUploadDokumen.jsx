@@ -108,8 +108,8 @@ const ModalUploadDokumen = ({
         Swal.fire("Error", "File type harus PDF", "error");
         return;
       }
-      if (file.size > 5 * 1024 * 1024) {
-        Swal.fire("Error", "File size harus dibawah 5 MB", "error");
+      if (file.size > 100 * 1024 * 1024) {
+        Swal.fire("Error", "File size harus dibawah 100 MB", "error");
         return;
       }
       setFormData((prev) => ({
@@ -123,7 +123,7 @@ const ModalUploadDokumen = ({
   };
 
   const handleSave = () => {
-    if (!validateFileFormat(formData.fileDokumen, ["pdf"], 5, "File Dokumen"))
+    if (!validateFileFormat(formData.fileDokumen, ["pdf"], 100, "File Dokumen"))
       return;
     if (!setuju) {
       Swal.fire("Warning", "Anda Belum Menyetujui Upload", "warning");
@@ -366,7 +366,7 @@ const ModalUploadDokumen = ({
                           or drag and drop
                         </p>
                       )}
-                      <p>(File PDF, Max: 5MB)</p>
+                      <p>(File PDF, Max: 100MB)</p>
                     </div>
                   </div>
                 </div>
