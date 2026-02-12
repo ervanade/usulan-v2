@@ -828,9 +828,13 @@ const KonfirmasiKabupaten = () => {
         sortable: true,
       },
       {
-        name: <div className="text-wrap">Periode</div>,
-        selector: (row) => row.nama_barang,
-        cell: (row) => <div className="text-wrap py-2">{row.periode}</div>,
+        name: <div className="text-wrap">Tanggal Periode</div>,
+        selector: (row) => row.tanggal_from,
+        cell: (row) => (
+          <div className="text-wrap py-2 text-xs">
+            {`${row.tanggal_from} - ${row.tanggal_to} `}
+          </div>
+        ),
         minWidth: "110px",
         sortable: true,
       },
@@ -944,13 +948,17 @@ const KonfirmasiKabupaten = () => {
         sortable: true,
         cell: (row) => (
           <div className="text-wrap py-2">
-            {row.stat == "1" ? (
+            {row.stat == "2" ? (
               <div className="text-white py-1 px-2 bg-green-600 rounded-md text-xs">
                 Sudah Konfirmasi
               </div>
+            ) : row.stat == "1" ? (
+              <div className="text-white py-1 px-2 bg-yellow-600 rounded-md text-xs">
+                Belum Konfirmasi
+              </div>
             ) : (
               <div className="text-white py-1 px-2 bg-red-600 rounded-md text-xs">
-                Belum Konfirmasi
+                Belum Mengisi
               </div>
             )}
           </div>

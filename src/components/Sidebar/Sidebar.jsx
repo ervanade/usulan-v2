@@ -400,6 +400,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                           <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
                             <li>
                               <NavLink
+                                to="/master-data-periode-alkes"
+                                className={({ isActive }) =>
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
+                                }
+                              >
+                                Data Periode Alkes
+                              </NavLink>
+                            </li>
+                            {/* <li>
+                              <NavLink
                                 to="/master-data-periode"
                                 className={({ isActive }) =>
                                   "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
@@ -408,7 +419,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               >
                                 Data Periode
                               </NavLink>
-                            </li>
+                            </li> */}
                             {/* <li>
                               <NavLink
                                 to="/master-data-puskesmas"

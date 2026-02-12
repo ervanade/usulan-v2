@@ -60,6 +60,9 @@ import EditKriteria from "./pages/master-kriteria/EditKriteria.jsx";
 import KonfirmasiAlkes from "./pages/konfirmasi-alkes/KonfirmasiAlkes.jsx";
 import EditKonfirmasi from "./pages/konfirmasi-alkes/EditKonfirmasi.jsx";
 import KonfirmasiKabupaten from "./pages/konfirmasi-alkes/KonfirmasiKabupaten.jsx";
+import DataPeriodeAlkes from "./pages/master-periode-alkes/DataPeriodeAlkes.jsx";
+import TambahPeriodeAlkes from "./pages/master-periode-alkes/TambahPeriodeAlkes.jsx";
+import EditPeriodeAlkes from "./pages/master-periode-alkes/EditPeriodeAlkes.jsx";
 
 function App() {
   const { pathname } = useLocation();
@@ -169,6 +172,18 @@ function App() {
               <Route path="/not-found" element={<NotFound />} />
               {/* <Route path="notifikasi" element={<Notifikasi />} /> */}
               <Route path="/" element={<ProtectedRoutesAdmin />}>
+                <Route
+                  path="master-data-periode-alkes"
+                  element={<DataPeriodeAlkes />}
+                />
+                <Route
+                  path="master-data-periode-alkes/add"
+                  element={<TambahPeriodeAlkes />}
+                />
+                <Route
+                  path="master-data-periode-alkes/edit/:id"
+                  element={<EditPeriodeAlkes />}
+                />
                 <Route path="master-data-periode" element={<DataPeriode />} />
                 <Route
                   path="master-data-periode/add"
