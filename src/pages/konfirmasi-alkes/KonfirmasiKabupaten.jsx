@@ -710,6 +710,7 @@ const KonfirmasiKabupaten = () => {
         kecamatan: data.kecamatan,
         provinsi: data.provinsi || "",
         kabupaten: data.nama_kabupaten || "",
+        nama_alkes: data.nama_alkes || "",
         file_upload: data.file_upload || null,
         file_chr: data.file_chr || null,
         file_chp: data.file_chp || null,
@@ -732,6 +733,7 @@ const KonfirmasiKabupaten = () => {
       } else {
         fileUrl = dataJson?.file_upload;
       }
+      console.log(dataJson.nama_alkes);
       if (fileUrl) {
         try {
           // Menggunakan axios untuk mengambil file
@@ -746,7 +748,7 @@ const KonfirmasiKabupaten = () => {
 
           // Menentukan nama file
           const fileName = dataJson?.kabupaten
-            ? `${fileNamePrefix} ${dataJson.kabupaten}.pdf`
+            ? `${fileNamePrefix} ${dataJson.kabupaten} - ${dataJson.nama_alkes}.pdf`
             : `${fileNamePrefix}.pdf`;
 
           // Menggunakan file-saver untuk menyimpan file
