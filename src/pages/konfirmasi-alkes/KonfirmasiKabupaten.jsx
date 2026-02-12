@@ -733,7 +733,6 @@ const KonfirmasiKabupaten = () => {
       } else {
         fileUrl = dataJson?.file_upload;
       }
-      console.log(dataJson.nama_alkes);
       if (fileUrl) {
         try {
           // Menggunakan axios untuk mengambil file
