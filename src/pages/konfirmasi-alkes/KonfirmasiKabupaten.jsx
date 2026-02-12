@@ -709,7 +709,7 @@ const KonfirmasiKabupaten = () => {
         id: data.id,
         kecamatan: data.kecamatan,
         provinsi: data.provinsi || "",
-        kabupaten: data.kabupaten || "",
+        kabupaten: data.nama_kabupaten || "",
         file_upload: data.file_upload || null,
         file_chr: data.file_chr || null,
         file_chp: data.file_chp || null,
@@ -732,7 +732,6 @@ const KonfirmasiKabupaten = () => {
       } else {
         fileUrl = dataJson?.file_upload;
       }
-
       if (fileUrl) {
         try {
           // Menggunakan axios untuk mengambil file
