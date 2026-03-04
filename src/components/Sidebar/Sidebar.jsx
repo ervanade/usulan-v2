@@ -142,7 +142,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   Konfirmasi Ulang Alkes
                 </NavLink>
               </li>
-              {/* <li>
+              <li>
                 <NavLink
                   to="/usulan-alkes"
                   className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
@@ -166,7 +166,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   <TbReport size={20} />
                   Dokumen Usulan
                 </NavLink>
-              </li> */}
+              </li>
               {/* <li>
                 <NavLink
                   to="/"
@@ -409,7 +409,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                                 Data Periode Alkes
                               </NavLink>
                             </li>
-                            {/* <li>
+                            <li>
                               <NavLink
                                 to="/master-data-periode"
                                 className={({ isActive }) =>
@@ -419,7 +419,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               >
                                 Data Periode
                               </NavLink>
-                            </li> */}
+                            </li>
                             {/* <li>
                               <NavLink
                                 to="/master-data-puskesmas"

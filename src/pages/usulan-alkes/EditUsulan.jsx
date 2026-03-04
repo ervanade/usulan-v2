@@ -62,9 +62,9 @@ const EditUsulan = () => {
   const isDisabled = false;
 
   const isAdmin = user?.role == "1"; // Asumsi role admin adalah 'admin' atau '1', sesuaikan jika berbeda
-  const isAllowedKab =  useMemo(
+  const isAllowedKab = useMemo(
     () => isAdmin || allowedKabupaten.includes(formData.kabupaten),
-    [formData.kabupaten, isAdmin]
+    [formData.kabupaten, isAdmin],
   );
 
   const [dataUser, setDataUser] = useState([]);
@@ -74,7 +74,7 @@ const EditUsulan = () => {
   const [dataPuskesmas, setDataPuskesmas] = useState([]);
   const [dataKriteria, setDataKriteria] = useState([]);
   const [dataPeriode, setDataPeriode] = useState([]);
-  const [idPeriode, setIdPeriode] = useState(null);
+  const [idPeriode, setIdPeriode] = useState("1");
 
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
   const [selectedKota, setSelectedKota] = useState(null);
@@ -294,7 +294,7 @@ const EditUsulan = () => {
         setGetLoading(false);
       }
     },
-    [user?.token]
+    [user?.token],
   );
 
   const handleAlasanChange = (rowId, value) => {
@@ -344,7 +344,7 @@ const EditUsulan = () => {
   };
 
   useEffect(() => {
-    fetchDistribusiData();
+    fetchDistribusiData(idPeriode ? idPeriode : null);
     fetchPeriodeData();
     fetchKriteria();
     // fetchProvinsi();
@@ -445,7 +445,7 @@ const EditUsulan = () => {
     // Inisialisasi pelayanan
     if (formData.pelayanan) {
       const initialOption = pelayananOptions.find(
-        (kec) => kec.value == formData.pelayanan
+        (kec) => kec.value == formData.pelayanan,
       );
       if (initialOption) {
         setSelectedPelayanan({
@@ -458,7 +458,7 @@ const EditUsulan = () => {
     // Inisialisasi listrik
     if (formData.ketersediaan_listrik) {
       const initialOption = SelectOptions.find(
-        (kec) => kec.value == formData.ketersediaan_listrik
+        (kec) => kec.value == formData.ketersediaan_listrik,
       );
       if (initialOption) {
         setSelectedListrik({
@@ -471,7 +471,7 @@ const EditUsulan = () => {
     // Inisialisasi daya
     if (formData.kapasitas_listrik) {
       const initialOption = dayaOptions.find(
-        (kec) => kec.value == formData.kapasitas_listrik
+        (kec) => kec.value == formData.kapasitas_listrik,
       );
       if (initialOption) {
         setSelectedDaya({
@@ -484,7 +484,7 @@ const EditUsulan = () => {
     // Inisialisasi internet
     if (formData.internet) {
       const initialOption = SelectOptions.find(
-        (kec) => kec.value == formData.internet
+        (kec) => kec.value == formData.internet,
       );
       if (initialOption) {
         setSelectedInternet({
@@ -506,7 +506,7 @@ const EditUsulan = () => {
       const initialSelectedKriteria = formData.id_kriteria
         .map((kriteriaId) => {
           const foundKriteria = dataKriteria.find(
-            (kriteria) => kriteria.value == kriteriaId
+            (kriteria) => kriteria.value == kriteriaId,
           );
           return foundKriteria
             ? { value: foundKriteria.value, label: foundKriteria.label }
@@ -537,7 +537,7 @@ const EditUsulan = () => {
       const initialEditedData = {};
       formData.usulan.forEach((item) => {
         const isStandardAlasan = AlasanOptions.some(
-          (opt) => opt.value === item.keterangan_usulan
+          (opt) => opt.value === item.keterangan_usulan,
         );
 
         initialEditedData[item.id] = {
@@ -546,17 +546,17 @@ const EditUsulan = () => {
           keterangan_usulan: isStandardAlasan
             ? item.keterangan_usulan
             : item.keterangan_usulan === null ||
-              item.keterangan_usulan === false ||
-              item.keterangan_usulan === ""
-            ? ""
-            : "Lainnya",
+                item.keterangan_usulan === false ||
+                item.keterangan_usulan === ""
+              ? ""
+              : "Lainnya",
           catatanAlasan: isStandardAlasan
             ? undefined
             : item.keterangan_usulan === null ||
-              item.keterangan_usulan === false ||
-              item.keterangan_usulan === ""
-            ? undefined
-            : item.keterangan_usulan,
+                item.keterangan_usulan === false ||
+                item.keterangan_usulan === ""
+              ? undefined
+              : item.keterangan_usulan,
         };
       });
 
@@ -599,7 +599,7 @@ const EditUsulan = () => {
         .map((option) => option.value);
 
       setSelectedKriteria(
-        dataKriteria.filter((option) => option.value !== "all")
+        dataKriteria.filter((option) => option.value !== "all"),
       );
       setFormData((prev) => ({ ...prev, id_kriteria: allKriteriaValues }));
     } else {
@@ -628,7 +628,7 @@ const EditUsulan = () => {
 
     // Cek apakah memenuhi kriteria SDM
     const memenuhiKriteria = row.kriteria_alkes?.some((alkesKriteria) =>
-      formData.id_kriteria?.includes(alkesKriteria.id)
+      formData.id_kriteria?.includes(alkesKriteria.id),
     );
 
     // 1. Handle perubahan usulan untuk alkes yang memenuhi kriteria SDM
@@ -763,7 +763,7 @@ const EditUsulan = () => {
   const getResultData = () => {
     return filteredData.map((row) => {
       const memenuhiKriteria = row.kriteria_alkes?.some((alkesKriteria) =>
-        formData.id_kriteria?.includes(alkesKriteria.id)
+        formData.id_kriteria?.includes(alkesKriteria.id),
       );
 
       const currentKeterangan = editedData[row.id]?.keterangan_usulan;
@@ -774,12 +774,12 @@ const EditUsulan = () => {
         memenuhiKriteria && currentKeterangan === "Tidak Siap SDM"
           ? null
           : // If doesn't meet criteria
-          !memenuhiKriteria && row.kriteria_alkes?.length > 0
-          ? "Tidak Siap SDM"
-          : // If meets criteria and has other reason
-          currentKeterangan === "Lainnya"
-          ? editedData[row.id]?.catatanAlasan
-          : currentKeterangan;
+            !memenuhiKriteria && row.kriteria_alkes?.length > 0
+            ? "Tidak Siap SDM"
+            : // If meets criteria and has other reason
+              currentKeterangan === "Lainnya"
+              ? editedData[row.id]?.catatanAlasan
+              : currentKeterangan;
 
       return {
         id: row.id,
@@ -856,7 +856,7 @@ const EditUsulan = () => {
 
       // Check if equipment meets SDM criteria
       const memenuhiKriteria = row.kriteria_alkes?.some((alkesKriteria) =>
-        formData.id_kriteria?.includes(alkesKriteria.id)
+        formData.id_kriteria?.includes(alkesKriteria.id),
       );
 
       // Special case: Skip validation if SDM doesn't meet criteria
@@ -906,12 +906,12 @@ const EditUsulan = () => {
 
   const handleShowKeterangan = (keterangan, nama_alkes) => {
     const linkMatch = keterangan.match(
-      /\[(https:\/\/drive\.google\.com[^\]]*)\]/
+      /\[(https:\/\/drive\.google\.com[^\]]*)\]/,
     );
     const imageUrl = linkMatch ? linkMatch[1] : null;
     const detailString = keterangan.replace(
       linkMatch ? `[${imageUrl}]` : "",
-      ""
+      "",
     );
     const detailList = detailString
       .split("|")
@@ -1047,7 +1047,7 @@ const EditUsulan = () => {
         name: <div className="text-wrap">Usulan</div>,
         cell: (row) => {
           const memenuhiSalahSatuKriteria = row.kriteria_alkes?.some(
-            (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id)
+            (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id),
           );
 
           if (!memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
@@ -1140,7 +1140,7 @@ const EditUsulan = () => {
         name: <div className="text-wrap">Alasan Tidak Mengusulkan</div>,
         cell: (row) => {
           const memenuhiSalahSatuKriteria = row.kriteria_alkes?.some(
-            (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id)
+            (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id),
           );
 
           // If doesn't meet criteria, show auto-reason
@@ -1231,7 +1231,7 @@ const EditUsulan = () => {
         width: "250px",
       },
     ],
-    [editedData, errors, selectedPelayanan, filteredData]
+    [editedData, errors, selectedPelayanan, filteredData],
   );
 
   if (getLoading) {
