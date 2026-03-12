@@ -84,7 +84,7 @@ const PdfUsulanAlkes = () => {
     id,
     nama_dokumen,
     kabupaten,
-    type = null
+    type = null,
   ) => {
     e.preventDefault();
     setShowModalUpload(true);
@@ -198,7 +198,7 @@ const PdfUsulanAlkes = () => {
         setDataKota([]);
       }
     },
-    [dataKota.length, selectedProvinsi?.value, user?.token]
+    [dataKota.length, selectedProvinsi?.value, user?.token],
   );
 
   // Fetch subdistricts based on the selected city
@@ -228,7 +228,7 @@ const PdfUsulanAlkes = () => {
         setDataKecamatan([]);
       }
     },
-    [dataKecamatan.length, selectedKota?.value, user?.token]
+    [dataKecamatan.length, selectedKota?.value, user?.token],
   );
 
   const fetchPeriode = async () => {
@@ -373,7 +373,7 @@ const PdfUsulanAlkes = () => {
           selectedStatus.value == 0
             ? dataResponse.filter((a) => a.status_tte == "0")
             : dataResponse.filter(
-                (a) => a.status_tte == "1" || a.status_tte == "2"
+                (a) => a.status_tte == "1" || a.status_tte == "2",
               );
       }
 
@@ -416,7 +416,7 @@ const PdfUsulanAlkes = () => {
       dataProvinsi.length > 0
     ) {
       const initialOption = dataProvinsi.find(
-        (prov) => prov.value == user.provinsi
+        (prov) => prov.value == user.provinsi,
       );
       if (initialOption) {
         setSelectedProvinsi({
@@ -427,7 +427,7 @@ const PdfUsulanAlkes = () => {
     }
     if (user.role == "3" && user.kabupaten && dataKota.length > 0) {
       const initialOption = dataKota.find(
-        (prov) => prov.value == user.kabupaten
+        (prov) => prov.value == user.kabupaten,
       );
       if (initialOption) {
         setSelectedKota({
@@ -754,8 +754,8 @@ const PdfUsulanAlkes = () => {
         selector: (row) => (row?.tgl_chr && row?.file_chr ? "Sudah" : "Belum"),
         sortable: true,
         cell: (row) => {
-          const isAllowed =
-          user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
+          const isAllowed = true;
+          // user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
 
           return (
             <div className="flex flex-col items-center space-y-1">
@@ -772,7 +772,7 @@ const PdfUsulanAlkes = () => {
                       row.id,
                       `Dokumen CHR ${row.kabupaten}`,
                       row.kabupaten,
-                      "chr"
+                      "chr",
                     )
                   }
                   disabled={!isAllowed}
@@ -795,7 +795,7 @@ const PdfUsulanAlkes = () => {
                         row.id,
                         `Dokumen CHR ${row.kabupaten}`,
                         row.kabupaten,
-                        "chr"
+                        "chr",
                       )
                     }
                     disabled={!isAllowed}
@@ -831,8 +831,8 @@ const PdfUsulanAlkes = () => {
         selector: (row) => (row?.tgl_chp && row?.file_chp ? "Sudah" : "Belum"),
         sortable: true,
         cell: (row) => {
-          const isAllowed =
-          user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
+          const isAllowed = true;
+          // user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
 
           return (
             <div className="flex flex-col items-center space-y-1">
@@ -849,7 +849,7 @@ const PdfUsulanAlkes = () => {
                       row.id,
                       `Dokumen CHP ${row.kabupaten}`,
                       row.kabupaten,
-                      "chp"
+                      "chp",
                     )
                   }
                   disabled={!isAllowed}
@@ -872,7 +872,7 @@ const PdfUsulanAlkes = () => {
                         row.id,
                         `Dokumen CHP ${row.kabupaten}`,
                         row.kabupaten,
-                        "chp"
+                        "chp",
                       )
                     }
                     disabled={!isAllowed}
@@ -947,7 +947,7 @@ const PdfUsulanAlkes = () => {
           <div className="flex items-center space-x-1">
             <Link
               to={`/pdf-usulan-alkes/preview-dokumen/${encodeURIComponent(
-                encryptId(row.id)
+                encryptId(row.id),
               )}`} // Sesuaikan dengan path preview Anda
               title="Lihat Preview"
               className="text-white bg-teal-500 hover:bg-teal-700 py-1 px-3 rounded-md font-medium text-xs"
@@ -1002,8 +1002,8 @@ const PdfUsulanAlkes = () => {
           row?.tgl_upload && row?.file_upload ? "Sudah" : "Belum",
         sortable: true,
         cell: (row) => {
-          const isAllowed =
-          user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
+          const isAllowed = true;
+          // user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
 
           return (
             <div className="flex flex-col items-center space-y-1">
@@ -1029,7 +1029,7 @@ const PdfUsulanAlkes = () => {
                       row.id,
                       `Dokumen Proposal ${row.kabupaten}`,
                       row.kabupaten,
-                      "proposal"
+                      "proposal",
                     )
                   }
                   disabled={!isAllowed}
@@ -1053,7 +1053,7 @@ const PdfUsulanAlkes = () => {
                         row.id,
                         `Dokumen Proposal ${row.kabupaten}`,
                         row.kabupaten,
-                        "proposal"
+                        "proposal",
                       )
                     }
                     disabled={!isAllowed}
@@ -1120,8 +1120,8 @@ const PdfUsulanAlkes = () => {
           row?.tgl_verifikasi && row?.file_verifikasi ? "Sudah" : "Belum",
         sortable: true,
         cell: (row) => {
-          const isAllowed =
-          user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
+          const isAllowed = true;
+          // user?.role == "1" || allowedKabupaten.includes(row.kabupaten);
           return (
             <div className="flex flex-col items-center space-y-1">
               {!row?.tgl_upload || !row?.file_upload ? (
@@ -1140,7 +1140,7 @@ const PdfUsulanAlkes = () => {
                       row.id,
                       `Dokumen BA Verif ${row.kabupaten}`,
                       row.kabupaten,
-                      "baverif"
+                      "baverif",
                     )
                   }
                 >
@@ -1160,7 +1160,7 @@ const PdfUsulanAlkes = () => {
                         row.id,
                         `Dokumen BA Verif ${row.kabupaten}`,
                         row.kabupaten,
-                        "baverif"
+                        "baverif",
                       )
                     }
                   >
@@ -1233,7 +1233,7 @@ const PdfUsulanAlkes = () => {
       //   button: true,
       // },
     ],
-    []
+    [],
   );
 
   const handleExport = async () => {

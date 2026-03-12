@@ -23,7 +23,11 @@ import Swal from "sweetalert2";
 import Card from "../../components/Card/Card";
 import UsulanForm from "./components/UsulanForm";
 import UsulanItemsTable from "./components/UsulanItemsTable";
-import { useUsulanDetail, useKriteria, usePeriode } from "../../hooks/useUsulan";
+import {
+  useUsulanDetail,
+  useKriteria,
+  usePeriode,
+} from "../../hooks/useUsulan";
 import { updateUsulan } from "../../api/services/usulanService";
 
 const EditUsulan = () => {
@@ -32,7 +36,11 @@ const EditUsulan = () => {
   const decryptedId = useMemo(() => decryptId(id), [id]);
   const [idPeriode, setIdPeriode] = useState(null);
 
-  const { usulan: usulanDetail, isLoading: usulanLoading, mutate: mutateDetail } = useUsulanDetail(decryptedId, idPeriode);
+  const {
+    usulan: usulanDetail,
+    isLoading: usulanLoading,
+    mutate: mutateDetail,
+  } = useUsulanDetail(decryptedId, idPeriode);
   const { kriteria: dataKriteriaRaw } = useKriteria();
   const { periode: dataPeriodeRaw } = usePeriode();
 
@@ -66,10 +74,11 @@ const EditUsulan = () => {
   const isDisabled = false;
 
   const isAdmin = user?.role == "1";
-  const isAllowedKab = useMemo(
-    () => isAdmin || allowedKabupaten.includes(formData.kabupaten),
-    [formData.kabupaten, isAdmin],
-  );
+  // const isAllowedKab = useMemo(
+  //   () => isAdmin || allowedKabupaten.includes(formData.kabupaten),
+  //   [formData.kabupaten, isAdmin],
+  // );
+  const isAllowedKab = true;
 
   const [dataKriteria, setDataKriteria] = useState([]);
   const [dataPeriode, setDataPeriode] = useState([]);
@@ -108,7 +117,7 @@ const EditUsulan = () => {
           label: item.periode_name,
           value: item.id,
           stat: item.stat,
-        }))
+        })),
       );
     }
   }, [dataPeriodeRaw]);
@@ -116,9 +125,9 @@ const EditUsulan = () => {
   useEffect(() => {
     if (usulanDetail) {
       setFormData({
-        id_provinsi: usulanDetail.id_provinsi || "",
-        id_kabupaten: usulanDetail.id_kabupaten || "",
-        id_kecamatan: usulanDetail.id_kecamatan || "",
+        id_provinsi: String(usulanDetail.id_provinsi) || "",
+        id_kabupaten: String(usulanDetail.id_kabupaten) || "",
+        id_kecamatan: String(usulanDetail.id_kecamatan) || "",
         provinsi: usulanDetail.provinsi || "",
         kabupaten: usulanDetail.kabupaten || "",
         kecamatan: usulanDetail.kecamatan || "",
@@ -174,7 +183,7 @@ const EditUsulan = () => {
   // Unused manual fetch functions removed (fetchPuskesmas, fetchProvinsi, etc.)
   // Handled by hooks or not needed for EditUsulan
 
-
+  console.log(formData);
   // Initialization of states from formData
   useEffect(() => {
     if (formData.pelayanan) {
@@ -250,10 +259,12 @@ const EditUsulan = () => {
     }
 
     if (formData.pengelolaan_limbah && formData.pengelolaan_limbah.length > 0) {
-      const initialOptions = formData.pengelolaan_limbah.map((val) => {
-        const found = limbahOptions.find((opt) => opt.value === val);
-        return found ? { label: found.label, value: found.value } : null;
-      }).filter(Boolean);
+      const initialOptions = formData.pengelolaan_limbah
+        .map((val) => {
+          const found = limbahOptions.find((opt) => opt.value === val);
+          return found ? { label: found.label, value: found.value } : null;
+        })
+        .filter(Boolean);
       setSelectedLimbah(initialOptions);
     }
   }, [
@@ -338,12 +349,18 @@ const EditUsulan = () => {
 
   const handleDayaChange = (selectedOption) => {
     setSelectedDaya(selectedOption);
-    setFormData((prev) => ({ ...prev, kapasitas_listrik: selectedOption?.value }));
+    setFormData((prev) => ({
+      ...prev,
+      kapasitas_listrik: selectedOption?.value,
+    }));
   };
 
   const handleListrikChange = (selectedOption) => {
     setSelectedListrik(selectedOption);
-    setFormData((prev) => ({ ...prev, ketersediaan_listrik: selectedOption?.value }));
+    setFormData((prev) => ({
+      ...prev,
+      ketersediaan_listrik: selectedOption?.value,
+    }));
   };
 
   const handleInternetChange = (selectedOption) => {
@@ -353,22 +370,29 @@ const EditUsulan = () => {
 
   const handlePersalinanChange = (selectedOption) => {
     setSelectedPersalinan(selectedOption);
-    setFormData((prev) => ({ ...prev, puskesmas_persalinan: selectedOption?.value }));
+    setFormData((prev) => ({
+      ...prev,
+      puskesmas_persalinan: selectedOption?.value,
+    }));
   };
 
   const handlePonedChange = (selectedOption) => {
     setSelectedPoned(selectedOption);
-    setFormData((prev) => ({ ...prev, puskesmas_poned: selectedOption?.value }));
+    setFormData((prev) => ({
+      ...prev,
+      puskesmas_poned: selectedOption?.value,
+    }));
   };
 
   const handleLimbahChange = (selectedOptions) => {
     setSelectedLimbah(selectedOptions);
     setFormData((prev) => ({
       ...prev,
-      pengelolaan_limbah: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
+      pengelolaan_limbah: selectedOptions
+        ? selectedOptions.map((opt) => opt.value)
+        : [],
     }));
   };
-
 
   const handleKriteriaChange = (selectedOptions) => {
     setSelectedKriteria(selectedOptions);
@@ -1078,6 +1102,5 @@ const EditUsulan = () => {
     </div>
   );
 };
-
 
 export default EditUsulan;
