@@ -1,41 +1,65 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.jsx";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
-import { encryptId, selectThemeColors } from "../../data/utils";
-import {
-  FaCheck,
-  FaEdit,
-  FaEye,
-  FaPlus,
-  FaSearch,
-  FaTrash,
-} from "react-icons/fa";
-import { BiExport, BiSolidFileExport } from "react-icons/bi";
+import { encryptId } from "../../data/utils";
+import { FaPlus, FaSearch } from "react-icons/fa";
+import { BiExport } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
 import Swal from "sweetalert2";
+import { useUsulan } from "../../hooks/useUsulan";
+import { useProvinsi, useKabupaten, useKecamatan } from "../../hooks/useRegion";
+import { filterUsulan } from "../../api/services/usulanService";
+import axiosInstance from "../../api/axiosInstance";
 
 const UsulanAlkes = () => {
-  const user = useSelector((a) => a.auth.user);
-  const [search, setSearch] = useState(""); // Initialize search state with an empty string
+  const user = useSelector((state) => state.auth.user);
+  const { usulan: initialData, isLoading: usulanLoading, mutate: mutateUsulan } = useUsulan();
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [getLoading, setGetLoading] = useState(false);
 
-  const [dataUser, setDataUser] = useState([]);
-  const [dataProvinsi, setDataProvinsi] = useState([]);
-  const [dataKota, setDataKota] = useState([]);
-  const [dataKecamatan, setDataKecamatan] = useState([]);
-  const [dataDokumen, setDataDokumen] = useState([]);
-
+  const { data: dataProvinsiRaw } = useProvinsi();
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
+  const { data: dataKotaRaw } = useKabupaten(selectedProvinsi?.value);
   const [selectedKota, setSelectedKota] = useState(null);
+  const { data: dataKecamatanRaw } = useKecamatan(selectedKota?.value);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+
+  const dataProvinsi = useMemo(() => {
+    if (!dataProvinsiRaw) return [];
+    return [
+      { label: "Semua Provinsi", value: "" },
+      ...dataProvinsiRaw.map((item) => ({ label: item.name, value: item.id })),
+    ];
+  }, [dataProvinsiRaw]);
+
+  const dataKota = useMemo(() => {
+    if (!dataKotaRaw) return [];
+    return [
+      { label: "Semua Kabupaten/Kota", value: "" },
+      ...dataKotaRaw.map((item) => ({ label: item.name, value: item.id })),
+    ];
+  }, [dataKotaRaw]);
+
+  const dataKecamatan = useMemo(() => {
+    if (!dataKecamatanRaw) return [];
+    return [
+      { label: "Semua Kecamatan", value: "" },
+      ...dataKecamatanRaw.map((item) => ({ label: item.name, value: item.id })),
+    ];
+  }, [dataKecamatanRaw]);
+
+  useEffect(() => {
+    if (initialData) {
+      setData(initialData);
+      setFilteredData(initialData);
+    }
+  }, [initialData]);
 
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
@@ -68,8 +92,6 @@ const UsulanAlkes = () => {
 
   const handleExport = async () => {
     const XLSX = await import("xlsx");
-
-    // Implementasi untuk mengekspor data (misalnya ke CSV)
     const exportData = filteredData?.map((item) => ({
       Puskesmas: item?.nama_puskesmas,
       Provinsi: item?.provinsi,
@@ -85,176 +107,34 @@ const UsulanAlkes = () => {
       ws = XLSX.utils.json_to_sheet(exportData);
 
     ws["!cols"] = [
-      { wch: 20 }, // Kolom 1 (Provinsi)
-      { wch: 20 }, // Kolom 2 (Kabupaten_Kota)
-      { wch: 20 }, // Kolom 3 (Kecamatan)
-      { wch: 25 }, // Kolom 4 (Puskesmas)
-      { wch: 20 }, // Kolom 5 (Dokumen)
-      { wch: 15 }, // Kolom 6 (Program)
-      { wch: 10 }, // Kolom 7 (Batch)
-      { wch: 15 }, // Kolom 8 (Tahun_Lokus)
-      { wch: 15 }, // Kolom 9 (BAST)
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 25 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 10 },
+      { wch: 15 },
+      { wch: 15 },
     ];
 
     XLSX.utils.book_append_sheet(wb, ws, `Data Usulan Alkes`);
     XLSX.writeFile(wb, "Data Usulan Alkes.xlsx");
   };
+
   const navigate = useNavigate();
-
-  const fetchUserData = useCallback(async () => {
-    setGetLoading(true);
-    try {
-      const responseUser = await axios({
-        method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/me`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-
-      setDataUser(responseUser.data.data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setGetLoading(false);
-    }
-  }, [user?.token]);
-
-  // Fetch provinces only if dataProvinsi is empty
-  const fetchProvinsi = useCallback(async () => {
-    if (dataProvinsi.length > 0) return;
-
-    try {
-      const response = await axios({
-        method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/provinsi`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-
-      setDataProvinsi([
-        { label: "Semua Provinsi", value: "" },
-        ...response.data.data.map((item) => ({
-          label: item.name,
-          value: item.id,
-        })),
-      ]);
-    } catch (error) {
-      setError(true);
-      setDataProvinsi([]);
-    }
-  }, [dataProvinsi.length, user?.token]);
-
-  // Fetch cities based on the selected province
-  const fetchKota = useCallback(
-    async (idProvinsi) => {
-      if (dataKota.length > 0 && selectedProvinsi?.value == idProvinsi) return;
-
-      try {
-        const response = await axios({
-          method: "get",
-          url: `${
-            import.meta.env.VITE_APP_API_URL
-          }/api/getkabupaten/${idProvinsi}`,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
-          },
-        });
-
-        setDataKota([
-          { label: "Semua Kabupaten/Kota", value: "" },
-          ...response.data.data.map((item) => ({
-            label: item.name,
-            value: item.id,
-          })),
-        ]);
-      } catch (error) {
-        setError(true);
-        setDataKota([]);
-      }
-    },
-    [dataKota.length, selectedProvinsi?.value, user?.token]
-  );
-
-  // Fetch subdistricts based on the selected city
-  const fetchKecamatan = useCallback(
-    async (idKota) => {
-      if (dataKecamatan.length > 0 && selectedKota?.value == idKota) return;
-
-      try {
-        const response = await axios({
-          method: "get",
-          url: `${import.meta.env.VITE_APP_API_URL}/api/getkecamatan/${idKota}`,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
-          },
-        });
-
-        setDataKecamatan([
-          { label: "Semua Kecamatan", value: "" },
-          ...response.data.data.map((item) => ({
-            label: item.name,
-            value: item.id,
-          })),
-        ]);
-      } catch (error) {
-        setError(true);
-        setDataKecamatan([]);
-      }
-    },
-    [dataKecamatan.length, selectedKota?.value, user?.token]
-  );
-
-  // Fetch distribution data
-  const fetchDistribusiData = useCallback(async () => {
-    setLoading(true);
-    setError(false);
-    try {
-      const response = await axios({
-        method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/puskesmas`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-
-      setData(response.data.data);
-      setFilteredData(response.data.data);
-    } catch (error) {
-      setError(true);
-      setFilteredData([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.token]);
 
   const handleSearchClick = async () => {
     setLoading(true);
     setError(false);
-
     try {
-      const response = await axios({
-        method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/puskesmas/filter`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-        data: {
-          id_provinsi: selectedProvinsi?.value.toString() || "",
-          id_kabupaten: selectedKota?.value.toString() || "",
-          id_kecamatan: selectedKecamatan?.value.toString() || "",
-        },
+      const result = await filterUsulan({
+        id_provinsi: selectedProvinsi?.value.toString() || "",
+        id_kabupaten: selectedKota?.value.toString() || "",
+        id_kecamatan: selectedKecamatan?.value.toString() || "",
       });
-
-      setFilteredData(response.data.data);
-      setData(response.data.data);
+      setFilteredData(result);
+      setData(result);
     } catch (error) {
       setError(true);
       setFilteredData([]);
@@ -262,47 +142,16 @@ const UsulanAlkes = () => {
       setLoading(false);
     }
   };
-
-  const fetchDokumen = async () => {
-    try {
-      const response = await axios({
-        method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/getdokumen/0`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      setDataDokumen(...response.data.data);
-    } catch (error) {
-      setError(true);
-      setDataDokumen([]);
-    }
-  };
-
-  useEffect(() => {
-    fetchDistribusiData();
-    fetchProvinsi();
-  }, []);
 
   const handleProvinsiChange = (selectedOption) => {
     setSelectedProvinsi(selectedOption);
     setSelectedKota(null);
     setSelectedKecamatan(null);
-    setDataKota([]);
-    setDataKecamatan([]);
-    if (selectedOption && selectedOption.value !== "") {
-      fetchKota(selectedOption.value);
-    }
   };
 
   const handleKotaChange = (selectedOption) => {
     setSelectedKota(selectedOption);
     setSelectedKecamatan(null);
-    setDataKecamatan([]);
-    if (selectedOption && selectedOption.value !== "") {
-      fetchKecamatan(selectedOption.value);
-    }
   };
 
   const handleKecamatanChange = (selectedOption) => {
@@ -310,24 +159,15 @@ const UsulanAlkes = () => {
   };
 
   const deleteDistribusi = async (id) => {
-    await axios({
-      method: "delete",
-      url: `${import.meta.env.VITE_APP_API_URL}/api/distribusi/${id}`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user?.token}`,
-      },
-    })
-      .then(() => {
-        fetchDistribusiData();
-        setSearch("");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      await axiosInstance.delete(`/api/distribusi/${id}`);
+      mutateUsulan();
+      setSearch("");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleConfirmDeleteDistribusi = async (id) => {
     return Swal.fire({
       title: "Are you sure?",
@@ -438,26 +278,20 @@ const UsulanAlkes = () => {
     []
   );
 
-  useEffect(() => {
-    if (user.role == "3" || user.role == "5") {
-      fetchUserData();
-    }
-  }, [user.role, fetchUserData]);
-
   // Fetch provinces and cities based on selected options
-  useEffect(() => {
-    fetchProvinsi();
-    if (selectedProvinsi) {
-      fetchKota(selectedProvinsi.value);
-    }
-  }, [fetchProvinsi, selectedProvinsi, fetchKota]);
+  // useEffect(() => {
+  //   fetchProvinsi();
+  //   if (selectedProvinsi) {
+  //     fetchKota(selectedProvinsi.value);
+  //   }
+  // }, [fetchProvinsi, selectedProvinsi, fetchKota]);
 
   // Fetch subdistricts based on the selected city
-  useEffect(() => {
-    if (selectedKota) {
-      fetchKecamatan(selectedKota.value);
-    }
-  }, [selectedKota, fetchKecamatan]);
+  // useEffect(() => {
+  //   if (selectedKota) {
+  //     fetchKecamatan(selectedKota.value);
+  //   }
+  // }, [selectedKota, fetchKecamatan]);
 
   // Set selected options for provinces and cities based on user's initial data
   useEffect(() => {
@@ -489,7 +323,7 @@ const UsulanAlkes = () => {
     }
   }, [user.role, user.provinsi, user.kabupaten, dataProvinsi, dataKota]);
 
-  if (getLoading) {
+  if (usulanLoading) {
     return (
       <div className="flex justify-center items-center">
         <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />

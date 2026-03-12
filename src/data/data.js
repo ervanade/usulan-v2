@@ -380,6 +380,17 @@ export const pelayananOptions = [
   },
 ];
 
+export const limbahOptions = [
+  { label: "IPAL", value: "IPAL" },
+  { label: "IPAL Komunal", value: "IPAL Komunal" },
+  { label: "Bak Penampungan Air Limbah", value: "Bak Penampungan Air Limbah" },
+  { label: "Tangki Septik", value: "Tangki Septik" },
+  { label: "Tempat sampah sesuai jenis", value: "Tempat sampah sesuai jenis" },
+  { label: "Cold Storage Limbah", value: "Cold Storage Limbah" },
+  { label: "TPS LB3", value: "TPS LB3" },
+  { label: "Kerjasama dengan Pihak Ketiga", value: "Kerjasama dengan Pihak Ketiga" },
+];
+
 export const batchOptions = [
   {
     label: "Batch 1",
