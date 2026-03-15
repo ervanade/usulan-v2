@@ -453,6 +453,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                                 Data Kriteria
                               </NavLink>
                             </li>
+                            <li>
+                              <NavLink
+                                to="/master-data-limbah"
+                                className={({ isActive }) =>
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
+                                }
+                              >
+                                Data Pengelolaan Limbah
+                              </NavLink>
+                            </li>
                             {/* <li>
                               <NavLink
                                 to="/master-data-provinsi"
@@ -518,7 +529,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   }}
                 </SidebarLinkGroup>
                 {/* <!-- Menu Item Ui Elements --> */}
-                {/* <li>
+                <li>
                   <NavLink
                     to="/user-management"
                     className={`group relative flex items-center gap-2.5 rounded-md py-3 px-4 font-medium text-boxdark duration-0 hover:text-white ease-in-out hover:bg-gradient-to-r from-emerald-600 to-teal-500 dark:hover:bg-meta-4 ${
@@ -541,7 +552,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     <FaTasks size={20} />
                     Aktivitas Log
                   </NavLink>
-                </li> */}
+                </li>
               </ul>
             </div>
           ) : (

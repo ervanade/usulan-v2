@@ -10,7 +10,6 @@ import {
   AlasanOptions,
   allowedKabupaten,
   dayaOptions,
-  limbahOptions,
   pelayananOptions,
   SelectOptions,
 } from "../../data/data.js";
@@ -20,6 +19,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { CgSpinner } from "react-icons/cg";
 import Swal from "sweetalert2";
+import { mutate } from "swr";
 import Card from "../../components/Card/Card";
 import UsulanForm from "./components/UsulanForm";
 import UsulanItemsTable from "./components/UsulanItemsTable";
@@ -27,6 +27,7 @@ import {
   useUsulanDetail,
   useKriteria,
   usePeriode,
+  useLimbah,
 } from "../../hooks/useUsulan";
 import { updateUsulan } from "../../api/services/usulanService";
 
@@ -43,6 +44,7 @@ const EditUsulan = () => {
   } = useUsulanDetail(decryptedId, idPeriode);
   const { kriteria: dataKriteriaRaw } = useKriteria();
   const { periode: dataPeriodeRaw } = usePeriode();
+  const { limbah: dataLimbahRaw } = useLimbah();
 
   const [formData, setFormData] = useState({
     id_provinsi: "",
@@ -62,9 +64,9 @@ const EditUsulan = () => {
     tgl_upload: null,
     id_kriteria: [],
     usulan: [],
-    karakteristik_wilayah: "",
-    puskesmas_persalinan: "",
-    puskesmas_poned: "",
+    wilayah_kerja: "",
+    persalinan: "",
+    poned: "",
     pengelolaan_limbah: [],
   });
 
@@ -82,6 +84,7 @@ const EditUsulan = () => {
 
   const [dataKriteria, setDataKriteria] = useState([]);
   const [dataPeriode, setDataPeriode] = useState([]);
+  const [dataLimbah, setDataLimbah] = useState([]);
 
   const [selectedPelayanan, setSelectedPelayanan] = useState(null);
   const [selectedPeriode, setSelectedPeriode] = useState(null);
@@ -123,6 +126,17 @@ const EditUsulan = () => {
   }, [dataPeriodeRaw]);
 
   useEffect(() => {
+    if (dataLimbahRaw) {
+      setDataLimbah(
+        dataLimbahRaw.map((item) => ({
+          label: item.nama_pengelolaan_limbah,
+          value: item.id,
+        })),
+      );
+    }
+  }, [dataLimbahRaw]);
+
+  useEffect(() => {
     if (usulanDetail) {
       setFormData({
         id_provinsi: String(usulanDetail.id_provinsi) || "",
@@ -142,10 +156,14 @@ const EditUsulan = () => {
         tgl_upload: usulanDetail.usulan_alkes[0]?.tgl_upload || null,
         usulan: usulanDetail.usulan || [],
         id_kriteria: usulanDetail.id_kriteria || [],
-        karakteristik_wilayah: usulanDetail.karakteristik_wilayah || "",
-        puskesmas_persalinan: usulanDetail.puskesmas_persalinan || "",
-        puskesmas_poned: usulanDetail.puskesmas_poned || "",
-        pengelolaan_limbah: usulanDetail.pengelolaan_limbah || [],
+        wilayah_kerja: usulanDetail.wilayah_kerja || "",
+        persalinan: usulanDetail.persalinan || "",
+        poned: usulanDetail.poned || "",
+        pengelolaan_limbah: usulanDetail.pengelolaan_limbah
+          ? usulanDetail.pengelolaan_limbah.map((limb) =>
+              typeof limb === "object" && limb !== null ? limb.id : limb
+            )
+          : [],
       });
       setFilteredData(usulanDetail.usulan || []);
       if (!idPeriode) {
@@ -182,8 +200,6 @@ const EditUsulan = () => {
 
   // Unused manual fetch functions removed (fetchPuskesmas, fetchProvinsi, etc.)
   // Handled by hooks or not needed for EditUsulan
-
-  console.log(formData);
   // Initialization of states from formData
   useEffect(() => {
     if (formData.pelayanan) {
@@ -234,9 +250,9 @@ const EditUsulan = () => {
       }
     }
 
-    if (formData.puskesmas_persalinan) {
+    if (formData.persalinan) {
       const initialOption = SelectOptions.find(
-        (kec) => kec.value == formData.puskesmas_persalinan,
+        (kec) => kec.value == formData.persalinan,
       );
       if (initialOption) {
         setSelectedPersalinan({
@@ -246,9 +262,9 @@ const EditUsulan = () => {
       }
     }
 
-    if (formData.puskesmas_poned) {
+    if (formData.poned) {
       const initialOption = SelectOptions.find(
-        (kec) => kec.value == formData.puskesmas_poned,
+        (kec) => kec.value == formData.poned,
       );
       if (initialOption) {
         setSelectedPoned({
@@ -258,10 +274,11 @@ const EditUsulan = () => {
       }
     }
 
-    if (formData.pengelolaan_limbah && formData.pengelolaan_limbah.length > 0) {
+    if (formData.pengelolaan_limbah && formData.pengelolaan_limbah.length > 0 && dataLimbah.length > 0) {
       const initialOptions = formData.pengelolaan_limbah
         .map((val) => {
-          const found = limbahOptions.find((opt) => opt.value === val);
+          const limbahId = typeof val === "object" && val !== null ? val.id : val;
+          const found = dataLimbah.find((opt) => opt.value == limbahId);
           return found ? { label: found.label, value: found.value } : null;
         })
         .filter(Boolean);
@@ -272,9 +289,10 @@ const EditUsulan = () => {
     formData?.pelayanan,
     formData?.ketersediaan_listrik,
     formData?.kapasitas_listrik,
-    formData?.puskesmas_persalinan,
-    formData?.puskesmas_poned,
+    formData?.persalinan,
+    formData?.poned,
     formData?.pengelolaan_limbah,
+    dataLimbah,
   ]);
 
   useEffect(() => {
@@ -372,7 +390,7 @@ const EditUsulan = () => {
     setSelectedPersalinan(selectedOption);
     setFormData((prev) => ({
       ...prev,
-      puskesmas_persalinan: selectedOption?.value,
+      persalinan: selectedOption?.value,
     }));
   };
 
@@ -380,7 +398,7 @@ const EditUsulan = () => {
     setSelectedPoned(selectedOption);
     setFormData((prev) => ({
       ...prev,
-      puskesmas_poned: selectedOption?.value,
+      poned: selectedOption?.value,
     }));
   };
 
@@ -619,6 +637,11 @@ const EditUsulan = () => {
     try {
       await updateUsulan(decryptedId, updatedFormData);
       Swal.fire("Data Berhasil di Simpan!", "", "success");
+
+      // Invalidate SWR caches for usulan list and detail
+      mutate("usulan-list");
+      mutate((key) => Array.isArray(key) && key[0] === "usulan-detail" && key[1] == decryptedId, undefined, { revalidate: true });
+      
       navigate("/usulan-alkes");
     } catch (error) {
       Swal.fire("Error", "Gagal Menyimpan Data", "error");
@@ -1076,6 +1099,7 @@ const EditUsulan = () => {
             poned={selectedPoned}
             handlePonedChange={handlePonedChange}
             limbah={selectedLimbah}
+            dataLimbah={dataLimbah}
             handleLimbahChange={handleLimbahChange}
             user={user}
             isAllowedKab={isAllowedKab}

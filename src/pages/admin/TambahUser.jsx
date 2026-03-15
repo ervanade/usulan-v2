@@ -181,7 +181,7 @@ const TambahUser = () => {
     } catch (error) {
       setLoading(false);
       console.log(error);
-      if (error.response.status == 500) {
+      if (error?.response?.status == 500) {
         Swal.fire("Error", "Email Telah Digunakan", "error");
         setLoading(false);
         return;
@@ -299,7 +299,7 @@ const TambahUser = () => {
               </div>
               <div className="sm:flex-[5_5_0%]">
                 <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-primary
                   "border-red-500" 
                rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
                   id="email"
@@ -405,7 +405,7 @@ const TambahUser = () => {
               </div>
               <div className="sm:flex-[5_5_0%]">
                 <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-primary
                   "border-red-500" 
                rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
                   id="c_password"
@@ -434,7 +434,7 @@ const TambahUser = () => {
               </div>
               <div className="sm:flex-[5_5_0%]">
                 <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-primary
                   "border-red-500" 
                rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
                   id="username"
@@ -463,7 +463,7 @@ const TambahUser = () => {
               </div>
               <div className="sm:flex-[5_5_0%]">
                 <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-primary
                   "border-red-500" 
                rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
                   id="name"
@@ -491,7 +491,7 @@ const TambahUser = () => {
               </div>
               <div className="sm:flex-[5_5_0%]">
                 <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-primary
                   "border-red-500" 
                rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
                   id="nip"
@@ -519,7 +519,7 @@ const TambahUser = () => {
               </div>
               <div className="sm:flex-[5_5_0%]">
                 <input
-                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-[#0ACBC2]
+                  className={`sm:flex-[5_5_0%] bg-white appearance-none border border-[#cacaca] focus:border-primary
                   "border-red-500" 
                rounded-md w-full py-3 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
                   id="no_tlp"
@@ -633,7 +633,7 @@ const TambahUser = () => {
               <div className="div sm:flex-[5_5_0%] ">
                 <div className="w-4/5 flex items-center gap-4">
                   <button
-                    className="w-full bg-[#0ACBC2]  text-white font-bold py-4 px-6 rounded-md focus:outline-none focus:shadow-outline dark:bg-transparent"
+                    className="w-full bg-primary  text-white font-bold py-4 px-6 rounded-md focus:outline-none focus:shadow-outline dark:bg-transparent"
                     type="submit"
                     disabled={loading}
                   >
@@ -643,7 +643,7 @@ const TambahUser = () => {
                     onClick={() => {
                       navigate("/");
                     }}
-                    className="w-full bg-[#fff]  text-[#0ACBC2] border border-[#0ACBC2] font-bold py-4 px-6 rounded-md focus:outline-none focus:shadow-outline dark:bg-transparent"
+                    className="w-full bg-[#fff]  text-primary border border-primary font-bold py-4 px-6 rounded-md focus:outline-none focus:shadow-outline dark:bg-transparent"
                   >
                     {loading ? "Loading..." : "Batal"}
                   </button>

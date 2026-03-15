@@ -4,7 +4,6 @@ import {
   pelayananOptions,
   dayaOptions,
   SelectOptions,
-  limbahOptions,
 } from "../../../data/data.js";
 import { selectThemeColors } from "../../../data/utils.js";
 
@@ -29,6 +28,7 @@ const UsulanForm = ({
   poned,
   handlePonedChange,
   limbah,
+  dataLimbah,
   handleLimbahChange,
   user,
   isAllowedKab,
@@ -45,7 +45,7 @@ const UsulanForm = ({
           { label: "Kode Puskesmas", value: formData.kode_pusdatin_baru },
           { label: "Puskesmas", value: formData.nama_puskesmas },
           { label: "Tahun", value: formData.tahun_lokus },
-          { label: "Karakteristik Wilayah", value: formData.karakteristik_wilayah },
+          { label: "Karakteristik Wilayah", value: formData.wilayah_kerja },
         ].map((field) => (
           <div key={field.label} className="flex-col gap-2 flex">
             <label className="block text-[#728294] text-sm font-semibold mb-1">
@@ -160,7 +160,7 @@ const UsulanForm = ({
             Pengelolaan Limbah :
           </label>
           <Select
-            options={limbahOptions}
+            options={dataLimbah}
             value={limbah}
             onChange={handleLimbahChange}
             placeholder="Pengelolaan Limbah"
@@ -198,7 +198,7 @@ const UsulanForm = ({
             value={selectedPeriode}
             className="w-full text-sm"
             onChange={handlePeriodeChange}
-            isDisabled={user?.role == "5" || isDisabled || !isAllowedKab}
+            isDisabled={!user?.role == "1" || isDisabled || !isAllowedKab}
             placeholder="Pilih Periode"
             theme={selectThemeColors}
           />

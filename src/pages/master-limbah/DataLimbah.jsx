@@ -1,119 +1,65 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import Select from "react-select";
 import DataTable from "react-data-table-component";
-import {
-  dataDistribusiBekasi,
-  dataKecamatan,
-  dataKota,
-  dataProvinsi,
-} from "../../data/data";
-import { encryptId, selectThemeColors } from "../../data/utils";
-import { FaEdit, FaPlus, FaSpinner, FaTrash } from "react-icons/fa";
-import { BiExport, BiSolidFileExport } from "react-icons/bi";
+import { encryptId } from "../../data/utils";
+import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
+import { BiExport } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { CgSpinner } from "react-icons/cg";
+import { useLimbah } from "../../hooks/useUsulan";
+import { deleteLimbah } from "../../api/services/usulanService";
+import { mutate } from "swr";
 
-const UserManagement = () => {
+const DataLimbah = () => {
   const user = useSelector((a) => a.auth.user);
 
-  const [search, setSearch] = useState(""); // Initialize search state with an empty string
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [search, setSearch] = useState("");
+  const { limbah: data, isLoading: loading, isError: error } = useLimbah();
 
   const handleSearch = (event) => {
-    const value = event.target.value.toLowerCase();
-    setSearch(value);
-
-    const filtered = data.filter((item) => {
-      return (
-        (item?.email && item.email.toLowerCase().includes(value)) ||
-        (item?.username && item.username.toLowerCase().includes(value)) ||
-        (item?.name && item.name.toLowerCase().includes(value)) ||
-        (item?.merk && item.merk.toLowerCase().includes(value)) ||
-        (item?.tipe && item.tipe.toLowerCase().includes(value)) ||
-        (item?.satuan && item.satuan.toLowerCase().includes(value)) ||
-        (item?.harga_satuan &&
-          item.harga_satuan.toString().toLowerCase().includes(value)) ||
-        (item?.keterangan && item.keterangan.toLowerCase().includes(value))
-      );
-    });
-
-    setFilteredData(filtered);
+    setSearch(event.target.value.toLowerCase());
   };
+
+  const filteredData = useMemo(() => {
+    if (!data) return [];
+    if (!search) return data;
+    return data.filter((item) =>
+      item?.nama_pengelolaan_limbah?.toLowerCase().includes(search)
+    );
+  }, [data, search]);
 
   const handleExport = () => {
     // Implementasi untuk mengekspor data (misalnya ke CSV)
   };
 
-  const fetchUserData = async () => {
-    setLoading(true);
-    setError(false);
-    try {
-      const response = await axios({
-        method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/users`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      setData(response.data.data);
-      setFilteredData(response.data.data);
-    } catch (error) {
-      setError(true);
-      setFilteredData([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
-  const deleteBarang = async (id) => {
-    await axios({
-      method: "delete",
-      url: `${import.meta.env.VITE_APP_API_URL}/api/users/${id}`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user?.token}`,
-      },
-    })
-      .then(() => {
-        fetchUserData();
-        setSearch("");
-
-      })
-      .catch((error) => {
-        fetchUserData();
-        console.log(error);
-      });
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleConfirmDeleteBarang = async (id) => {
     return Swal.fire({
       title: "Are you sure?",
-      text: "You will Delete This Barang!",
+      text: "You will Delete This Limbah!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
       confirmButtonColor: "#16B3AC",
     }).then(async (result) => {
       if (result.value) {
-        await deleteBarang(id);
-        Swal.fire({
-          icon: "success",
-          title: "Deleted!",
-          text: "Your User has been deleted.",
-        });
+        try {
+            await deleteLimbah(id);
+            mutate("limbah"); // invalidate SWR cache
+            Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: "Your Limbah has been deleted.",
+            });
+        } catch(e) {
+            console.error(e);
+            Swal.fire({
+            icon: "error",
+            title: "Failed!",
+            text: "Failed to delete Limbah.",
+            });
+        }
       }
     });
   };
@@ -121,40 +67,10 @@ const UserManagement = () => {
   const columns = useMemo(
     () => [
       {
-        name: "Email",
-        selector: (row) => row.email,
+        name: <div className="text-wrap">Nama Limbah</div>,
+        selector: (row) => row.nama_pengelolaan_limbah,
+        cell: (row) => <div className="text-wrap py-2">{row.nama_pengelolaan_limbah}</div>,
         sortable: true,
-        width: "200px",
-      },
-      {
-        name: "Username",
-        selector: (row) => row.username,
-        sortable: true,
-      },
-      {
-        name: "Name",
-        selector: (row) => row.name,
-        sortable: true,
-      },
-      {
-        name: "Role",
-        selector: (row) =>
-          row.role == "1"
-            ? "Admin"
-            : row.role == "2"
-            ? "PPK"
-            : row.role == "3"
-            ? "User"
-            : row.role == "4"
-            ? "Direktur"
-            : "" || "",
-        sortable: true,
-      },
-      {
-        name: "Unit Kerja",
-        selector: (row) => row.unit_kerja || "",
-        sortable: true,
-        width: "100px",
       },
       {
         name: "Aksi",
@@ -162,7 +78,7 @@ const UserManagement = () => {
           <div className="flex items-center space-x-2">
             <button title="Edit" className="text-[#16B3AC] hover:text-cyan-500">
               <Link
-                to={`/user-management/edit/${encodeURIComponent(
+                to={`/master-data-limbah/edit/${encodeURIComponent(
                   encryptId(row.id)
                 )}`}
               >
@@ -192,8 +108,8 @@ const UserManagement = () => {
 
   return (
     <div>
-      <Breadcrumb pageName="Data User" title="Data User" />
-      <div className="rounded-md flex flex-col gap-4 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+      <Breadcrumb pageName="Data Pengelolaan Limbah" title="Data Limbah" />
+      <div className="rounded-md flex flex-col gap-4 overflow-hidden overflow-x-auto border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex justify-between mb-4 items-center">
           <div className="relative">
             <button className="absolute left-2 top-1/2 -translate-y-1/2">
@@ -230,7 +146,7 @@ const UserManagement = () => {
           </div>
           <div className="div flex gap-2 flex-row">
             <button
-              title="Export Data Barang"
+              title="Export Data Limbah"
               className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
               onClick={handleExport}
             >
@@ -239,15 +155,15 @@ const UserManagement = () => {
             </button>
             {user.role == "1" ? (
               <button
-                title="Tambah Data User"
+                title="Tambah Data Limbah"
                 className="flex items-center gap-2 cursor-pointer text-base text-white  bg-primary rounded-md tracking-tight"
               >
                 <Link
-                  to="/user-management/add"
+                  to="/master-data-limbah/add"
                   className="flex items-center gap-2 px-4 py-2"
                 >
                   <FaPlus size={16} />
-                  <span className="hidden sm:block">Tambah Data User</span>
+                  <span className="hidden sm:block">Tambah Data</span>
                 </Link>
               </button>
             ) : (
@@ -261,7 +177,7 @@ const UserManagement = () => {
               <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
               <span className="ml-2">Loading...</span>
             </div>
-          ) : error || filteredData.length === 0 ? (
+          ) : error || filteredData?.length == 0 ? (
             <div className="text-center">Data Tidak Tersedia.</div>
           ) : (
             <DataTable
@@ -275,8 +191,8 @@ const UserManagement = () => {
                 headCells: {
                   style: {
                     padding: 12,
-                    backgroundColor: "#0FAD91", // Warna header biru
-                    color: "#fff", // Teks header putih
+                    backgroundColor: "#0FAD91",
+                    color: "#fff",
                     fontWeight: 700,
                     fontSize: 14,
                   },
@@ -286,13 +202,13 @@ const UserManagement = () => {
                     fontSize: 14,
                     paddingTop: 6,
                     paddingBottom: 6,
-                    backgroundColor: "#FFFFFF", // Default warna baris ganjil (putih)
+                    backgroundColor: "#FFFFFF",
                     "&:nth-of-type(odd)": {
-                      backgroundColor: "#F9FAFB", // Warna baris genap (abu terang)
+                      backgroundColor: "#F9FAFB",
                     },
                     highlightOnHoverStyle: {
-                      backgroundColor: "#D1E8FF", // Warna saat hover (biru terang)
-                      color: "#212121", // Warna teks tetap gelap
+                      backgroundColor: "#D1E8FF",
+                      color: "#212121",
                     },
                   },
                 },
@@ -304,4 +220,4 @@ const UserManagement = () => {
     </div>
   );
 };
-export default UserManagement;
+export default DataLimbah;

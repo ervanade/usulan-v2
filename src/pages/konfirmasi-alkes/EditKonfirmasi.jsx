@@ -7,6 +7,7 @@ import { decryptId, encryptId, selectThemeColors } from "../../data/utils";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
+import { mutate } from "swr";
 import {
   alasanRelokasiOptions,
   checkKesiapanSDMByString,
@@ -603,6 +604,11 @@ export default function EditKonfirmasi() {
       });
 
       await showSuccessAlert();
+
+      // Clear SWR cache for konfirmasi hooks
+      mutate("konfirmasi-header");
+      mutate((key) => Array.isArray(key) && key[0] === "konfirmasi-detail", undefined, { revalidate: true });
+      
       const encryptedId = encryptId(parseInt(formData?.id_kabupaten));
       navigate(backUrl);
     } catch (err) {

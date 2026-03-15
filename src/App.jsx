@@ -17,7 +17,7 @@ import DataBarang from "./pages/master-barang/DataBarang";
 // import DataPuskesmas from "./pages/master-puskesmas/DataPuskesmas";
 // import DataKecamatan from "./pages/master-kecamatan/DataKecamatan";
 // import DataProvinsi from "./pages/master-provinsi/DataProvinsi";
-// import TambahUser from "./pages/admin/TambahUser";
+import TambahUser from "./pages/admin/TambahUser";
 // import EditProvinsi from "./pages/master-provinsi/EditProvinsi";
 // import TambahProvinsi from "./pages/master-provinsi/TambahProvinsi";
 import TambahBarang from "./pages/master-barang/TambahBarang";
@@ -34,15 +34,15 @@ import EditBarang from "./pages/master-barang/EditBarang";
 // import DetailKota from "./pages/master-kecamatan/DetailKota";
 
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
-// import EditUser from "./pages/admin/EditUser";
+import EditUser from "./pages/admin/EditUser";
 // import DetailLaporanProvinsi from "./pages/laporan/DetailLaporanProvinsi";
 // import Laporan from "./pages/laporan/Laporan";
 // import DetailLaporanKabupaten from "./pages/laporan/DetailLaporanKabupaten";
 // import DetailLaporanPuskesmas from "./pages/laporan/DetailLaporanPuskesmas";
 import LaporanBarang from "./pages/laporan/LaporanBarang";
 // import TesUpload from "./pages/tes-upload/TesUpload";
-// import LogActivity from "./pages/log/LogActivity";
-// import DetailLogActivity from "./pages/log/DetailLogActivity";
+import LogActivity from "./pages/log/LogActivity";
+import DetailLogActivity from "./pages/log/DetailLogActivity";
 import LaporanBarangProvinsi from "./pages/laporan/LaporanBarangProvinsi";
 import LaporanBarangKabupaten from "./pages/laporan/LaporanBarangKabupaten";
 import LaporanBarangPuskesmas from "./pages/laporan/LaporanBarangPuskesmas";
@@ -63,6 +63,10 @@ import KonfirmasiKabupaten from "./pages/konfirmasi-alkes/KonfirmasiKabupaten.js
 import DataPeriodeAlkes from "./pages/master-periode-alkes/DataPeriodeAlkes.jsx";
 import TambahPeriodeAlkes from "./pages/master-periode-alkes/TambahPeriodeAlkes.jsx";
 import EditPeriodeAlkes from "./pages/master-periode-alkes/EditPeriodeAlkes.jsx";
+import DataLimbah from "./pages/master-limbah/DataLimbah.jsx";
+import TambahLimbah from "./pages/master-limbah/TambahLimbah.jsx";
+import EditLimbah from "./pages/master-limbah/EditLimbah.jsx";
+import UserManagement from "./pages/admin/UserManagement.jsx";
 
 function App() {
   const { pathname } = useLocation();
@@ -202,7 +206,16 @@ function App() {
                   path="master-data-kriteria/edit/:id"
                   element={<EditKriteria />}
                 />
-                {/* <Route path="/logactivity" element={<LogActivity />} />
+                <Route path="master-data-limbah" element={<DataLimbah />} />
+                <Route
+                  path="master-data-limbah/add"
+                  element={<TambahLimbah />}
+                />
+                <Route
+                  path="master-data-limbah/edit/:id"
+                  element={<EditLimbah />}
+                />
+                <Route path="/logactivity" element={<LogActivity />} />
                 <Route
                   path="/logactivity/detail/:id"
                   element={<DetailLogActivity />}
@@ -213,7 +226,7 @@ function App() {
                   path="/user-management/edit/:id"
                   element={<EditUser />}
                 />
-                <Route
+                {/* <Route
                   path="data-distribusi/add"
                   element={<TambahDistribusi />}
                 /> */}

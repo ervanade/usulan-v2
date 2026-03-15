@@ -25,6 +25,7 @@ import ModalTTENew from "../../components/Modal/ModalTTENew.jsx";
 import GenerateVerif from "../../components/Dokumen/GenerateVerif.jsx";
 import { allowedKabupaten, EXCEL_HEADER } from "../../data/data.js";
 import { MdClose } from "react-icons/md";
+import { useKonfirmasiKabupaten } from "../../hooks/useKonfirmasi";
 
 const KonfirmasiKabupaten = () => {
   const user = useSelector((a) => a.auth.user);
@@ -124,27 +125,14 @@ const KonfirmasiKabupaten = () => {
     setUploadTypeModal(type); // Set tipe upload saat modal dibuka
   };
 
-  const fetchDokumenData = async () => {
-    setLoading(true);
-    setError(false);
-    try {
-      const response = await axios({
-        method: "get",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/konfirmasiheader`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      setData(response.data.data);
-      setFilteredData(response.data.data);
-    } catch (error) {
-      setError(true);
-      setFilteredData([]);
-    } finally {
-      setLoading(false);
+  const { konfirmasiKabupaten: initialData, isLoading: konfirmasiLoading, mutate: mutateKonfirmasi } = useKonfirmasiKabupaten();
+
+  useEffect(() => {
+    if (initialData) {
+      setData(initialData);
+      setFilteredData(initialData);
     }
-  };
+  }, [initialData]);
   const fetchBarang = useCallback(async () => {
     if (dataBarang.length > 0) return;
 
@@ -172,9 +160,8 @@ const KonfirmasiKabupaten = () => {
   }, [dataBarang.length, user?.token]);
 
   useEffect(() => {
-    fetchDokumenData();
     fetchBarang();
-  }, []);
+  }, [fetchBarang]);
 
   const fetchUserData = useCallback(async () => {
     setGetLoading(true);
@@ -356,7 +343,7 @@ const KonfirmasiKabupaten = () => {
       },
     })
       .then(() => {
-        fetchDokumenData();
+        mutateKonfirmasi();
         setSearch("");
       })
       .catch((error) => {
@@ -524,7 +511,7 @@ const KonfirmasiKabupaten = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      fetchDokumenData();
+      mutateKonfirmasi();
       setSearch("");
     } catch (error) {
       console.log(error);
@@ -1407,7 +1394,7 @@ const KonfirmasiKabupaten = () => {
         onClose={() => setShowModalUpload(false)}
         jsonData={jsonData}
         user={user}
-        fetchDokumenData={fetchDokumenData}
+        fetchDokumenData={mutateKonfirmasi}
         uploadType={uploadTypeModal} // State untuk menyimpan tipe upload yang akan digunakan modal
       />
       <div className="rounded-md flex flex-col gap-2 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -1478,7 +1465,7 @@ const KonfirmasiKabupaten = () => {
           </div>
         </div>
         <div className="overflow-x-auto">
-          {loading ? (
+          {loading || konfirmasiLoading ? (
             <div className="flex justify-center items-center">
               <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
               <span className="ml-2">Loading...</span>

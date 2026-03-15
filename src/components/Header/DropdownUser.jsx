@@ -8,8 +8,10 @@ import { logoutUser } from "../../store/authSlice";
 import { returnRole } from "../../data/utils";
 import axios from "axios";
 import { clearNotifs } from "../../store/notifSlice";
+import { useSWRConfig } from "swr";
 
 const DropdownUser = () => {
+  const { mutate } = useSWRConfig();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((a) => a.auth.user);
@@ -25,6 +27,8 @@ const DropdownUser = () => {
       });
       dispatch(logoutUser());
       dispatch(clearNotifs());
+      // Hapus seluruh cache SWR saat logout
+      mutate(() => true, undefined, { revalidate: false });
       navigate("/login");
     } catch (error) {
       console.log(error);

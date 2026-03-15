@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
 import Swal from "sweetalert2";
+import { useKonfirmasiAlkes } from "../../hooks/useKonfirmasi";
 
 const KonfirmasiAlkes = () => {
   const user = useSelector((a) => a.auth.user);
@@ -239,33 +240,14 @@ const KonfirmasiAlkes = () => {
     }
   }, [dataBarang.length, user?.token]);
 
-  // Fetch distribution data
-  const fetchDistribusiData = useCallback(async () => {
-    setLoading(true);
-    setError(false);
-    try {
-      const response = await axios({
-        method: "post",
-        url: `${import.meta.env.VITE_APP_API_URL}/api/konfirmasidetail/filter`,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-        data: {
-          id_kabupaten: decryptId(id).toString() || "",
-          id_alkes: decryptId(idBarang).toString() || "",
-        },
-      });
+  const { konfirmasiAlkes: initialData, isLoading: alkesLoading, mutate: mutateKonfirmasi } = useKonfirmasiAlkes(decryptId(id).toString(), decryptId(idBarang).toString());
 
-      setData(response.data.data);
-      setFilteredData(response.data.data);
-    } catch (error) {
-      setError(true);
-      setFilteredData([]);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (initialData) {
+      setData(initialData);
+      setFilteredData(initialData);
     }
-  }, [user?.token]);
+  }, [initialData]);
 
   const handleSearchClick = async () => {
     setLoading(true);
@@ -296,7 +278,6 @@ const KonfirmasiAlkes = () => {
   };
 
   useEffect(() => {
-    fetchDistribusiData();
     fetchKecamatan(decryptId(id).toString());
     fetchBarang();
   }, []);
@@ -338,7 +319,7 @@ const KonfirmasiAlkes = () => {
       },
     })
       .then(() => {
-        fetchDistribusiData();
+        mutateKonfirmasi();
         setSearch("");
       })
       .catch((error) => {
@@ -758,7 +739,7 @@ const KonfirmasiAlkes = () => {
           </div>
         </div>
         <div className="overflow-x-auto">
-          {loading ? (
+          {loading || alkesLoading ? (
             <div className="flex justify-center items-center">
               <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
               <span className="ml-2">Loading...</span>

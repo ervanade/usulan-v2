@@ -1,8 +1,13 @@
 import useSWR from "swr";
-import { getUsulanList, getUsulanDetail, getKriteria, getPeriode } from "../api/services/usulanService";
+import { useSelector } from "react-redux";
+import { getUsulanList, getUsulanDetail, getKriteria, getPeriode, getLimbah, getLimbahDetail } from "../api/services/usulanService";
 
 export const useUsulan = () => {
-  const { data, error, isLoading, mutate } = useSWR("usulan-list", getUsulanList);
+  const user = useSelector((state) => state.auth.user);
+  const { data, error, isLoading, mutate } = useSWR(
+    user ? ["usulan-list", user.id] : null,
+    getUsulanList
+  );
 
   return {
     usulan: data,
@@ -13,8 +18,9 @@ export const useUsulan = () => {
 };
 
 export const useUsulanDetail = (id, periodeId = null) => {
+  const user = useSelector((state) => state.auth.user);
   const { data, error, isLoading, mutate } = useSWR(
-    id ? ["usulan-detail", id, periodeId] : null,
+    id && user ? ["usulan-detail", id, periodeId, user.id] : null,
     () => getUsulanDetail(id, periodeId)
   );
 
@@ -43,5 +49,35 @@ export const usePeriode = () => {
     periode: data,
     isLoading,
     isError: error,
+  };
+};
+
+export const useLimbah = () => {
+  const user = useSelector((state) => state.auth.user);
+  const { data, error, isLoading, mutate } = useSWR(
+    user ? ["limbah", user.id] : null,
+    getLimbah
+  );
+
+  return {
+    limbah: data,
+    isLoading,
+    isError: error,
+    mutate,
+  };
+};
+
+export const useLimbahDetail = (id) => {
+  const user = useSelector((state) => state.auth.user);
+  const { data, error, isLoading, mutate } = useSWR(
+    id && user ? ["limbah-detail", id, user.id] : null,
+    () => getLimbahDetail(id)
+  );
+
+  return {
+    limbah: data,
+    isLoading,
+    isError: error,
+    mutate,
   };
 };

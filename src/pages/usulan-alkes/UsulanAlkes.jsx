@@ -13,6 +13,7 @@ import { useUsulan } from "../../hooks/useUsulan";
 import { useProvinsi, useKabupaten, useKecamatan } from "../../hooks/useRegion";
 import { filterUsulan } from "../../api/services/usulanService";
 import axiosInstance from "../../api/axiosInstance";
+import ModalVerifikasiUsulan from "../../components/Modal/ModalVerifikasiUsulan";
 
 const UsulanAlkes = () => {
   const user = useSelector((state) => state.auth.user);
@@ -22,6 +23,9 @@ const UsulanAlkes = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+
+  const [showModalVerif, setShowModalVerif] = useState(false);
+  const [selectedDataVerif, setSelectedDataVerif] = useState(null);
 
   const { data: dataProvinsiRaw } = useProvinsi();
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
@@ -220,6 +224,15 @@ const UsulanAlkes = () => {
         width: "150px",
         omit: user.role == "3",
       },
+       {
+        name: <div className="text-wrap">Periode</div>,
+        selector: (row) => row.periode_name,
+        sortable: true,
+        cell: (row) => (
+          <div className="text-wrap text-xs py-2">{row.periode_name}</div>
+        ),
+        width: "80px",
+      },
 
       // {
       //   name: <div className="text-wrap">Jumlah Dikirim</div>,
@@ -239,6 +252,34 @@ const UsulanAlkes = () => {
       //   sortable: true,
       //   width: "100px",
       // },
+           {
+        name: <div className="text-wrap">Status Verifikasi</div>,
+        selector: (row) => row.provinsi,
+        sortable: true,
+        cell: (row) => (
+          <div className="text-wrap py-2">
+            {row.status_verifikasi == "3" ? (
+              <div className="text-white py-1 px-2 bg-green-600 rounded-md text-xs">
+                Perlu Revisi
+              </div>
+            ) : row.status_verifikasi == "2" ? (
+              <div className="text-white py-1 px-2 bg-yellow-600 rounded-md text-xs">
+                Sudah Verifikasi
+              </div>
+            ) : row.status_verifikasi == "1" ? (
+              <div className="text-white py-1 px-2 bg-red-600 rounded-md text-xs">
+                Belum Verifikasi
+              </div>
+            ) : (
+              <div className="text-white py-1 px-2 bg-slate-500 rounded-md text-xs">
+                Belum Mengisi
+              </div>
+            )}
+          </div>
+        ),
+        width: "150px",
+        // omit: user.role == "3",
+      },
       {
         name: "Aksi",
         id: "Aksi",
@@ -246,10 +287,10 @@ const UsulanAlkes = () => {
           <div className="flex items-center space-x-2">
             <button
               title="Detail"
-              className="text-white font-semibold py-2 w-22 bg-primary rounded-md"
+              className="text-white font-semibold py-2 w-18 bg-primary rounded-md text-xs"
               onClick={() => {
                 navigate(
-                  `/usulan-alkes/edit/${encodeURIComponent(encryptId(row.id))}`,
+                  `/usulan-alkes/edit/${encodeURIComponent(encryptId(row?.id_puskesmas))}`,
                   {
                     replace: true,
                   }
@@ -258,19 +299,31 @@ const UsulanAlkes = () => {
             >
               <Link
                 to={`/usulan-alkes/edit/${encodeURIComponent(
-                  encryptId(row.id)
+                  encryptId(row?.id_puskesmas)
                 )}`}
               >
                 Detail
               </Link>
             </button>
+            {(row.status_verifikasi == "1" && (user.role == "1" || user.role == "2")) && (
+              <button
+                title="Verifikasi"
+                className="text-white font-semibold py-2 w-18 bg-[#16B3AC] rounded-md px-2 text-xs"
+                onClick={() => {
+                  setSelectedDataVerif(row);
+                  setShowModalVerif(true);
+                }}
+              >
+                Verifikasi
+              </button>
+            )}
           </div>
         ),
         ignoreRowClick: true,
         allowOverflow: true,
         button: true,
         sortable: true,
-        minWidth: "150px",
+        minWidth: "160px",
         selector: (row) =>
           user.role == "3" ? row.konfirmasi_daerah : row.konfirmasi_ppk,
       },
@@ -570,7 +623,7 @@ const UsulanAlkes = () => {
               }}
               onRowClicked={(row) => {
                 navigate(
-                  `/usulan-alkes/edit/${encodeURIComponent(encryptId(row.id))}`,
+                  `/usulan-alkes/edit/${encodeURIComponent(encryptId(row?.id_puskesmas))}`,
                   {
                     replace: true,
                   }
@@ -580,6 +633,12 @@ const UsulanAlkes = () => {
           )}
         </div>
       </div>
+      <ModalVerifikasiUsulan
+        show={showModalVerif}
+        onClose={() => setShowModalVerif(false)}
+        data={selectedDataVerif}
+        onSave={() => mutateUsulan()}
+      />
     </div>
   );
 };
