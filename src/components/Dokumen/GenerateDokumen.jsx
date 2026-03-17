@@ -318,7 +318,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             }}
           >
             DINAS KESEHATAN {jsonData?.kabupaten} {"\n\n"}
-            PROVINSI {jsonData?.provinsi} {"\n\n"}TAHUN 2025
+            PROVINSI {jsonData?.provinsi} {"\n\n"}TAHUN 2026
           </Text>
         </View>
         <View style={styles.footer}>
@@ -1272,7 +1272,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             <View style={{ flex: 1 }}></View>
             <View style={{ flex: 1 }}>
               <Text style={{ ...styles.text, textAlign: "center" }}>
-                ...............,...................2025
+                ...............,...................2026
               </Text>
               Yang membuat pernyataan
               <Text
@@ -1470,7 +1470,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             <View style={{ flex: 1 }}></View>
             <View style={{ flex: 1 }}>
               <Text style={{ ...styles.text, textAlign: "center" }}>
-                ...............,...................2025
+                ...............,...................2026
               </Text>
               Yang membuat pernyataan
               <Text

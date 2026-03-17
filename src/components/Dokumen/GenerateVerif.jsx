@@ -559,7 +559,7 @@ const GenerateVerif = async (jsonData, preview) => {
             <View style={{ flex: 1 }}></View>
             <View style={{ flex: 1 }}>
               <Text style={{ ...styles.text, textAlign: "center" }}>
-                ...............,...................2025
+                ...............,...................2026
               </Text>
               Yang membuat pernyataan
               <Text
@@ -997,7 +997,7 @@ const GenerateVerif = async (jsonData, preview) => {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ ...styles.text, textAlign: "center" }}>
-                  ...................., ...... Mei 2025
+                  ...................., ...... Mei 2026
                 </Text>
                 Yang membuat pernyataan
                 <Text

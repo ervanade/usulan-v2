@@ -330,8 +330,12 @@ export const dayaOptions = [
     value: "7000 - 10000 VA",
   },
   {
-    label: "> 10000 VA",
-    value: "> 10000 VA",
+    label: "10000 - 17000 VA",
+    value: "10000 - 17000 VA",
+  },
+  {
+    label: "> 17000 VA",
+    value: "> 17000 VA",
   },
   {
     label: "NON PLN",
