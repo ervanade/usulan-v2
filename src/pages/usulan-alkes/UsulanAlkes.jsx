@@ -259,11 +259,11 @@ const UsulanAlkes = () => {
         cell: (row) => (
           <div className="text-wrap py-2">
             {row.status_verifikasi == "3" ? (
-              <div className="text-white py-1 px-2 bg-green-600 rounded-md text-xs">
+              <div className="text-white py-1 px-2 bg-yellow-600 rounded-md text-xs">
                 Perlu Revisi
               </div>
             ) : row.status_verifikasi == "2" ? (
-              <div className="text-white py-1 px-2 bg-yellow-600 rounded-md text-xs">
+              <div className="text-white py-1 px-2 bg-green-600 rounded-md text-xs">
                 Sudah Verifikasi
               </div>
             ) : row.status_verifikasi == "1" ? (

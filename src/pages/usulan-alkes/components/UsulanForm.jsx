@@ -44,7 +44,7 @@ const UsulanForm = ({
           { label: "Kecamatan", value: formData.kecamatan },
           { label: "Kode Puskesmas", value: formData.kode_pusdatin_baru },
           { label: "Puskesmas", value: formData.nama_puskesmas },
-          { label: "Tahun", value: formData.tahun_lokus },
+          // { label: "Tahun", value: formData.tahun_lokus },
           { label: "Karakteristik Wilayah", value: formData.wilayah_kerja },
         ].map((field) => (
           <div key={field.label} className="flex-col gap-2 flex">
