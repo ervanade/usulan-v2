@@ -17,7 +17,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { CgSpinner } from "react-icons/cg";
+import { CgLaptop, CgSpinner } from "react-icons/cg";
 import ModalTTE from "../../components/Modal/ModalTTE.jsx";
 import GenerateDokumen from "../../components/Dokumen/GenerateDokumen.jsx";
 import ModalUploadDokumen from "../../components/Modal/ModalUploadDokumen.jsx";
@@ -388,6 +388,7 @@ const KonfirmasiKabupaten = () => {
         (item?.tanggal_bast &&
           item.tanggal_bast.toLowerCase().includes(value)) ||
         (item?.tahun_lokus && item.tahun_lokus.toLowerCase().includes(value)) ||
+        (item?.nama_alkes && item.nama_alkes.toLowerCase().includes(value)) ||
         (item?.penerima_hibah &&
           item.penerima_hibah.toLowerCase().includes(value))
       );
@@ -990,7 +991,7 @@ const KonfirmasiKabupaten = () => {
   );
 
   const mapResponseToExcel = (data) => {
-    return data.map((item, index) => ({
+    return data?.map((item, index) => ({
       No: index + 1,
       Provinsi: item.provinsi,
       "Kab/Kota": item.kab_kota,
@@ -1093,9 +1094,8 @@ const KonfirmasiKabupaten = () => {
       if (!json.success) throw new Error("Gagal export");
 
       updateProgress(50);
-
       // mapping data
-      const excelData = mapResponseToExcel(json.data.data);
+      const excelData = mapResponseToExcel(json.data);
 
       updateProgress(70);
 

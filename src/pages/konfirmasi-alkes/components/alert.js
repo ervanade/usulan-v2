@@ -167,6 +167,10 @@ export const buildHumanPreview = (payload) => {
       label: "Puskesmas Relokasi",
       value: payload.nama_puskesmas_penerima_relokasi || "-",
     },
+    isRelokasi && {
+      label: "Jumlah Relokasi",
+      value: payload.jumlah_relokasi || "-",
+    },
 
     isRelokasi && {
       label: "Alamat Relokasi",

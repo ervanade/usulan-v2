@@ -81,6 +81,7 @@ export default function EditKonfirmasi() {
   const [picHpDinkesRelokasi, setPicHpDinkesRelokasi] = useState("");
   const [statusVerifikasi, setStatusVerifikasi] = useState(null);
   const [fileSurat, setFileSurat] = useState(null);
+  const [jumlahRelokasi, setJumlahRelokasi] = useState(0);
 
   const [kabOptions, setKabOptions] = useState([]);
   const [pusOptions, setPusOptions] = useState([]);
@@ -171,11 +172,11 @@ export default function EditKonfirmasi() {
   }, [user?.token, formData.id_provinsi]);
 
   const fetchPuskesmas = useCallback(
-    async ({ id_provinsi = "", id_kabupaten = "", id_kecamatan = "" }) => {
+    async ({ id_provinsi = "", id_kabupaten = "", id_kecamatan = "", id_alkes = "" }) => {
       try {
         const res = await axios({
           method: "post",
-          url: `${import.meta.env.VITE_APP_API_URL}/api/puskesmas/all`,
+          url: `${import.meta.env.VITE_APP_API_URL}/api/puskesmas-relokasi`,
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${user?.token}`,
@@ -184,6 +185,7 @@ export default function EditKonfirmasi() {
             id_provinsi: id_provinsi.toString() || "",
             id_kabupaten: id_kabupaten.toString() || "",
             id_kecamatan: id_kecamatan?.toString() || "",
+            id_alkes: id_alkes?.toString() || "",
           },
         });
 
@@ -191,6 +193,7 @@ export default function EditKonfirmasi() {
           value: p.id,
           label: p.nama_puskesmas,
           alamat: p.alamat,
+          jumlah: p.jumlah,
         }));
       } catch (err) {
         console.error("Gagal fetch puskesmas", err);
@@ -297,6 +300,7 @@ export default function EditKonfirmasi() {
       const list = await fetchPuskesmas({
         id_provinsi: targetProvinsi || "",
         id_kabupaten: kabRelokasi.value || "",
+        id_alkes: formData.id_alkes || "",
         id_kecamatan: "",
       });
 
@@ -320,6 +324,25 @@ export default function EditKonfirmasi() {
       setAlamatRelokasi(pusRelokasi.alamat);
     }
   }, [pusRelokasi]);
+
+  useEffect(() => {
+    if (!pusRelokasi) {
+      setJumlahRelokasi(0);
+      return;
+    }
+
+    const jumlahBarang = Number(formData.jumlah) || 0;
+    const pkmQuota =
+      pusRelokasi.jumlah !== undefined && pusRelokasi.jumlah !== null
+        ? Number(pusRelokasi.jumlah)
+        : null;
+
+    if (pkmQuota === null) {
+      setJumlahRelokasi(jumlahBarang);
+    } else {
+      setJumlahRelokasi(Math.min(jumlahBarang, pkmQuota));
+    }
+  }, [pusRelokasi, formData.jumlah]);
   useEffect(() => {
     // setiap ganti kabupaten → reset puskesmas
     setPusRelokasi(null);
@@ -522,6 +545,7 @@ export default function EditKonfirmasi() {
     setKabRelokasi(null);
     setPusRelokasi(null);
     setAlamatRelokasi("");
+    setJumlahRelokasi(0);
 
     setCpRelokasi("");
     setCpHpRelokasi("");
@@ -573,6 +597,7 @@ export default function EditKonfirmasi() {
       picDinkesRelokasi,
       picHpDinkesRelokasi,
       statusVerifikasi: finalStatusVerifikasi,
+      jumlahRelokasi,
     });
 
     // 2. Validasi
@@ -834,13 +859,13 @@ export default function EditKonfirmasi() {
                     {" "}
                     <FormSelect
                       label="Provinsi Tujuan Relokasi"
-                      placeholder="Pilih provinsi tujuan relokasi"
+                      placeholder={!skemaRelokasi ? "Pilih skema relokasi terlebih dahulu" :"Pilih provinsi tujuan relokasi"}
                       value={provRelokasi}
                       onChange={setProvRelokasi}
                       options={provOptions}
                       isDisabled={
                         skemaRelokasi?.value === "DALAM_KAB" ||
-                        skemaRelokasi?.value === "ANTAR_KAB"
+                        skemaRelokasi?.value === "ANTAR_KAB" || !skemaRelokasi
                       }
                       isLoading={loadingProv}
                     />
@@ -886,6 +911,14 @@ export default function EditKonfirmasi() {
                       value={alamatRelokasi}
                       onChange={(e) => setAlamatRelokasi(e.target.value)}
                     />
+                    {
+                      pusRelokasi && <FormInput
+                      label="Jumlah Relokasi"
+                      value={jumlahRelokasi}
+                      disabled
+                    />
+                    }
+                    
                   </div>
 
                   <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -918,7 +951,7 @@ export default function EditKonfirmasi() {
                       placeholder={
                         !pusRelokasi
                           ? "Pilih puskesmas relokasi dahulu"
-                          : "Contoh: Dr. Ahmad Fauzi_081234567890"
+                          : "Contoh: Dr. Ahmad Fauzi"
                       }
                       disabled={!pusRelokasi}
                       value={picDinkesRelokasi}

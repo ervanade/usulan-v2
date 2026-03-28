@@ -1115,7 +1115,7 @@ const EditUsulan = () => {
           <div className="w-full mt-8 gap-4">
             <button
               onClick={handleSimpan}
-              // disabled={loading || selectedPeriode?.stat == 0 || !isAllowedKab}
+              disabled={loading || selectedPeriode?.stat == 0 }
               className="w-full px-6 py-2 bg-primary text-white rounded-md font-semibold disabled:bg-slate-300"
             >
               {loading ? "Menyimpan..." : "Simpan Usulan"}

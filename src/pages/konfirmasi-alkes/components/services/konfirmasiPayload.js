@@ -22,6 +22,7 @@ export const buildKonfirmasiPayload = ({
   picDinkesRelokasi,
   picHpDinkesRelokasi,
   statusVerifikasi,
+  jumlahRelokasi,
 }) => {
   const isRelokasi = relokasi === "YA";
   const isSDMTidakSiap = kesiapanSDM === "TIDAK";
@@ -81,6 +82,7 @@ export const buildKonfirmasiPayload = ({
       isRelokasi && pusRelokasi?.label ? pusRelokasi.label : null,
 
     alamat_relokasi: isRelokasi ? alamatRelokasi || null : null,
+    jumlah_relokasi: isRelokasi ? Number(jumlahRelokasi) : null,
 
     /* ===== PIC ===== */
     pic_penerima_relokasi_nama: isRelokasi ? cpRelokasi || null : null,

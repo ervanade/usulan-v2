@@ -88,6 +88,9 @@ export const validateKonfirmasiPayload = (payload) => {
     if (!payload.alamat_relokasi)
       errors.push("Alamat puskesmas relokasi wajib diisi");
 
+    if (!payload.jumlah_relokasi || payload.jumlah_relokasi <= 0)
+      errors.push("Jumlah relokasi tidak valid");
+
     /* CP Puskesmas Penerima */
     if (!payload.pic_penerima_relokasi_nama)
       errors.push("Nama CP Puskesmas Relokasi wajib diisi");
