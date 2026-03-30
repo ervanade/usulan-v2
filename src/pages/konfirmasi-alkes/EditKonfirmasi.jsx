@@ -172,7 +172,12 @@ export default function EditKonfirmasi() {
   }, [user?.token, formData.id_provinsi]);
 
   const fetchPuskesmas = useCallback(
-    async ({ id_provinsi = "", id_kabupaten = "", id_kecamatan = "", id_alkes = "" }) => {
+    async ({
+      id_provinsi = "",
+      id_kabupaten = "",
+      id_kecamatan = "",
+      id_alkes = "",
+    }) => {
       try {
         const res = await axios({
           method: "post",
@@ -632,8 +637,12 @@ export default function EditKonfirmasi() {
 
       // Clear SWR cache for konfirmasi hooks
       mutate("konfirmasi-header");
-      mutate((key) => Array.isArray(key) && key[0] === "konfirmasi-detail", undefined, { revalidate: true });
-      
+      mutate(
+        (key) => Array.isArray(key) && key[0] === "konfirmasi-detail",
+        undefined,
+        { revalidate: true },
+      );
+
       const encryptedId = encryptId(parseInt(formData?.id_kabupaten));
       navigate(backUrl);
     } catch (err) {
@@ -859,13 +868,18 @@ export default function EditKonfirmasi() {
                     {" "}
                     <FormSelect
                       label="Provinsi Tujuan Relokasi"
-                      placeholder={!skemaRelokasi ? "Pilih skema relokasi terlebih dahulu" :"Pilih provinsi tujuan relokasi"}
+                      placeholder={
+                        !skemaRelokasi
+                          ? "Pilih skema relokasi terlebih dahulu"
+                          : "Pilih provinsi tujuan relokasi"
+                      }
                       value={provRelokasi}
                       onChange={setProvRelokasi}
                       options={provOptions}
                       isDisabled={
                         skemaRelokasi?.value === "DALAM_KAB" ||
-                        skemaRelokasi?.value === "ANTAR_KAB" || !skemaRelokasi
+                        skemaRelokasi?.value === "ANTAR_KAB" ||
+                        !skemaRelokasi
                       }
                       isLoading={loadingProv}
                     />
@@ -911,17 +925,16 @@ export default function EditKonfirmasi() {
                       value={alamatRelokasi}
                       onChange={(e) => setAlamatRelokasi(e.target.value)}
                     />
-                    {
-                      pusRelokasi && <FormInput
-                      label="Jumlah Relokasi"
-                      value={jumlahRelokasi}
-                      disabled
-                    />
-                    }
-                    
+                    {pusRelokasi && (
+                      <FormInput
+                        label="Jumlah Relokasi"
+                        value={jumlahRelokasi}
+                        disabled
+                      />
+                    )}
                   </div>
 
-                  <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                     <FormInput
                       label="CP Nama Puskesmas Relokasi"
                       value={cpRelokasi}
