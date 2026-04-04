@@ -125,7 +125,11 @@ const KonfirmasiKabupaten = () => {
     setUploadTypeModal(type); // Set tipe upload saat modal dibuka
   };
 
-  const { konfirmasiKabupaten: initialData, isLoading: konfirmasiLoading, mutate: mutateKonfirmasi } = useKonfirmasiKabupaten();
+  const {
+    konfirmasiKabupaten: initialData,
+    isLoading: konfirmasiLoading,
+    mutate: mutateKonfirmasi,
+  } = useKonfirmasiKabupaten();
 
   useEffect(() => {
     if (initialData) {
@@ -1016,7 +1020,7 @@ const KonfirmasiKabupaten = () => {
       }`,
       "Status RC Puskesmas Relokasi": item.status_verifikasi || "",
       "Tindak lanjut/ Keterangan Relokasi": item.keterangan_relokasi || "",
-      "PIC Puskesmas (Petugas ASPAK)": `${item.pic_puskesmas_nama || ""} (${item.pic_puskesmas_hp || ""})`,
+      "PIC Puskesmas (PJ Aspak Puskesmas)": `${item.pic_puskesmas_nama || ""} (${item.pic_puskesmas_hp || ""})`,
       "PIC Dinkes Kesehatan Kab/Kota": `${item.pic_dinkes_nama || ""} (${item.pic_dinkes_hp || ""})`,
       "PIC Dinas Kesehatan Provinsi": "",
       "Surat Balasan": item.document_link ? item.document_link : "Belum",

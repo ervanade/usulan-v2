@@ -186,7 +186,7 @@ export const buildHumanPreview = (payload) => {
 
     /* ===== PIC ===== */
     {
-      label: "PIC Puskesmas",
+      label: "PIC Puskesmas (PJ Aspak Puskesmas)",
       value: payload.pic_puskesmas_nama
         ? `${payload.pic_puskesmas_nama} (${payload.pic_puskesmas_hp})`
         : "-",

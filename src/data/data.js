@@ -392,7 +392,10 @@ export const limbahOptions = [
   { label: "Tempat sampah sesuai jenis", value: "Tempat sampah sesuai jenis" },
   { label: "Cold Storage Limbah", value: "Cold Storage Limbah" },
   { label: "TPS LB3", value: "TPS LB3" },
-  { label: "Kerjasama dengan Pihak Ketiga", value: "Kerjasama dengan Pihak Ketiga" },
+  {
+    label: "Kerjasama dengan Pihak Ketiga",
+    value: "Kerjasama dengan Pihak Ketiga",
+  },
 ];
 
 export const batchOptions = [
@@ -1339,7 +1342,7 @@ export const EXCEL_HEADER = [
   "Kontak Puskesmas Penerima Relokasi",
   "Status RC Puskesmas Relokasi",
   "Tindak lanjut/ Keterangan Relokasi",
-  "PIC Puskesmas (Petugas ASPAK)",
+  "PIC Puskesmas (PJ Aspak Puskesmas)",
   "PIC Dinkes Kesehatan Kab/Kota",
   "PIC Dinas Kesehatan Provinsi",
   "Surat Balasan",
