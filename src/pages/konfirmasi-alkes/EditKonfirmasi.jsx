@@ -934,7 +934,7 @@ export default function EditKonfirmasi() {
                     )}
                   </div>
 
-                  <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                     <FormInput
                       label="CP Nama Puskesmas Relokasi"
                       value={cpRelokasi}

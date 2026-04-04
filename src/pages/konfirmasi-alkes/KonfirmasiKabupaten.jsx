@@ -1011,6 +1011,8 @@ const KonfirmasiKabupaten = () => {
       "Alasan Relokasi": item.alasan_relokasi || "",
       "Nama Puskesmas PENERIMA RELOKASI":
         item.nama_puskesmas_penerima_relokasi || "",
+      "Jumlah Relokasi":
+        item.jumlah_relokasi || "",
       "Alamat Puskesmas Penerima Relokasi":
         item.alamat_puskesmas_relokasi || "",
       "Kecamatan Penerima Relokasi": item.kecamatan_relokasi || "",

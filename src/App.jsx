@@ -46,7 +46,7 @@ import DetailLogActivity from "./pages/log/DetailLogActivity";
 import LaporanBarangProvinsi from "./pages/laporan/LaporanBarangProvinsi";
 import LaporanBarangKabupaten from "./pages/laporan/LaporanBarangKabupaten";
 import LaporanBarangPuskesmas from "./pages/laporan/LaporanBarangPuskesmas";
-// import Notifikasi from "./pages/notifikasi/Notifikasi";
+import Notifikasi from "./pages/notifikasi/Notifikasi";
 import UsulanAlkes from "./pages/usulan-alkes/UsulanAlkes.jsx";
 import PdfUsulanAlkes from "./pages/usulan-alkes/PdfUsulanAlkes.jsx";
 import EditUsulan from "./pages/usulan-alkes/EditUsulan.jsx";
@@ -174,7 +174,7 @@ function App() {
                 element={<TambahDistribusi />}
               /> */}
               <Route path="/not-found" element={<NotFound />} />
-              {/* <Route path="notifikasi" element={<Notifikasi />} /> */}
+              <Route path="notifikasi" element={<Notifikasi />} />
               <Route path="/" element={<ProtectedRoutesAdmin />}>
                 <Route
                   path="master-data-periode-alkes"
