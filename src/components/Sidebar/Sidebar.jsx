@@ -420,7 +420,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                                 Data Periode
                               </NavLink>
                             </li>
-                            {/* <li>
+                            <li>
                               <NavLink
                                 to="/master-data-puskesmas"
                                 className={({ isActive }) =>
@@ -430,7 +430,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               >
                                 Data Puskesmas
                               </NavLink>
-                            </li> */}
+                            </li>
                             <li>
                               <NavLink
                                 to="/master-data-barang"

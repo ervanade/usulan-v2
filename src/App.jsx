@@ -14,7 +14,7 @@ import ProtectedRoutesAdmin from "./components/Layout/ProtectedRoutesAdmin.jsx";
 // import Profile from "./pages/Profile";
 import PreviewDokumen from "./pages/distribusi/PreviewDokumen.jsx";
 import DataBarang from "./pages/master-barang/DataBarang";
-// import DataPuskesmas from "./pages/master-puskesmas/DataPuskesmas";
+import DataPuskesmas from "./pages/master-puskesmas/DataPuskesmas";
 // import DataKecamatan from "./pages/master-kecamatan/DataKecamatan";
 // import DataProvinsi from "./pages/master-provinsi/DataProvinsi";
 import TambahUser from "./pages/admin/TambahUser";
@@ -22,8 +22,8 @@ import TambahUser from "./pages/admin/TambahUser";
 // import TambahProvinsi from "./pages/master-provinsi/TambahProvinsi";
 import TambahBarang from "./pages/master-barang/TambahBarang";
 import EditBarang from "./pages/master-barang/EditBarang";
-// import TambahPuskesmas from "./pages/master-puskesmas/TambahPuskesmas";
-// import EditPuskesmas from "./pages/master-puskesmas/EditPuskesmas";
+import TambahPuskesmas from "./pages/master-puskesmas/TambahPuskesmas";
+import EditPuskesmas from "./pages/master-puskesmas/EditPuskesmas";
 // import DataKota from "./pages/master-kota/DataKota";
 // import TambahKota from "./pages/master-kota/TambahKota";
 // import EditKota from "./pages/master-kota/EditKota";
@@ -241,7 +241,7 @@ function App() {
                   element={<EditBarang />}
                 />
 
-                {/* <Route
+                <Route
                   path="master-data-puskesmas"
                   element={<DataPuskesmas />}
                 />
@@ -254,7 +254,7 @@ function App() {
                   element={<EditPuskesmas />}
                 />
 
-                <Route path="master-data-penyedia" element={<DataPenyedia />} />
+                {/* <Route path="master-data-penyedia" element={<DataPenyedia />} />
                 <Route
                   path="master-data-penyedia/add"
                   element={<TambahPenyedia />}

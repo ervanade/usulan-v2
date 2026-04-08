@@ -559,6 +559,11 @@ const EditUsulan = () => {
         newState.needAlasan = false;
       }
 
+      // Jika usulan dirubah menjadi 0, bersihkan strategi_pemenuhan
+      if (finalValue === 0) {
+        newState.strategi_pemenuhan = undefined;
+      }
+
       setEditedData((prev) => ({
         ...prev,
         [rowId]: newState,
@@ -584,6 +589,11 @@ const EditUsulan = () => {
         newState.keterangan_usulan = undefined;
         newState.catatanAlasan = undefined;
         newState.needAlasan = false;
+      }
+
+      // Jika usulan menyesuaikan menjadi 0, bersihkan strategi_pemenuhan
+      if (adjustedUsulan === 0) {
+        newState.strategi_pemenuhan = undefined;
       }
 
       setEditedData((prevData) => ({
@@ -682,7 +692,8 @@ const EditUsulan = () => {
   const handleSimpan = async (e) => {
     e.preventDefault();
     const validationErrors = {};
-    let hasError = false;
+    let hasErrorAlasan = false;
+    let hasErrorStrategi = false;
 
     filteredData.forEach((row) => {
       const standard =
@@ -719,7 +730,7 @@ const EditUsulan = () => {
         const strategi = editedData[row.id]?.strategi_pemenuhan;
         if (!strategi) {
           validationErrors[row.id] = "Harap pilih strategi pemenuhan SDMK";
-          hasError = true;
+          hasErrorStrategi = true;
         }
       }
 
@@ -728,22 +739,30 @@ const EditUsulan = () => {
         // Case 1: No reason provided
         if (!keterangan) {
           validationErrors[row.id] = "Harap pilih alasan tidak usul";
-          hasError = true;
+          hasErrorAlasan = true;
         }
         // Case 2: 'Lainnya' selected but no note
         else if (keterangan === "Lainnya" && !catatan?.trim()) {
           validationErrors[row.id] = "Harap isi alasan tidak usul lainnya";
-          hasError = true;
+          hasErrorAlasan = true;
         }
       }
     });
 
-    if (hasError) {
+    if (hasErrorAlasan || hasErrorStrategi) {
       setErrors(validationErrors);
+      let errorMsg = "Harap periksa kembali usulan Anda.";
+      if (hasErrorAlasan && hasErrorStrategi) {
+        errorMsg = "Harap lengkapi alasan untuk usulan yang kurang dari standar dan strategi pemenuhan SDMK.";
+      } else if (hasErrorAlasan) {
+        errorMsg = "Harap lengkapi alasan untuk usulan yang kurang dari standar.";
+      } else if (hasErrorStrategi) {
+        errorMsg = "Harap pilih strategi pemenuhan SDMK untuk usulan yang tidak memenuhi kriteria SDM.";
+      }
       Swal.fire({
         icon: "warning",
         title: "Perhatian",
-        text: "Harap lengkapi alasan untuk usulan yang kurang dari standar",
+        text: errorMsg,
       });
       return;
     }
@@ -989,11 +1008,11 @@ const EditUsulan = () => {
                   Standar SDMK Belum Terpenuhi. Harap Isi Strategi Pemenuhan!
                 </div>
               )}
-              {errors[row.id] && (
+              {/* {errors[row.id] && (
                 <div className="text-red-500 text-xs mt-1">
                   {errors[row.id]}
                 </div>
-              )}
+              )} */}
             </div>
           );
         },
@@ -1047,8 +1066,9 @@ const EditUsulan = () => {
               : row.standard_rawat_inap;
 
           const masihBerfungsi =
-            editedData[row.id]?.berfungsi || row.berfungsi || 0;
-          const usulan = editedData[row.id]?.usulan || row.usulan || 0;
+            editedData[row.id]?.berfungsi !== undefined ? editedData[row.id].berfungsi : row.berfungsi || 0;
+          const usulan = 
+            editedData[row.id]?.usulan !== undefined ? editedData[row.id].usulan : row.usulan || 0;
           const required = standard - masihBerfungsi;
 
           // Perbaikan utama: Tampilkan alasan jika usulan < required ATAU ada flag needAlasan
@@ -1115,13 +1135,18 @@ const EditUsulan = () => {
                   </select>
                 </div>
               )}
+              {errors[row.id] && (
+                <div className="text-red-500 text-xs mt-1">
+                  {errors[row.id]}
+                </div>
+              )}
             </div>
           );
         },
         width: "250px",
       },
     ],
-    [editedData, errors, selectedPelayanan, filteredData],
+    [editedData, errors, selectedPelayanan, filteredData, formData.id_kriteria],
   );
 
   if (usulanLoading) {
