@@ -299,12 +299,20 @@ export const StatusOptions = [
 ];
 export const AlasanOptions = [
   {
+    label: "Pengadaan Alat dari SOPHI (2024-2025)",
+    value: "Pengadaan Alat dari SOPHI (2024-2025)",
+  },
+  {
     label: "Pengadaan Alat Berasal dari Sumber Pendanaan Lain",
     value: "Pengadaan Alat Berasal dari Sumber Pendanaan Lain",
   },
+  // {
+  //   label: "Tidak Siap SDM",
+  //   value: "Tidak Siap SDM",
+  // },
   {
-    label: "Tidak Siap SDM",
-    value: "Tidak Siap SDM",
+    label: "Tidak Memiliki Strategi Pemenuhan SDMK",
+    value: "Tidak Memiliki Strategi Pemenuhan SDMK",
   },
   {
     label: "Tidak Siap Sarpras",
