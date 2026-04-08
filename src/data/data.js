@@ -316,6 +316,16 @@ export const AlasanOptions = [
   },
 ];
 
+export const StrategiPemenuhanOptions = [
+  { label: "Rekrutmen ASN (CPNS dan PPPK)", value: "Rekrutmen ASN (CPNS dan PPPK)" },
+  { label: "Penugasan Khusus Pusat", value: "Penugasan Khusus Pusat" },
+  { label: "Penugasan Khusus Daerah (Kab/Kota/ Provinsi)", value: "Penugasan Khusus Daerah (Kab/Kota/ Provinsi)" },
+  { label: "Rekrutmen BLUD", value: "Rekrutmen BLUD" },
+  { label: "Redistribusi SDMK antar fasilitas di 1 kab/kota yang sama, sesuai beban kerja dan kebutuhan layanan.", value: "Redistribusi SDMK antar fasilitas di 1 kab/kota yang sama, sesuai beban kerja dan kebutuhan layanan." },
+  { label: "Kemitraan dengan institusi pendidikan kesehatan untuk penempatan tenaga magang", value: "Kemitraan dengan institusi pendidikan kesehatan untuk penempatan tenaga magang" },
+  { label: "Tidak dapat memenuhi SDM", value: "Tidak dapat memenuhi SDM" },
+];
+
 export const dayaOptions = [
   {
     label: "0 - 3000 VA",

@@ -12,6 +12,7 @@ import {
   dayaOptions,
   pelayananOptions,
   SelectOptions,
+  StrategiPemenuhanOptions,
 } from "../../data/data.js";
 import { decryptId, selectThemeColors } from "../../data/utils.js";
 import { FaInfoCircle } from "react-icons/fa";
@@ -198,6 +199,16 @@ const EditUsulan = () => {
     }));
   };
 
+  const handleStrategiPemenuhanChange = (rowId, value) => {
+    setEditedData((prev) => ({
+      ...prev,
+      [rowId]: {
+        ...prev[rowId],
+        strategi_pemenuhan: value,
+      },
+    }));
+  };
+
   // Unused manual fetch functions removed (fetchPuskesmas, fetchProvinsi, etc.)
   // Handled by hooks or not needed for EditUsulan
   // Initialization of states from formData
@@ -328,27 +339,29 @@ const EditUsulan = () => {
     if (formData?.usulan && AlasanOptions) {
       const initialEditedData = {};
       formData.usulan.forEach((item) => {
+        const alasanToUse = item.alasan_tidak_mengusulkan || item.keterangan_usulan;
         const isStandardAlasan = AlasanOptions.some(
-          (opt) => opt.value === item.keterangan_usulan,
+          (opt) => opt.value === alasanToUse,
         );
 
         initialEditedData[item.id] = {
           berfungsi: item.berfungsi ?? 0,
           usulan: item.usulan ?? 0,
           keterangan_usulan: isStandardAlasan
-            ? item.keterangan_usulan
-            : item.keterangan_usulan === null ||
-                item.keterangan_usulan === false ||
-                item.keterangan_usulan === ""
+            ? alasanToUse
+            : alasanToUse === null ||
+                alasanToUse === false ||
+                alasanToUse === ""
               ? ""
               : "Lainnya",
           catatanAlasan: isStandardAlasan
             ? undefined
-            : item.keterangan_usulan === null ||
-                item.keterangan_usulan === false ||
-                item.keterangan_usulan === ""
+            : alasanToUse === null ||
+                alasanToUse === false ||
+                alasanToUse === ""
               ? undefined
-              : item.keterangan_usulan,
+              : alasanToUse,
+          strategi_pemenuhan: item.strategi_pemenuhan || null,
         };
       });
 
@@ -457,6 +470,8 @@ const EditUsulan = () => {
       formData.id_kriteria?.includes(alkesKriteria.id),
     );
 
+    const isSdmkStrategyEnabled = import.meta.env.VITE_ENABLE_SDMK_STRATEGY === 'true';
+
     // 1. Handle perubahan usulan untuk alkes yang memenuhi kriteria SDM
     if (columnName === "usulan" && memenuhiKriteria) {
       const currentKeterangan = editedData[rowId]?.keterangan_usulan;
@@ -482,16 +497,18 @@ const EditUsulan = () => {
       !memenuhiKriteria &&
       row.kriteria_alkes?.length > 0
     ) {
-      setEditedData((prevData) => ({
-        ...prevData,
-        [rowId]: {
-          ...prevData[rowId],
-          [columnName]: finalValue,
-          keterangan_usulan: "Tidak Siap SDM",
-          catatanAlasan: undefined,
-        },
-      }));
-      return;
+      if (!isSdmkStrategyEnabled) {
+        setEditedData((prevData) => ({
+          ...prevData,
+          [rowId]: {
+            ...prevData[rowId],
+            [columnName]: finalValue,
+            keterangan_usulan: "Tidak Siap SDM",
+            catatanAlasan: undefined,
+          },
+        }));
+        return;
+      }
     }
 
     // 3. Skip validasi jika standard tidak terdefinisi
@@ -587,6 +604,7 @@ const EditUsulan = () => {
   };
 
   const getResultData = () => {
+    const isSdmkStrategyEnabled = import.meta.env.VITE_ENABLE_SDMK_STRATEGY === 'true';
     return filteredData.map((row) => {
       const memenuhiKriteria = row.kriteria_alkes?.some((alkesKriteria) =>
         formData.id_kriteria?.includes(alkesKriteria.id),
@@ -595,23 +613,32 @@ const EditUsulan = () => {
       const currentKeterangan = editedData[row.id]?.keterangan_usulan;
 
       // Handle case where criteria was added but reason was "Tidak Siap SDM"
-      const finalAlasan =
-        // If now meets criteria but had "Tidak Siap SDM" reason
-        memenuhiKriteria && currentKeterangan === "Tidak Siap SDM"
-          ? null
-          : // If doesn't meet criteria
-            !memenuhiKriteria && row.kriteria_alkes?.length > 0
-            ? "Tidak Siap SDM"
-            : // If meets criteria and has other reason
-              currentKeterangan === "Lainnya"
-              ? editedData[row.id]?.catatanAlasan
-              : currentKeterangan;
+      let finalAlasan;
+      if (isSdmkStrategyEnabled) {
+          finalAlasan = currentKeterangan === "Lainnya" ? editedData[row.id]?.catatanAlasan : currentKeterangan;
+          if (memenuhiKriteria && currentKeterangan === "Tidak Siap SDM") {
+              finalAlasan = null;
+          }
+      } else {
+          finalAlasan =
+            // If now meets criteria but had "Tidak Siap SDM" reason
+            memenuhiKriteria && currentKeterangan === "Tidak Siap SDM"
+              ? null
+              : // If doesn't meet criteria
+                !memenuhiKriteria && row.kriteria_alkes?.length > 0
+                ? "Tidak Siap SDM"
+                : // If meets criteria and has other reason
+                  currentKeterangan === "Lainnya"
+                  ? editedData[row.id]?.catatanAlasan
+                  : currentKeterangan;
+      }
 
       return {
         id: row.id,
         berfungsi: editedData[row.id]?.berfungsi ?? row.berfungsi ?? 0,
         usulan: editedData[row.id]?.usulan ?? row.usulan ?? 0,
-        alasan: finalAlasan,
+        alasan_tidak_mengusulkan: finalAlasan,
+        strategi_pemenuhan: isSdmkStrategyEnabled ? (editedData[row.id]?.strategi_pemenuhan || null) : null,
       };
     });
   };
@@ -679,12 +706,22 @@ const EditUsulan = () => {
         formData.id_kriteria?.includes(alkesKriteria.id),
       );
 
+      const isSdmkStrategyEnabled = import.meta.env.VITE_ENABLE_SDMK_STRATEGY === 'true';
+
       // Special case: Skip validation if SDM doesn't meet criteria
-      if (!memenuhiKriteria && row.kriteria_alkes?.length > 0) {
+      if (!isSdmkStrategyEnabled && !memenuhiKriteria && row.kriteria_alkes?.length > 0) {
         return;
       }
 
       const kekurangan = standard - masihBerfungsi;
+
+      if (isSdmkStrategyEnabled && !memenuhiKriteria && row.kriteria_alkes?.length > 0 && usulan > 0) {
+        const strategi = editedData[row.id]?.strategi_pemenuhan;
+        if (!strategi) {
+          validationErrors[row.id] = "Harap pilih strategi pemenuhan SDMK";
+          hasError = true;
+        }
+      }
 
       // Only validate if usulan is less than required
       if (usulan < kekurangan && kekurangan > 0) {
@@ -870,7 +907,9 @@ const EditUsulan = () => {
             (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id),
           );
 
-          if (!memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
+          const isSdmkStrategyEnabled = import.meta.env.VITE_ENABLE_SDMK_STRATEGY === 'true';
+
+          if (!isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
             // Jika tidak memenuhi kriteria, set otomatis alasan
             if (
               !editedData[row.id]?.keterangan_usulan ||
@@ -945,6 +984,11 @@ const EditUsulan = () => {
                   !isAllowedKab
                 } // Nonaktifkan input jika masih_berfungsi >= standard
               />
+              {isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0 && usulan > 0 && (
+                <div className="text-red-500 text-[10px] mt-1 leading-tight text-[10px]">
+                  Standar SDMK Belum Terpenuhi. Harap Isi Strategi Pemenuhan!
+                </div>
+              )}
               {errors[row.id] && (
                 <div className="text-red-500 text-xs mt-1">
                   {errors[row.id]}
@@ -957,14 +1001,16 @@ const EditUsulan = () => {
         maxWidth: "200px",
       },
       {
-        name: <div className="text-wrap">Alasan Tidak Mengusulkan</div>,
+        name: <div className="text-wrap">Alasan & Strategi Pemenuhan</div>,
         cell: (row) => {
           const memenuhiSalahSatuKriteria = row.kriteria_alkes?.some(
             (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id),
           );
 
-          // If doesn't meet criteria, show auto-reason
-          if (!memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
+          const isSdmkStrategyEnabled = import.meta.env.VITE_ENABLE_SDMK_STRATEGY === 'true';
+
+          // If doesn't meet criteria, show auto-reason (ONLY IF feature is not enabled)
+          if (!isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
             return (
               <div className="w-full">
                 <input
@@ -1010,39 +1056,63 @@ const EditUsulan = () => {
             standard !== null &&
             standard !== undefined &&
             (usulan < required || editedData[row.id]?.needAlasan);
+            
+          const showStrategi = isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0 && usulan > 0;
 
-          if (!showAlasan)
-            return <div className="text-xs text-gray-400">-</div>;
+          if (!showAlasan && !showStrategi) {
+              return <div className="text-xs text-gray-400">-</div>;
+          }
 
           return (
-            <div className="w-full">
-              <select
-                value={editedData[row.id]?.keterangan_usulan || ""}
-                onChange={(e) => handleAlasanChange(row.id, e.target.value)}
-                disabled={!isAllowedKab}
-                className="border border-primary focus:border-primary rounded p-1 text-sm w-full focus-within:border-primary active:border-primary"
-              >
-                <option value="">Pilih Alasan</option>
-                {AlasanOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-
-              {editedData[row.id]?.keterangan_usulan === "Lainnya" && (
-                <div className="mt-1">
-                  <input
+            <div className="w-full space-y-2">
+              {showAlasan && (
+                <div className="w-full">
+                  <select
+                    value={editedData[row.id]?.keterangan_usulan || ""}
+                    onChange={(e) => handleAlasanChange(row.id, e.target.value)}
                     disabled={!isAllowedKab}
-                    type="text"
-                    value={editedData[row.id]?.catatanAlasan || ""}
-                    onChange={(e) =>
-                      handleCatatanAlasanChange(row.id, e.target.value)
-                    }
-                    placeholder="Ketik keterangan_usulan lainnya"
-                    className="border border-primary rounded p-1 text-sm w-full mt-1"
-                    required
-                  />
+                    className="border border-primary focus:border-primary rounded p-1 text-sm w-full focus-within:border-primary active:border-primary mb-2"
+                  >
+                    <option value="">Pilih Alasan Tidak Mengusulkan</option>
+                    {AlasanOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  {editedData[row.id]?.keterangan_usulan === "Lainnya" && (
+                    <div className="mt-1">
+                      <input
+                        disabled={!isAllowedKab}
+                        type="text"
+                        value={editedData[row.id]?.catatanAlasan || ""}
+                        onChange={(e) =>
+                          handleCatatanAlasanChange(row.id, e.target.value)
+                        }
+                        placeholder="Ketik alasan lainnya"
+                        className="border border-primary rounded p-1 text-sm w-full mt-1 mb-2"
+                        required
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+              {showStrategi && (
+                <div className="w-full">
+                  <select
+                    value={editedData[row.id]?.strategi_pemenuhan || ""}
+                    onChange={(e) => handleStrategiPemenuhanChange(row.id, e.target.value)}
+                    disabled={!isAllowedKab}
+                    className="border border-blue-500 focus:border-blue-500 rounded p-1 text-sm w-full focus-within:border-blue-500 active:border-blue-500"
+                  >
+                    <option value="">Pilih Strategi Pemenuhan SDMK</option>
+                    {StrategiPemenuhanOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
             </div>
