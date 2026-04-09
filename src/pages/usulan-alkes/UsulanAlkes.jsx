@@ -773,6 +773,7 @@ const UsulanAlkes = () => {
             />
           </div>
           <div className="div flex gap-2 flex-row">
+            {user?.role == "1" && (
             <button
               title="Export Data Usulan Alkes"
               className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white px-4 py-2 bg-primary rounded-md tracking-tight"
@@ -780,7 +781,7 @@ const UsulanAlkes = () => {
             >
               <BiExport />
               <span className="hidden sm:block">Export</span>
-            </button>
+            </button>)}
             {user.role == "1" ? (
               <button
                 title="Tambah Usulan Alkes"
