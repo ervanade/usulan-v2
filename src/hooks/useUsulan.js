@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { useSelector } from "react-redux";
-import { getUsulanList, getUsulanDetail, getKriteria, getPeriode, getLimbah, getLimbahDetail } from "../api/services/usulanService";
+import { getUsulanList, getUsulanDetail, getKriteria, getPeriode, getLimbah, getLimbahDetail, getAlkes } from "../api/services/usulanService";
 
 export const useUsulan = () => {
   const user = useSelector((state) => state.auth.user);
@@ -47,6 +47,16 @@ export const usePeriode = () => {
 
   return {
     periode: data,
+    isLoading,
+    isError: error,
+  };
+};
+
+export const useAlkes = () => {
+  const { data, error, isLoading } = useSWR("alkes", getAlkes);
+
+  return {
+    alkes: data,
     isLoading,
     isError: error,
   };

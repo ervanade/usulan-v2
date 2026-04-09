@@ -5,6 +5,11 @@ export const getUsulanList = async () => {
   return response.data.data;
 };
 
+export const getAlkes = async () => {
+  const response = await axiosInstance.get("/api/alkes");
+  return response.data.data;
+};
+
 export const getUsulanDetail = async (id, periodeId = null) => {
   let url = `/api/usulan/detail/${encodeURIComponent(id)}`;
   if (periodeId) {

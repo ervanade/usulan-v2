@@ -9,11 +9,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { CgSpinner } from "react-icons/cg";
 import Swal from "sweetalert2";
-import { useUsulan } from "../../hooks/useUsulan";
+import { useUsulan, usePeriode, useAlkes } from "../../hooks/useUsulan";
 import { useProvinsi, useKabupaten, useKecamatan } from "../../hooks/useRegion";
 import { filterUsulan } from "../../api/services/usulanService";
 import axiosInstance from "../../api/axiosInstance";
 import ModalVerifikasiUsulan from "../../components/Modal/ModalVerifikasiUsulan";
+import { MdClose } from "react-icons/md";
 
 const UsulanAlkes = () => {
   const user = useSelector((state) => state.auth.user);
@@ -33,6 +34,19 @@ const UsulanAlkes = () => {
   const [selectedKota, setSelectedKota] = useState(null);
   const { data: dataKecamatanRaw } = useKecamatan(selectedKota?.value);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportAll, setExportAll] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
+
+  const [selectedProvinsiLaporan, setSelectedProvinsiLaporan] = useState(null);
+  const { data: dataKotaLaporanRaw } = useKabupaten(selectedProvinsiLaporan?.value);
+  const [selectedKabupatenLaporan, setSelectedKabupatenLaporan] = useState(null);
+  const [selectedAlkesLaporan, setSelectedAlkesLaporan] = useState(null);
+  const [selectedPeriodeLaporan, setSelectedPeriodeLaporan] = useState(null);
+
+  const { periode: dataPeriodeRaw } = usePeriode();
+  const { alkes: dataAlkesRaw } = useAlkes();
 
   const dataProvinsi = useMemo(() => {
     if (!dataProvinsiRaw) return [];
@@ -57,6 +71,46 @@ const UsulanAlkes = () => {
       ...dataKecamatanRaw.map((item) => ({ label: item.name, value: item.id })),
     ];
   }, [dataKecamatanRaw]);
+
+  const dataPeriodeLaporan = useMemo(() => {
+    if (!dataPeriodeRaw) return [];
+    return dataPeriodeRaw.map((item) => ({ label: item.periode_name, value: item.id, stat: item.stat }));
+  }, [dataPeriodeRaw]);
+
+  const dataProvinsiLaporan = useMemo(() => {
+    if (!dataProvinsiRaw) return [];
+    return [
+      { label: "Semua Provinsi", value: "" },
+      ...dataProvinsiRaw.map((item) => ({ label: item.name, value: item.id })),
+    ];
+  }, [dataProvinsiRaw]);
+
+  const dataKotaLaporan = useMemo(() => {
+    if (!dataKotaLaporanRaw) return [];
+    return [
+      { label: "Semua Kabupaten/Kota", value: "" },
+      ...dataKotaLaporanRaw.map((item) => ({ label: item.name, value: item.id })),
+    ];
+  }, [dataKotaLaporanRaw]);
+
+  const dataAlkesLaporan = useMemo(() => {
+    if (!dataAlkesRaw) return [];
+    return [
+      { label: "Semua Alkes", value: "" },
+      ...dataAlkesRaw.map((item) => ({ label: item.nama_alkes, value: item.id })),
+    ];
+  }, [dataAlkesRaw]);
+
+  useEffect(() => {
+    if (dataPeriodeLaporan.length > 0 && !selectedPeriodeLaporan) {
+      const initialOption = dataPeriodeLaporan.find((kec) => kec.stat == "1");
+      if (initialOption) {
+        setSelectedPeriodeLaporan(initialOption);
+      } else {
+        setSelectedPeriodeLaporan(dataPeriodeLaporan[0]);
+      }
+    }
+  }, [dataPeriodeLaporan, selectedPeriodeLaporan]);
 
   useEffect(() => {
     if (initialData) {
@@ -95,35 +149,115 @@ const UsulanAlkes = () => {
   };
 
   const handleExport = async () => {
-    const XLSX = await import("xlsx");
-    const exportData = filteredData?.map((item) => ({
-      Puskesmas: item?.nama_puskesmas,
-      Provinsi: item?.provinsi,
-      Kabupaten_Kota: item?.kabupaten,
-      Kecamatan: item?.kecamatan,
-      Kode_Puskesmas: item?.kode_pusdatin_baru,
-      Status_Pelayanan: item?.pelayanan,
-      Kapasitas_Listrik: item?.kapasitas_listrik,
-      Ketersediaan_Listrik: item?.ketersediaan_listrik,
-      Internet: item?.internet,
-    }));
-    const wb = XLSX.utils.book_new(),
-      ws = XLSX.utils.json_to_sheet(exportData);
+    setIsExportModalOpen(true);
+  };
 
-    ws["!cols"] = [
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 25 },
-      { wch: 20 },
-      { wch: 15 },
-      { wch: 10 },
-      { wch: 15 },
-      { wch: 15 },
-    ];
+  const processExport = async () => {
+    try {
+      setExportLoading(true);
 
-    XLSX.utils.book_append_sheet(wb, ws, `Data Usulan Alkes`);
-    XLSX.writeFile(wb, "Data Usulan Alkes.xlsx");
+      const payload = {
+        periode_id: selectedPeriodeLaporan?.value || "",
+        id_provinsi: exportAll ? "" : selectedProvinsiLaporan?.value || "",
+        id_kabupaten: exportAll ? "" : selectedKabupatenLaporan?.value || "",
+        id_alkes: exportAll ? "" : selectedAlkesLaporan?.value || "",
+      };
+
+      const res = await axiosInstance.post("/api/usulan/laporan", payload);
+      
+      const json = res.data;
+      if (!json) throw new Error("Gagal export");
+
+      const dataResponse = json.data || json;
+
+      const mapResponseToExcel = (data) => {
+        return data?.map((item, index) => ({
+          "No": index + 1,
+          "Provinsi": item.provinsi || "",
+          "Kab/Kota": item.kabupaten || "",
+          "Kecamatan": item.kecamatan || "",
+          "Kode Puskesmas": item.kode_puskesmas || "",
+          "Nama Puskesmas": item.nama_puskesmas || "",
+          "Jenis Pelayanan": item.pelayanan || "",
+          "Karakteristik Wilayah": item.karakteristik_wilayah || "",
+          "Puskemas Persalinan": item.puskesmas_persalinan || "",
+          "Puskemas PONED": item.puskesmas_poned || "",
+          "Sumber Listrik": item.sumber_listrik || "",
+          "Total Daya Listrik": item.total_daya_listrik || "",
+          "Daya Listrik dari PLN": item.daya_listrik_pln || "",
+          "Ketersediaan Listrik": item.ketersediaan_listrik || "",
+          "Ketersediaan Internet": item.ketersediaan_internet || "",
+          "Pengelolaan Limbah": item.pengelolaan_limbah || "",
+          "SDMK Tersedia": item.sdmk_tersedia || "",
+          "Tahun Usulan": item.tahun_usulan || "",
+          "Nama Alkes": item.nama_alkes || "",
+          "SDMK": item.sdmk_alkes || "",
+          "Standar Ranap": item.standar_ranap || "",
+          "Standar Non Ranap": item.standar_non_ranap || "",
+          "Jumlah Tersedia": item.jumlah_tersedia || 0,
+          "Jumlah Usulan": item.jumlah_usulan || 0,
+          "Strategi Pemenuhan SDMK": item.strategi_pemenuhan || "",
+          "Alasan tidak mengusulkan": item.alasan_tidak_mengusulkan || ""
+        }));
+      };
+
+      const excelData = mapResponseToExcel(dataResponse);
+
+      const XLSX = await import("xlsx");
+      const EXCEL_HEADER = [
+        "No", "Provinsi", "Kab/Kota", "Kecamatan", "Kode Puskesmas", "Nama Puskesmas",
+        "Jenis Pelayanan", "Karakteristik Wilayah", "Puskemas Persalinan", "Puskemas PONED",
+        "Sumber Listrik", "Total Daya Listrik", "Daya Listrik dari PLN", "Ketersediaan Listrik",
+        "Ketersediaan Internet", "Pengelolaan Limbah", "SDMK Tersedia", "Tahun Usulan",
+        "Nama Alkes", "SDMK", "Standar Ranap", "Standar Non Ranap", "Jumlah Tersedia",
+        "Jumlah Usulan", "Strategi Pemenuhan SDMK", "Alasan tidak mengusulkan"
+      ];
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData, {
+        header: EXCEL_HEADER,
+      });
+
+      worksheet["!cols"] = EXCEL_HEADER.map((h) => ({
+        wch: Math.max(h.length + 5, 10),
+      }));
+
+      EXCEL_HEADER.forEach((_, idx) => {
+        const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: idx })];
+        if (cell) {
+          cell.s = {
+            font: { bold: true, color: { rgb: "FFFFFF" } },
+            fill: { fgColor: { rgb: "2563EB" } },
+            alignment: {
+              horizontal: "center",
+              vertical: "center",
+              wrapText: true,
+            },
+          };
+        }
+      });
+
+      worksheet["!rows"] = [{ hpt: 30 }];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Usulan Alkes");
+
+      XLSX.writeFile(workbook, `Laporan_Usulan_Alkes_${Date.now()}.xlsx`);
+
+      Swal.fire({
+        icon: "success",
+        title: "Export Selesai",
+        text: "File Excel berhasil dibuat",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+    } catch (err) {
+      console.log(err);
+      Swal.fire("Error", "Gagal melakukan export", "error");
+    } finally {
+      setExportLoading(false);
+      setIsExportModalOpen(false);
+    }
   };
 
   const navigate = useNavigate();
@@ -388,6 +522,113 @@ const UsulanAlkes = () => {
   return (
     <div>
       <Breadcrumb pageName="Usulan Alkes" />
+      {isExportModalOpen && (
+        <div className="fixed inset-0 z-999 bg-black/30 flex items-center justify-center">
+          <div className="bg-white rounded-lg w-full max-w-lg shadow-lg">
+            {/* Header */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-semibold text-primary">
+                Export Data Usulan Alkes
+              </h3>
+              <button onClick={() => setIsExportModalOpen(false)}>
+                <MdClose size={20} />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-4 space-y-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={exportAll}
+                  onChange={(e) => {
+                    setExportAll(e.target.checked);
+                    if (e.target.checked) {
+                      setSelectedProvinsiLaporan(null);
+                      setSelectedKabupatenLaporan(null);
+                      setSelectedAlkesLaporan(null);
+                    }
+                  }}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium">Export Semua Data</span>
+              </label>
+
+              <div>
+                <label className="block mb-1 text-sm text-[#728294] font-normal">Periode</label>
+                <Select
+                  options={dataPeriodeLaporan}
+                  value={selectedPeriodeLaporan}
+                  onChange={setSelectedPeriodeLaporan}
+                  placeholder="Pilih Periode"
+                />
+              </div>
+
+              {!exportAll && (
+                <>
+                  <div>
+                    <label className="block mb-1 text-sm text-[#728294] font-normal">Provinsi</label>
+                    <Select
+                      options={dataProvinsiLaporan}
+                      value={selectedProvinsiLaporan}
+                      onChange={(selectedOption) => {
+                        setSelectedProvinsiLaporan(selectedOption);
+                        setSelectedKabupatenLaporan(null);
+                      }}
+                      placeholder="Pilih Provinsi"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm text-[#728294] font-normal">Kabupaten/Kota</label>
+                    <Select
+                      options={dataKotaLaporan}
+                      value={selectedKabupatenLaporan}
+                      onChange={setSelectedKabupatenLaporan}
+                      placeholder={selectedProvinsiLaporan ? "Pilih Kabupaten/Kota" : "Pilih Provinsi Dahulu"}
+                      isDisabled={!selectedProvinsiLaporan}
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm text-[#728294] font-normal">Alkes</label>
+                    <Select
+                      options={dataAlkesLaporan}
+                      value={selectedAlkesLaporan}
+                      onChange={setSelectedAlkesLaporan}
+                      placeholder="Pilih Alkes"
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end gap-2 p-4 border-t">
+              <button
+                className="px-4 py-2 rounded bg-gray-300 text-sm font-medium hover:bg-gray-400 transition"
+                onClick={() => setIsExportModalOpen(false)}
+              >
+                Batal
+              </button>
+              <button
+                disabled={exportLoading}
+                onClick={processExport}
+                className={`px-4 py-2 rounded text-white text-sm font-medium transition ${
+                  exportLoading ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-opacity-90"
+                }`}
+              >
+                {exportLoading ? (
+                  <div className="flex items-center gap-2">
+                    <CgSpinner className="animate-spin w-4 h-4" />
+                    Mengekspor...
+                  </div>
+                ) : (
+                  "Export Excel"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col items-center justify-center w-full tracking-tight mb-6">
         <h1 className="font-medium mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
           USULAN ALKES
