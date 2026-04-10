@@ -409,7 +409,7 @@ const GenerateVerif = async (jsonData, preview) => {
               <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>
                 Memastikan bahwa sarana dan prasarana (luas ruangan, listrik,
-                internet, IPAL, air bersih) memenuhi standar dan tersedia
+                internet, pengelolaan limbah medis, air bersih) memenuhi standar dan tersedia
                 sebelum alat didistribusikan.
               </Text>
             </View>
@@ -483,7 +483,7 @@ const GenerateVerif = async (jsonData, preview) => {
               <Text>
                 Menyiapkan biaya operasional untuk pemeliharaan alat kesehatan,
                 reagen dan BMHP, serta sarana prasarana lainnya (luas ruangan,
-                listrik, internet, IPAL, air bersih).
+                listrik, internet, pengelolaan limbah medis, air bersih).
               </Text>
             </View>
 
@@ -735,7 +735,7 @@ const GenerateVerif = async (jsonData, preview) => {
               <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>
                 Memastikan bahwa sarana dan prasarana (luas ruangan, listrik,
-                internet, IPAL, air bersih) memenuhi standar dan tersedia
+                internet, pengelolaan limbah medis, air bersih) memenuhi standar dan tersedia
                 sebelum alat didistribusikan.
               </Text>
             </View>
@@ -808,7 +808,7 @@ const GenerateVerif = async (jsonData, preview) => {
               <Text>
                 Menyiapkan biaya operasional untuk pemeliharaan alat kesehatan,
                 reagen dan BMHP, serta sarana prasarana lainnya (luas ruangan,
-                listrik, internet, IPAL, air bersih).{" "}
+                listrik, internet, pengelolaan limbah medis, air bersih).{" "}
               </Text>
             </View>
           </View>
@@ -826,7 +826,7 @@ const GenerateVerif = async (jsonData, preview) => {
             <Text>
               Dinas Kesehatan {jsonData?.kabupaten} menyatakan akan
               bertanggungjawab atas kebenaran data yang disampaikan dalam usulan
-              alat kesehatan untuk 51 alat jenis alkes melalui proyek SOPHI.{" "}
+              alat kesehatan untuk 48 alat jenis alkes melalui proyek SOPHI.{" "}
               {"\n"}Demikian pernyataan ini dibuat dengan sebenar-benarnya dalam
               keadaan sadar, untuk digunakan sebagaimana mestinya.{" "}
             </Text>
@@ -997,7 +997,7 @@ const GenerateVerif = async (jsonData, preview) => {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ ...styles.text, textAlign: "center" }}>
-                  ...................., ...... Mei 2026
+                  ...................., ...... April 2026
                 </Text>
                 Yang membuat pernyataan
                 <Text
@@ -1007,7 +1007,7 @@ const GenerateVerif = async (jsonData, preview) => {
                     marginTop: 16,
                   }}
                 >
-                  Verifikator {"\n"} ..........
+                  Verifikator {"\n"} Kementerian Kesehatan
                 </Text>
                 <View style={{ ...styles.imageTtd, marginVertical: 8 }}></View>
                 <Text

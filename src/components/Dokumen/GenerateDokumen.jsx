@@ -753,7 +753,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text>
                 Usulan peralatan puskesmas dalam lampiran ini diusulkan dengan
                 mempertimbangkan sarana dan prasarana pendukung yang mencakup
-                ketersediaan Listrik dan ruangan untuk menerima alat Kesehatan.
+                ketersediaan Listrik dan ruangan untuk menerima alat Kesehatan, serta kesiapan pengelolaan limbah medis.
               </Text>
             </View>
 
@@ -1171,7 +1171,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text style={{ marginRight: 8 }}>3.</Text>
               <Text>
                 Memastikan bahwa sarana dan prasarana (luas ruangan, listrik,
-                internet, IPAL, air bersih) memenuhi standar dan tersedia
+                internet, pengelolaan limbah medis, air bersih) memenuhi standar dan tersedia
                 sebelum alat didistribusikan.
               </Text>
             </View>
@@ -1262,7 +1262,7 @@ const GenerateDokumen = async (jsonData, preview) => {
             <Text>
               Dinas Kesehatan {jsonData?.kabupaten} menyatakan akan
               bertanggungjawab atas kebenaran data yang disampaikan dalam usulan
-              alat kesehatan untuk 51 alat jenis alkes melalui proyek SOPHI.{" "}
+              alat kesehatan untuk 48 alat jenis alkes melalui proyek SOPHI.{" "}
               {"\n"}Demikian pernyataan ini dibuat dengan sebenar-benarnya dalam
               keadaan sadar, untuk digunakan sebagaimana mestinya.{" "}
             </Text>

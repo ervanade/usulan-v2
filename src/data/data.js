@@ -1126,10 +1126,10 @@ export const alkesDokumen = [
   { nama_alkes: "Urine Analyzer", standard: "1" },
   { nama_alkes: "Pipet Mikro", standard: "1" },
   { nama_alkes: "Rotator Plate", standard: "1" },
-  { nama_alkes: "Tes Cepat Molekuler", standard: "1" },
+  // { nama_alkes: "Tes Cepat Molekuler", standard: "1" },
   { nama_alkes: "Sentrifus", standard: "1" },
   { nama_alkes: "USG 2 Dimensi", standard: "1" },
-  { nama_alkes: "Laringoskop Neonatus Bilah Lurus", standard: "1" },
+  { nama_alkes: "Laringoskop Neonatus Bilah Lurus", standard: "2" },
   {
     nama_alkes: "Suction Pump Portable",
     standard: "2 (non rawat inap), 3 (rawat inap)",
@@ -1186,12 +1186,12 @@ export const alkesDokumen = [
   { nama_alkes: "Troli Emergency", standard: "2" },
   { nama_alkes: "Dehumidifier", standard: "2" },
   { nama_alkes: "Timbangan Analitik", standard: "1" },
-  { nama_alkes: "Alat Test Darah Portable (RDT) Hb Meter", standard: "1" },
-  { nama_alkes: "Alat Test Darah Portable (RDT) Gula Darah", standard: "1" },
+  // { nama_alkes: "Alat Test Darah Portable (RDT) Hb Meter", standard: "1" },
+  // { nama_alkes: "Alat Test Darah Portable (RDT) Gula Darah", standard: "1" },
   { nama_alkes: "Inkubator Bayi", standard: "1" },
   { nama_alkes: "Lemari Pendingin Vaksin", standard: "1" },
   { nama_alkes: "X-Ray Portable", standard: "1" },
-  { nama_alkes: "Cold Storage", standard: "1" },
+  // { nama_alkes: "Cold Storage", standard: "1" },
 ];
 
 export const allowedKabupaten = [
