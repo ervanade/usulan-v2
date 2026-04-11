@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.jsx";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
-import { encryptId } from "../../data/utils";
+import { encryptId, isAdmin, isDesker } from "../../data/utils";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import { BiExport } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
@@ -15,6 +15,9 @@ import { filterUsulan } from "../../api/services/usulanService";
 import axiosInstance from "../../api/axiosInstance";
 import ModalVerifikasiUsulan from "../../components/Modal/ModalVerifikasiUsulan";
 import { MdClose } from "react-icons/md";
+import ReadMore from "../../components/Table/ReadMore";
+import ModalLog from "../../components/Modal/ModalLog";
+import { AiOutlineHistory } from "react-icons/ai";
 
 const UsulanAlkes = () => {
   const user = useSelector((state) => state.auth.user);
@@ -27,6 +30,9 @@ const UsulanAlkes = () => {
 
   const [showModalVerif, setShowModalVerif] = useState(false);
   const [selectedDataVerif, setSelectedDataVerif] = useState(null);
+  const [showModalLog, setShowModalLog] = useState(false);
+  const [selectedPayloadLog, setSelectedPayloadLog] = useState(null);
+  const [selectedRowLog, setSelectedRowLog] = useState(null);
 
   const { data: dataProvinsiRaw } = useProvinsi();
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
@@ -415,6 +421,17 @@ const UsulanAlkes = () => {
         // omit: user.role == "3",
       },
       {
+        name: <div className="text-wrap">Keterangan</div>,
+        selector: (row) => row.keterangan || row.catatan_verifikasi,
+        sortable: true,
+        cell: (row) => (
+          <div className="text-wrap text-xs py-2">
+            <ReadMore text={row.keterangan} />
+          </div>
+        ),
+        width: "200px",
+      },
+      {
         name: "Aksi",
         id: "Aksi",
         cell: (row) => (
@@ -439,7 +456,7 @@ const UsulanAlkes = () => {
                 Detail
               </Link>
             </button>
-            {(row.status_verifikasi == "1" && (user.role == "1" || user.role == "2")) && (
+            {(row.status_verifikasi == "1" && isDesker(user.role)) && (
               <button
                 title="Verifikasi"
                 className="text-white font-semibold py-2 w-18 bg-[#16B3AC] rounded-md px-2 text-xs"
@@ -451,13 +468,29 @@ const UsulanAlkes = () => {
                 Verifikasi
               </button>
             )}
+            {isDesker(user.role) && (
+              <button
+                title="Log History"
+                className="text-white font-semibold py-2 w-10 bg-slate-500 hover:bg-slate-600 rounded-md flex justify-center items-center text-lg transition-colors"
+                onClick={() => {
+                  setSelectedPayloadLog({
+                    puskesmas_id: row.id_puskesmas,
+                    periode_id: row.periode_id,
+                  });
+                  setSelectedRowLog(row);
+                  setShowModalLog(true);
+                }}
+              >
+                <AiOutlineHistory />
+              </button>
+            )}
           </div>
         ),
         ignoreRowClick: true,
         allowOverflow: true,
         button: true,
         sortable: true,
-        minWidth: "160px",
+        minWidth: "250px",
         selector: (row) =>
           user.role == "3" ? row.konfirmasi_daerah : row.konfirmasi_ppk,
       },
@@ -633,9 +666,9 @@ const UsulanAlkes = () => {
         <h1 className="font-medium mb-3 text-xl lg:text-[28px] tracking-tight text-center text-bodydark1">
           USULAN ALKES
           {/* SELAMAT DATANG{" "}
-          {user.role == "1"
+          {isDesker(user.role)
             ? "ADMIN PUSAT"
-            : user.role == "2"
+            : user.id_role == "2"
             ? "ADMIN PPK"
             : user.role == "3"
             ? `ADMIN KAB/KOTA`
@@ -773,7 +806,7 @@ const UsulanAlkes = () => {
             />
           </div>
           <div className="div flex gap-2 flex-row">
-            {user?.role == "1" && (
+            {isDesker(user?.role) && (
             <button
               title="Export Data Usulan Alkes"
               className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white px-4 py-2 bg-primary rounded-md tracking-tight"
@@ -782,7 +815,7 @@ const UsulanAlkes = () => {
               <BiExport />
               <span className="hidden sm:block">Export</span>
             </button>)}
-            {user.role == "1" ? (
+            {isDesker(user.role) ? (
               <button
                 title="Tambah Usulan Alkes"
                 className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white  bg-primary rounded-md tracking-tight"
@@ -879,7 +912,14 @@ const UsulanAlkes = () => {
         show={showModalVerif}
         onClose={() => setShowModalVerif(false)}
         data={selectedDataVerif}
-        onSave={() => mutateUsulan()}
+        onSave={mutateUsulan}
+      />
+      <ModalLog
+        show={showModalLog}
+        onClose={() => setShowModalLog(false)}
+        payload={selectedPayloadLog}
+        row={selectedRowLog}
+        source="usulan"
       />
     </div>
   );

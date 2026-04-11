@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.jsx";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
-import { decryptId, encryptId, selectThemeColors } from "../../data/utils";
+import { decryptId, encryptId, isAdmin, isDesker, selectThemeColors } from "../../data/utils";
 import {
   FaCheck,
   FaEdit,
@@ -18,6 +18,8 @@ import axios from "axios";
 import { CgSpinner } from "react-icons/cg";
 import Swal from "sweetalert2";
 import { useKonfirmasiAlkes } from "../../hooks/useKonfirmasi";
+import ModalLog from "../../components/Modal/ModalLog";
+import { AiOutlineHistory } from "react-icons/ai";
 
 const KonfirmasiAlkes = () => {
   const user = useSelector((a) => a.auth.user);
@@ -28,6 +30,9 @@ const KonfirmasiAlkes = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [getLoading, setGetLoading] = useState(false);
+  const [showModalLog, setShowModalLog] = useState(false);
+  const [selectedPayloadLog, setSelectedPayloadLog] = useState(null);
+  const [selectedRowLog, setSelectedRowLog] = useState(null);
 
   const [dataUser, setDataUser] = useState([]);
   const [dataProvinsi, setDataProvinsi] = useState([]);
@@ -435,13 +440,26 @@ const KonfirmasiAlkes = () => {
                 Konfirmasi Ulang
               </Link>
             </button>
+            {isDesker(user.role) && (
+              <button
+                title="Log History"
+                className="text-white font-semibold py-2 w-10 bg-slate-500 hover:bg-slate-600 rounded-md flex justify-center items-center text-lg transition-colors border-none cursor-pointer"
+                onClick={() => {
+                  setSelectedPayloadLog({ usulan_id: row.id });
+                  setSelectedRowLog(row);
+                  setShowModalLog(true);
+                }}
+              >
+                <AiOutlineHistory />
+              </button>
+            )}
           </div>
         ),
         ignoreRowClick: true,
         allowOverflow: true,
         button: true,
         sortable: true,
-        minWidth: "150px",
+        minWidth: "180px",
         selector: (row) =>
           user.role == "3" ? row.konfirmasi_daerah : row.konfirmasi_ppk,
       },
@@ -797,6 +815,13 @@ const KonfirmasiAlkes = () => {
           )}
         </div>
       </div>
+      <ModalLog
+        show={showModalLog}
+        onClose={() => setShowModalLog(false)}
+        payload={selectedPayloadLog}
+        row={selectedRowLog}
+        source="konfirmasi"
+      />
     </div>
   );
 };

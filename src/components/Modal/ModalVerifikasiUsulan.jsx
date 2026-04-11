@@ -22,7 +22,7 @@ const ModalVerifikasiUsulan = ({ show, onClose, data, onSave }) => {
     if (data) {
       setFormData({
         status_verifikasi: data.status_verifikasi || "1",
-        catatan: data.catatan_verifikasi || "",
+        catatan: data.keterangan|| data.catatan_verifikasi || "",
         periode_id: data.periode_id || 0,
       });
     }

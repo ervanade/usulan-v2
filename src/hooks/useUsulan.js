@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { useSelector } from "react-redux";
-import { getUsulanList, getUsulanDetail, getKriteria, getPeriode, getLimbah, getLimbahDetail, getAlkes } from "../api/services/usulanService";
+import { getUsulanList, getUsulanDetail, getKriteria, getPeriode, getLimbah, getLimbahDetail, getAlkes, getSumberListrik } from "../api/services/usulanService";
 
 export const useUsulan = () => {
   const user = useSelector((state) => state.auth.user);
@@ -86,6 +86,21 @@ export const useLimbahDetail = (id) => {
 
   return {
     limbah: data,
+    isLoading,
+    isError: error,
+    mutate,
+  };
+};
+
+export const useSumberListrik = () => {
+  const user = useSelector((state) => state.auth.user);
+  const { data, error, isLoading, mutate } = useSWR(
+    user ? ["sumber-listrik", user.id] : null,
+    getSumberListrik
+  );
+
+  return {
+    sumberListrik: data,
     isLoading,
     isError: error,
     mutate,

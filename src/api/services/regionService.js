@@ -19,3 +19,10 @@ export const getPuskesmasByKecamatan = async (idKecamatan) => {
   const response = await axiosInstance.get(`/api/getpuskesmas/${idKecamatan}`);
   return response.data.data;
 };
+
+export const getPuskesmasByKabupaten = async (idKabupaten) => {
+  const response = await axiosInstance.post("/api/puskesmas-relokasi", {
+    id_kabupaten: idKabupaten.toString(),
+  });
+  return response.data.data;
+};

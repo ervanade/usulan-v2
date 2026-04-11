@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getProvinsi, getKabupaten, getKecamatan, getPuskesmasByKecamatan } from "../api/services/regionService";
+import { getProvinsi, getKabupaten, getKecamatan, getPuskesmasByKecamatan, getPuskesmasByKabupaten } from "../api/services/regionService";
 
 export const useProvinsi = () => {
   const { data, error, isLoading } = useSWR("provinsi", getProvinsi);
@@ -26,6 +26,14 @@ export const usePuskesmas = (idKecamatan) => {
   const { data, error, isLoading } = useSWR(
     idKecamatan ? ["puskesmas-kecamatan", idKecamatan] : null,
     () => getPuskesmasByKecamatan(idKecamatan)
+  );
+  return { data, error, isLoading };
+};
+
+export const usePuskesmasByKabupaten = (idKabupaten) => {
+  const { data, error, isLoading } = useSWR(
+    idKabupaten ? ["puskesmas-kabupaten", idKabupaten] : null,
+    () => getPuskesmasByKabupaten(idKabupaten)
   );
   return { data, error, isLoading };
 };

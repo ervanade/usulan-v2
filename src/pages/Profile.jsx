@@ -588,7 +588,7 @@ const Profile = () => {
                     {formData.role == "1"
                       ? "Admin"
                       : formData.role == "2"
-                      ? "PPK"
+                      ? "Desker"
                       : formData.role == "3"
                       ? "User"
                       : formData.role == "4"

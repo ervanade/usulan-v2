@@ -464,6 +464,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                                 Data Pengelolaan Limbah
                               </NavLink>
                             </li>
+                            <li>
+                              <NavLink
+                                to="/master-data-puskesmas-relokasi"
+                                className={({ isActive }) =>
+                                  "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-boxdark duration-0 hover:text-primary " +
+                                  (isActive && "!text-primary")
+                                }
+                              >
+                                Data Puskesmas Relokasi
+                              </NavLink>
+                            </li>
                             {/* <li>
                               <NavLink
                                 to="/master-data-provinsi"

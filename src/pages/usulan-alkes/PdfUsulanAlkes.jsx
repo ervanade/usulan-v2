@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.jsx";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
-import { encryptId, selectThemeColors } from "../../data/utils";
+import { encryptId, isAdmin, isDesker, selectThemeColors } from "../../data/utils";
 import {
   FaDownload,
   FaEdit,
@@ -24,6 +24,10 @@ import ModalUploadDokumen from "../../components/Modal/ModalUploadDokumen.jsx";
 import ModalTTENew from "../../components/Modal/ModalTTENew.jsx";
 import GenerateVerif from "../../components/Dokumen/GenerateVerif.jsx";
 import { allowedKabupaten } from "../../data/data.js";
+import ReadMore from "../../components/Table/ReadMore.jsx";
+import ModalVerifikasiCatatan from "../../components/Modal/ModalVerifikasiCatatan.jsx";
+import ModalLog from "../../components/Modal/ModalLog";
+import { AiOutlineHistory } from "react-icons/ai";
 
 const PdfUsulanAlkes = () => {
   const user = useSelector((a) => a.auth.user);
@@ -57,6 +61,9 @@ const PdfUsulanAlkes = () => {
   const [showModal, setShowModal] = useState(false);
   const [uploadTypeModal, setUploadTypeModal] = useState(null); // State untuk tipe upload modal
   const [showModalUpload, setShowModalUpload] = useState(false);
+  const [showModalLog, setShowModalLog] = useState(false);
+  const [selectedPayloadLog, setSelectedPayloadLog] = useState(null);
+  const [selectedRowLog, setSelectedRowLog] = useState(null);
   const [jsonData, setJsonData] = useState({
     id: "",
     nama_dokumen: "",
@@ -1199,7 +1206,30 @@ const PdfUsulanAlkes = () => {
           <div className="text-wrap text-xs py-2">{row.periode_name}</div>
         ),
         width: "80px",
-      }, // {
+      },
+      ...(isDesker(user.role) ? [{
+        name: <div className="text-wrap">Log</div>,
+        cell: (row) => (
+          <button
+            title="Log History"
+            className="text-white font-semibold py-2 w-10 bg-slate-500 hover:bg-slate-600 rounded-md flex justify-center items-center text-lg transition-colors border-none cursor-pointer"
+            onClick={() => {
+              setSelectedPayloadLog({
+                usulan_id: row.id,
+                periode_id: row.periode_id,
+              });
+              setSelectedRowLog(row);
+              setShowModalLog(true);
+            }}
+          >
+            <AiOutlineHistory />
+          </button>
+        ),
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
+        width: "70px",
+      }] : []),
       //   name: "Aksi",
       //   cell: (row) => (
       //     <div className="flex items-center space-x-2">
@@ -1233,7 +1263,7 @@ const PdfUsulanAlkes = () => {
       //   button: true,
       // },
     ],
-    [],
+    [user.role],
   );
 
   const handleExport = async () => {
@@ -1353,7 +1383,7 @@ const PdfUsulanAlkes = () => {
                 }
               />
             </div>
-            {user?.role == "1" && (
+            {isDesker(user?.role) && (
               <div>
                 <label
                   className="block text-[#728294] text-base font-normal mb-2"
@@ -1413,6 +1443,13 @@ const PdfUsulanAlkes = () => {
         fetchDokumenData={fetchDokumenData}
         uploadType={uploadTypeModal} // State untuk menyimpan tipe upload yang akan digunakan modal
       />
+      <ModalLog
+        show={showModalLog}
+        onClose={() => setShowModalLog(false)}
+        payload={selectedPayloadLog}
+        row={selectedRowLog}
+        source="dokumen"
+      />
       <div className="rounded-md flex flex-col gap-2 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex justify-between mb-2 items-center">
           <div className="relative">
@@ -1457,7 +1494,7 @@ const PdfUsulanAlkes = () => {
               <BiExport />
               <span className="hidden sm:block">Export</span>
             </button>
-            {user.role == "1" ? (
+            {isDesker(user.role) ? (
               <button
                 title="Tambah Data Dokumen"
                 className="flex font-semibold items-center gap-2 cursor-pointer text-base text-white  bg-primary rounded-md tracking-tight"

@@ -50,6 +50,11 @@ export const getLimbah = async () => {
   return response.data.data;
 };
 
+export const getSumberListrik = async () => {
+  const response = await axiosInstance.get("/api/sumber-listrik");
+  return response.data.data;
+};
+
 export const getLimbahDetail = async (id) => {
   const response = await axiosInstance.get(`/api/pengelolaan-limbah/${id}`);
   return response.data.data;

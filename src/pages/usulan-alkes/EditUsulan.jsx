@@ -14,7 +14,8 @@ import {
   SelectOptions,
   StrategiPemenuhanOptions,
 } from "../../data/data.js";
-import { decryptId, selectThemeColors } from "../../data/utils.js";
+import { checkKesiapanSDMByString } from "../konfirmasi-alkes/components/konfirmasi.constants";
+import { decryptId, isAdmin, isDesker, selectThemeColors } from "../../data/utils.js";
 import { FaInfoCircle } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -29,6 +30,7 @@ import {
   useKriteria,
   usePeriode,
   useLimbah,
+  useSumberListrik,
 } from "../../hooks/useUsulan";
 import { updateUsulan } from "../../api/services/usulanService";
 
@@ -46,6 +48,7 @@ const EditUsulan = () => {
   const { kriteria: dataKriteriaRaw } = useKriteria();
   const { periode: dataPeriodeRaw } = usePeriode();
   const { limbah: dataLimbahRaw } = useLimbah();
+  const { sumberListrik: dataSumberListrikRaw } = useSumberListrik();
 
   const [formData, setFormData] = useState({
     id_provinsi: "",
@@ -69,6 +72,8 @@ const EditUsulan = () => {
     persalinan: "",
     poned: "",
     pengelolaan_limbah: [],
+    master_sumber_listrik: [],
+    total_daya_listrik: "",
   });
 
   const [filteredData, setFilteredData] = useState([]);
@@ -76,7 +81,8 @@ const EditUsulan = () => {
   const [error, setError] = useState(false);
   const isDisabled = false;
 
-  const isAdmin = user?.role == "1";
+  const isDeskerUser = isDesker(user?.role);
+  const isAdminUser = isAdmin(user?.role);
   // const isAllowedKab = useMemo(
   //   () => isAdmin || allowedKabupaten.includes(formData.kabupaten),
   //   [formData.kabupaten, isAdmin],
@@ -86,6 +92,7 @@ const EditUsulan = () => {
   const [dataKriteria, setDataKriteria] = useState([]);
   const [dataPeriode, setDataPeriode] = useState([]);
   const [dataLimbah, setDataLimbah] = useState([]);
+  const [dataSumberListrik, setDataSumberListrik] = useState([]);
 
   const [selectedPelayanan, setSelectedPelayanan] = useState(null);
   const [selectedPeriode, setSelectedPeriode] = useState(null);
@@ -96,9 +103,22 @@ const EditUsulan = () => {
   const [selectedPersalinan, setSelectedPersalinan] = useState(null);
   const [selectedPoned, setSelectedPoned] = useState(null);
   const [selectedLimbah, setSelectedLimbah] = useState(null);
+  const [selectedSumberListrik, setSelectedSumberListrik] = useState(null);
+  const [selectedTotalDaya, setSelectedTotalDaya] = useState(null);
 
   const [editedData, setEditedData] = useState({});
   const [errors, setErrors] = useState({});
+
+  const ownedSDMObj = useMemo(() => {
+    const obj = {};
+    formData.id_kriteria?.forEach((id) => {
+      const kriteria = dataKriteriaRaw?.find((k) => k.id == id);
+      if (kriteria) {
+        obj[id] = { jenis: kriteria.kriteria };
+      }
+    });
+    return obj;
+  }, [formData.id_kriteria, dataKriteriaRaw]);
 
   const navigate = useNavigate();
 
@@ -138,6 +158,17 @@ const EditUsulan = () => {
   }, [dataLimbahRaw]);
 
   useEffect(() => {
+    if (dataSumberListrikRaw) {
+      setDataSumberListrik(
+        dataSumberListrikRaw.map((item) => ({
+          label: item.nama_sumber_listrik,
+          value: item.id,
+        })),
+      );
+    }
+  }, [dataSumberListrikRaw]);
+
+  useEffect(() => {
     if (usulanDetail) {
       setFormData({
         id_provinsi: String(usulanDetail.id_provinsi) || "",
@@ -165,6 +196,12 @@ const EditUsulan = () => {
               typeof limb === "object" && limb !== null ? limb.id : limb
             )
           : [],
+        master_sumber_listrik: usulanDetail.master_sumber_listrik
+          ? usulanDetail.master_sumber_listrik.map((src) =>
+              typeof src === "object" && src !== null ? src.id : src
+            )
+          : [],
+        total_daya_listrik: usulanDetail.total_daya_listrik || "",
       });
       setFilteredData(usulanDetail.usulan || []);
       if (!idPeriode) {
@@ -295,6 +332,29 @@ const EditUsulan = () => {
         .filter(Boolean);
       setSelectedLimbah(initialOptions);
     }
+
+    if (formData.master_sumber_listrik && formData.master_sumber_listrik.length > 0 && dataSumberListrik.length > 0) {
+      const initialOptions = formData.master_sumber_listrik
+        .map((val) => {
+          const sourceId = typeof val === "object" && val !== null ? val.id : val;
+          const found = dataSumberListrik.find((opt) => opt.value == sourceId);
+          return found ? { label: found.label, value: found.value } : null;
+        })
+        .filter(Boolean);
+      setSelectedSumberListrik(initialOptions);
+    }
+
+    if (formData.total_daya_listrik) {
+      const initialOption = dayaOptions.find(
+        (opt) => opt.value == formData.total_daya_listrik
+      );
+      if (initialOption) {
+        setSelectedTotalDaya({
+          label: initialOption.label,
+          value: initialOption.value,
+        });
+      }
+    }
   }, [
     formData?.internet,
     formData?.pelayanan,
@@ -303,7 +363,10 @@ const EditUsulan = () => {
     formData?.persalinan,
     formData?.poned,
     formData?.pengelolaan_limbah,
+    formData?.master_sumber_listrik,
+    formData?.total_daya_listrik,
     dataLimbah,
+    dataSumberListrik,
   ]);
 
   useEffect(() => {
@@ -425,6 +488,24 @@ const EditUsulan = () => {
     }));
   };
 
+  const handleSumberListrikChange = (selectedOptions) => {
+    setSelectedSumberListrik(selectedOptions);
+    setFormData((prev) => ({
+      ...prev,
+      master_sumber_listrik: selectedOptions
+        ? selectedOptions.map((opt) => opt.value)
+        : [],
+    }));
+  };
+
+  const handleTotalDayaChange = (selectedOption) => {
+    setSelectedTotalDaya(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      total_daya_listrik: selectedOption?.value,
+    }));
+  };
+
   const handleKriteriaChange = (selectedOptions) => {
     setSelectedKriteria(selectedOptions);
 
@@ -466,9 +547,7 @@ const EditUsulan = () => {
     const currentUsulan = editedData[rowId]?.usulan ?? row.usulan ?? 0;
 
     // Cek apakah memenuhi kriteria SDM
-    const memenuhiKriteria = row.kriteria_alkes?.some((alkesKriteria) =>
-      formData.id_kriteria?.includes(alkesKriteria.id),
-    );
+    const memenuhiKriteria = checkKesiapanSDMByString(row.jenis_sdmk_per_alat, ownedSDMObj);
 
     const isSdmkStrategyEnabled = import.meta.env.VITE_ENABLE_SDMK_STRATEGY === 'true';
 
@@ -495,7 +574,7 @@ const EditUsulan = () => {
     if (
       columnName === "usulan" &&
       !memenuhiKriteria &&
-      row.kriteria_alkes?.length > 0
+      row.jenis_sdmk_per_alat && row.jenis_sdmk_per_alat.trim() !== ""
     ) {
       if (!isSdmkStrategyEnabled) {
         setEditedData((prevData) => ({
@@ -616,9 +695,7 @@ const EditUsulan = () => {
   const getResultData = () => {
     const isSdmkStrategyEnabled = import.meta.env.VITE_ENABLE_SDMK_STRATEGY === 'true';
     return filteredData.map((row) => {
-      const memenuhiKriteria = row.kriteria_alkes?.some((alkesKriteria) =>
-        formData.id_kriteria?.includes(alkesKriteria.id),
-      );
+      const memenuhiKriteria = checkKesiapanSDMByString(row.jenis_sdmk_per_alat, ownedSDMObj);
 
       const currentKeterangan = editedData[row.id]?.keterangan_usulan;
 
@@ -635,7 +712,7 @@ const EditUsulan = () => {
             memenuhiKriteria && currentKeterangan === "Tidak Siap SDM"
               ? null
               : // If doesn't meet criteria
-                !memenuhiKriteria && row.kriteria_alkes?.length > 0
+                !memenuhiKriteria && row.jenis_sdmk_per_alat && row.jenis_sdmk_per_alat.trim() !== ""
                 ? "Tidak Siap SDM"
                 : // If meets criteria and has other reason
                   currentKeterangan === "Lainnya"
@@ -713,20 +790,18 @@ const EditUsulan = () => {
       const catatan = editedData[row.id]?.catatanAlasan;
 
       // Check if equipment meets SDM criteria
-      const memenuhiKriteria = row.kriteria_alkes?.some((alkesKriteria) =>
-        formData.id_kriteria?.includes(alkesKriteria.id),
-      );
+      const memenuhiKriteria = checkKesiapanSDMByString(row.jenis_sdmk_per_alat, ownedSDMObj);
 
       const isSdmkStrategyEnabled = import.meta.env.VITE_ENABLE_SDMK_STRATEGY === 'true';
 
       // Special case: Skip validation if SDM doesn't meet criteria
-      if (!isSdmkStrategyEnabled && !memenuhiKriteria && row.kriteria_alkes?.length > 0) {
+      if (!isSdmkStrategyEnabled && !memenuhiKriteria && row.jenis_sdmk_per_alat && row.jenis_sdmk_per_alat.trim() !== "") {
         return;
       }
 
       const kekurangan = standard - masihBerfungsi;
 
-      if (isSdmkStrategyEnabled && !memenuhiKriteria && row.kriteria_alkes?.length > 0 && usulan > 0) {
+      if (isSdmkStrategyEnabled && !memenuhiKriteria && row.jenis_sdmk_per_alat && row.jenis_sdmk_per_alat.trim() !== "" && usulan > 0) {
         const strategi = editedData[row.id]?.strategi_pemenuhan;
         if (!strategi) {
           validationErrors[row.id] = "Harap pilih strategi pemenuhan SDMK";
@@ -857,12 +932,10 @@ const EditUsulan = () => {
       },
       {
         name: <div className="text-wrap">Kriteria SDM</div>,
-        selector: (row) => row.kriteria_alkes,
+        selector: (row) => row.jenis_sdmk_per_alat,
         cell: (row) => (
           <div className="text-wrap py-2">
-            {row.kriteria_alkes?.length > 0
-              ? row.kriteria_alkes?.map((item) => item.kriteria).join("/ ")
-              : "Tidak Spesifik"}
+            {row.jenis_sdmk_per_alat ? row.jenis_sdmk_per_alat : "Tidak Spesifik"}
           </div>
         ),
         width: "120px",
@@ -922,13 +995,11 @@ const EditUsulan = () => {
       {
         name: <div className="text-wrap">Usulan</div>,
         cell: (row) => {
-          const memenuhiSalahSatuKriteria = row.kriteria_alkes?.some(
-            (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id),
-          );
+          const memenuhiSalahSatuKriteria = checkKesiapanSDMByString(row.jenis_sdmk_per_alat, ownedSDMObj);
 
           const isSdmkStrategyEnabled = import.meta.env.VITE_ENABLE_SDMK_STRATEGY === 'true';
 
-          if (!isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
+          if (!isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row.jenis_sdmk_per_alat && row.jenis_sdmk_per_alat.trim() !== "") {
             // Jika tidak memenuhi kriteria, set otomatis alasan
             if (
               !editedData[row.id]?.keterangan_usulan ||
@@ -1003,7 +1074,7 @@ const EditUsulan = () => {
                   !isAllowedKab
                 } // Nonaktifkan input jika masih_berfungsi >= standard
               />
-              {isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0 && usulan > 0 && (
+              {isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row.jenis_sdmk_per_alat && row.jenis_sdmk_per_alat.trim() !== "" && usulan > 0 && (
                 <div className="text-red-500 text-[10px] mt-1 leading-tight text-[10px]">
                   Standar SDMK Belum Terpenuhi. Harap Isi Strategi Pemenuhan!
                 </div>
@@ -1022,14 +1093,12 @@ const EditUsulan = () => {
       {
         name: <div className="text-wrap">Alasan & Strategi Pemenuhan</div>,
         cell: (row) => {
-          const memenuhiSalahSatuKriteria = row.kriteria_alkes?.some(
-            (alkesKriteria) => formData.id_kriteria?.includes(alkesKriteria.id),
-          );
+          const memenuhiSalahSatuKriteria = checkKesiapanSDMByString(row.jenis_sdmk_per_alat, ownedSDMObj);
 
           const isSdmkStrategyEnabled = import.meta.env.VITE_ENABLE_SDMK_STRATEGY === 'true';
 
           // If doesn't meet criteria, show auto-reason (ONLY IF feature is not enabled)
-          if (!isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0) {
+          if (!isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row.jenis_sdmk_per_alat && row.jenis_sdmk_per_alat.trim() !== "") {
             return (
               <div className="w-full">
                 <input
@@ -1077,7 +1146,7 @@ const EditUsulan = () => {
             standard !== undefined &&
             (usulan < required || editedData[row.id]?.needAlasan);
             
-          const showStrategi = isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row?.kriteria_alkes?.length > 0 && usulan > 0;
+          const showStrategi = isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row.jenis_sdmk_per_alat && row.jenis_sdmk_per_alat.trim() !== "" && usulan > 0;
 
           if (!showAlasan && !showStrategi) {
               return <div className="text-xs text-gray-400">-</div>;
@@ -1146,7 +1215,7 @@ const EditUsulan = () => {
         width: "250px",
       },
     ],
-    [editedData, errors, selectedPelayanan, filteredData, formData.id_kriteria],
+    [editedData, errors, selectedPelayanan, filteredData, formData.id_kriteria, ownedSDMObj],
   );
 
   if (usulanLoading) {
@@ -1196,6 +1265,11 @@ const EditUsulan = () => {
             limbah={selectedLimbah}
             dataLimbah={dataLimbah}
             handleLimbahChange={handleLimbahChange}
+            sumberListrik={selectedSumberListrik}
+            dataSumberListrik={dataSumberListrik}
+            handleSumberListrikChange={handleSumberListrikChange}
+            totalDaya={selectedTotalDaya}
+            handleTotalDayaChange={handleTotalDayaChange}
             user={user}
             isAllowedKab={isAllowedKab}
             isDisabled={isDisabled}

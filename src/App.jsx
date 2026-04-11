@@ -67,6 +67,7 @@ import DataLimbah from "./pages/master-limbah/DataLimbah.jsx";
 import TambahLimbah from "./pages/master-limbah/TambahLimbah.jsx";
 import EditLimbah from "./pages/master-limbah/EditLimbah.jsx";
 import UserManagement from "./pages/admin/UserManagement.jsx";
+import DataPuskesmasRelokasi from "./pages/master-puskesmas-relokasi/DataPuskesmasRelokasi.jsx";
 
 function App() {
   const { pathname } = useLocation();
@@ -214,6 +215,10 @@ function App() {
                 <Route
                   path="master-data-limbah/edit/:id"
                   element={<EditLimbah />}
+                />
+                <Route
+                  path="master-data-puskesmas-relokasi"
+                  element={<DataPuskesmasRelokasi />}
                 />
                 <Route path="/logactivity" element={<LogActivity />} />
                 <Route

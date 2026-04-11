@@ -30,10 +30,18 @@ const UsulanForm = ({
   limbah,
   dataLimbah,
   handleLimbahChange,
+  sumberListrik,
+  dataSumberListrik,
+  handleSumberListrikChange,
+  totalDaya,
+  handleTotalDayaChange,
   user,
   isAllowedKab,
   isDisabled,
 }) => {
+  const isSelectedPLN = sumberListrik?.some(
+    (item) => item.label?.toUpperCase() === "PLN",
+  );
   return (
     <form className="mt-4 mb-8">
       <div className="gap-3 gap-y-4 grid grid-cols-2 md:grid-cols-3 mb-4">
@@ -80,18 +88,51 @@ const UsulanForm = ({
 
         <div className="flex-col gap-2 flex">
           <label className="block text-[#728294] text-sm font-semibold mb-1">
-            Ketersediaan Daya Listrik (PLN) :
+            Sumber Listrik :
           </label>
           <Select
-            options={dayaOptions}
-            value={daya}
-            onChange={handleDayaChange}
-            placeholder="Ketersediaan Daya"
+            options={dataSumberListrik}
+            value={sumberListrik}
+            onChange={handleSumberListrikChange}
+            placeholder="Sumber Listrik"
+            isMulti
             className="w-full text-sm"
             isDisabled={user?.role == "5" || isDisabled || !isAllowedKab}
             theme={selectThemeColors}
           />
         </div>
+
+        <div className="flex-col gap-2 flex">
+          <label className="block text-[#728294] text-sm font-semibold mb-1">
+            Total Daya Listrik :
+          </label>
+          <Select
+            options={dayaOptions}
+            value={totalDaya}
+            onChange={handleTotalDayaChange}
+            placeholder="Total Daya Listrik"
+            className="w-full text-sm"
+            isDisabled={user?.role == "5" || isDisabled || !isAllowedKab}
+            theme={selectThemeColors}
+          />
+        </div>
+
+        {isSelectedPLN && (
+          <div className="flex-col gap-2 flex">
+            <label className="block text-[#728294] text-sm font-semibold mb-1">
+              Daya Listrik dari PLN :
+            </label>
+            <Select
+              options={dayaOptions}
+              value={daya}
+              onChange={handleDayaChange}
+              placeholder="Daya Listrik dari PLN"
+              className="w-full text-sm"
+              isDisabled={user?.role == "5" || isDisabled || !isAllowedKab}
+              theme={selectThemeColors}
+            />
+          </div>
+        )}
 
         <div className="flex-col gap-2 flex">
           <label className="block text-[#728294] text-sm font-semibold mb-1">

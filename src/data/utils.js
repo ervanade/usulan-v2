@@ -20,7 +20,7 @@ export const returnRole = (role) => {
   if (role == "1") {
     return "Admin";
   } else if (role == "2") {
-    return "PPK";
+    return "Desker";
   } else if (role == "3") {
     return "User";
   } else if (role == "4") {
@@ -63,3 +63,6 @@ export const formatRupiah = (price) => {
 export const onlyNumber = (value = "") => {
   return value.replace(/\D/g, "");
 };
+
+export const isAdmin = (role) => role == "1";
+export const isDesker = (role) => role == "1" || role == "2";

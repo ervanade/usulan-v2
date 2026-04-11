@@ -142,7 +142,7 @@ const UserManagement = () => {
           row.role == "1"
             ? "Admin"
             : row.role == "2"
-            ? "PPK"
+            ? "Desker"
             : row.role == "3"
             ? "User"
             : row.role == "4"

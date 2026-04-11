@@ -355,10 +355,10 @@ export const dayaOptions = [
     label: "> 17000 VA",
     value: "> 17000 VA",
   },
-  {
-    label: "NON PLN",
-    value: "NON PLN",
-  },
+  // {
+  //   label: "NON PLN",
+  //   value: "NON PLN",
+  // },
 ];
 
 export const ProgramOptions = [
@@ -444,7 +444,7 @@ export const roleOptions = [
     value: "1",
   },
   {
-    label: "PPK",
+    label: "Desker",
     value: "2",
   },
   {
