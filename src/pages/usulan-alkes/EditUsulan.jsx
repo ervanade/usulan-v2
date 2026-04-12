@@ -856,54 +856,102 @@ const EditUsulan = () => {
   };
 
   const handleShowKeterangan = (keterangan, nama_alkes) => {
-    const linkMatch = keterangan.match(
-      /\[(https:\/\/drive\.google\.com[^\]]*)\]/,
-    );
-    const imageUrl = linkMatch ? linkMatch[1] : null;
-    const detailString = keterangan.replace(
-      linkMatch ? `[${imageUrl}]` : "",
-      "",
-    );
+    // Detect plain URL (bare link) or bracketed [url] format
+    const isPlainUrl = /^https?:\/\//i.test(keterangan.trim());
+    const bracketMatch = keterangan.match(/\[(https?:\/\/[^\]]*)\]/);
+
+    let imageUrl = null;
+    let detailString = keterangan;
+
+    if (isPlainUrl) {
+      // Entire value is just a URL — treat it as the link directly
+      imageUrl = keterangan.trim();
+      detailString = "";
+    } else if (bracketMatch) {
+      imageUrl = bracketMatch[1];
+      detailString = keterangan.replace(`[${imageUrl}]`, "");
+    }
+
     const detailList = detailString
       .split("|")
       .map((item) => item.trim())
       .filter((item) => item !== "");
 
+    const isDriveLink =
+      imageUrl && imageUrl.includes("drive.google.com");
+
+    // Build a preview embed URL for Google Drive
+    const getEmbedUrl = (url) => {
+      const match = url.match(/\/d\/([^/]+)\//);
+      if (match) return `https://drive.google.com/file/d/${match[1]}/preview`;
+      return null;
+    };
+
+    const embedUrl = isDriveLink && imageUrl ? getEmbedUrl(imageUrl) : null;
+
     let htmlContent = "";
 
     if (imageUrl) {
-      htmlContent += `
-        <div style="margin-bottom: 10px; text-align: center;">
-          <button
-            style="background-color: #0FAD91; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;"
-            onclick="window.open('${imageUrl}', '_blank', 'noopener,noreferrer')"
-          >
-            Lihat Gambar Alkes
-          </button>
-        </div>
-      `;
+      if (embedUrl) {
+        htmlContent += `
+          <div style="margin-bottom:12px;">
+            <iframe
+              src="${embedUrl}"
+              width="100%"
+              height="320"
+              style="border:none; border-radius:8px;"
+              allow="autoplay"
+            ></iframe>
+          </div>
+          <div style="text-align:center; margin-bottom:8px;">
+            <a
+              href="${imageUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="display:inline-block; background-color:#0FAD91; color:white; padding:9px 20px; border-radius:6px; font-size:14px; text-decoration:none; font-weight:600;"
+            >
+              🔗 Buka di Google Drive
+            </a>
+          </div>
+        `;
+      } else {
+        htmlContent += `
+          <div style="margin-bottom:12px; text-align:center;">
+            <a
+              href="${imageUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="display:inline-block; background-color:#0FAD91; color:white; padding:9px 20px; border-radius:6px; font-size:14px; text-decoration:none; font-weight:600;"
+            >
+              🔗 Lihat Gambar Alkes
+            </a>
+          </div>
+        `;
+      }
     }
 
     if (detailList.length > 0) {
       const daftarBarang = detailList
-        .map((item, index) => `${index + 1}. ${item}`)
-        .join("<br>");
+        .map((item, index) => `<li style="margin-bottom:4px;">${index + 1}. ${item}</li>`)
+        .join("");
       htmlContent += `
-        <div style="text-align: left; max-height: 300px; overflow-y: auto; margin-top: 10px;">
-          <strong>Detail Alkes:</strong><br>
-          ${daftarBarang}
+        <div style="text-align:left; max-height:200px; overflow-y:auto; margin-top:8px; background:#f8fafc; border-radius:6px; padding:10px;">
+          <strong style="font-size:13px; color:#475569;">Detail Alkes:</strong>
+          <ul style="margin-top:6px; padding-left:4px; list-style:none; font-size:13px; color:#334155;">
+            ${daftarBarang}
+          </ul>
         </div>
       `;
     } else if (!imageUrl) {
-      // Jika tidak ada gambar dan tidak ada detail yang dipisahkan, tampilkan seluruh keterangan awal
-      htmlContent += `<div style="text-align: left; max-height: 300px; overflow-y: auto;">${keterangan}</div>`;
+      htmlContent += `<div style="text-align:left; max-height:300px; overflow-y:auto; font-size:13px;">${keterangan}</div>`;
     }
 
     Swal.fire({
-      title: `Detail ${nama_alkes || ""}`,
+      title: `<span style="font-size:16px; font-weight:700;">${nama_alkes || "Detail Alkes"}</span>`,
       html: htmlContent,
       showConfirmButton: true,
       confirmButtonText: "Tutup",
+      confirmButtonColor: "#0FAD91",
       width: "600px",
     });
   };
