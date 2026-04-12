@@ -184,7 +184,7 @@ const LogItem = ({ log, index }) => {
   );
 };
 
-const ModalLog = ({ show, onClose, payload, row, source }) => {
+const ModalLog = ({ show, onClose, payload, row, source, apiUrl }) => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -197,7 +197,8 @@ const ModalLog = ({ show, onClose, payload, row, source }) => {
   const fetchLogs = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.post("/api/log/filter-usulan", payload);
+      const endpoint = apiUrl || "/api/log/filter-usulan";
+      const response = await axiosInstance.post(endpoint, payload);
       if (response.data.success) {
         setLogs(response.data.data || []);
       }

@@ -445,7 +445,13 @@ const KonfirmasiAlkes = () => {
                 title="Log History"
                 className="text-white font-semibold py-2 w-10 bg-slate-500 hover:bg-slate-600 rounded-md flex justify-center items-center text-lg transition-colors border-none cursor-pointer"
                 onClick={() => {
-                  setSelectedPayloadLog({ usulan_id: row.id });
+                  setSelectedPayloadLog({
+                    id_masterdata: row.id,
+                    id_header_ihss: row.id_ihss,
+                    id_provinsi: row.id_provinsi,
+                    id_kabupaten: row.id_kabupaten,
+                    id_puskesmas: row.id_puskesmas,
+                  });
                   setSelectedRowLog(row);
                   setShowModalLog(true);
                 }}
@@ -821,6 +827,7 @@ const KonfirmasiAlkes = () => {
         payload={selectedPayloadLog}
         row={selectedRowLog}
         source="konfirmasi"
+        apiUrl="/api/log/filter-header-ihss"
       />
     </div>
   );

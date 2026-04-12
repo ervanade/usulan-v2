@@ -1014,8 +1014,9 @@ const KonfirmasiKabupaten = () => {
                   className="text-white font-semibold py-2 w-10 bg-slate-500 hover:bg-slate-600 rounded-md flex justify-center items-center text-lg transition-colors border-none cursor-pointer"
                   onClick={() => {
                     setSelectedPayloadLog({
-                      puskesmas_id: row.id_puskesmas,
-                      periode_id: row.periode_id,
+                      id_header_ihss: row.id,
+                      id_provinsi: row.id_provinsi,
+                      id_kabupaten: row.id_kabupaten,
                     });
                     setSelectedRowLog(row);
                     setShowModalLog(true);
@@ -1579,6 +1580,7 @@ const KonfirmasiKabupaten = () => {
         payload={selectedPayloadLog}
         row={selectedRowLog}
         source="konfirmasi"
+        apiUrl="/api/log/filter-header-ihss"
       />
     </div>
   );

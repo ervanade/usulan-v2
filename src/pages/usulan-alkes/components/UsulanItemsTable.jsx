@@ -14,6 +14,8 @@ const UsulanItemsTable = ({
         columns={columns}
         data={data}
         pagination
+        paginationPerPage={100}
+        paginationRowsPerPageOptions={[50, 100, 200]}
         striped
         defaultSortAsc={false}
         persistTableHead
