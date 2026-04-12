@@ -1244,7 +1244,7 @@ const GenerateDokumen = async (jsonData, preview) => {
               <Text>
                 Menyiapkan biaya operasional untuk pemeliharaan alat kesehatan,
                 reagen dan BMHP, serta sarana prasarana lainnya (luas ruangan,
-                listrik, internet, IPAL, air bersih).{" "}
+                listrik, internet, pengelolaan limbah medis, air bersih).{" "}
               </Text>
             </View>
           </View>
