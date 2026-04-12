@@ -429,7 +429,7 @@ const UsulanAlkes = () => {
             <ReadMore text={row.keterangan} />
           </div>
         ),
-        width: "200px",
+        width: "150px",
       },
       {
         name: "Aksi",

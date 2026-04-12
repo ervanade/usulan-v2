@@ -64,6 +64,8 @@ const PdfUsulanAlkes = () => {
   const [showModalLog, setShowModalLog] = useState(false);
   const [selectedPayloadLog, setSelectedPayloadLog] = useState(null);
   const [selectedRowLog, setSelectedRowLog] = useState(null);
+  const [showModalVerif, setShowModalVerif] = useState(false);
+  const [selectedDataVerif, setSelectedDataVerif] = useState(null);
   const [jsonData, setJsonData] = useState({
     id: "",
     nama_dokumen: "",
@@ -1207,28 +1209,51 @@ const PdfUsulanAlkes = () => {
         ),
         width: "80px",
       },
-      ...(isDesker(user.role) ? [{
-        name: <div className="text-wrap">Log</div>,
+      {
+        name: <div className="text-wrap">Keterangan</div>,
+        selector: (row) => row.keterangan || row.catatan_verifikasi,
+        sortable: true,
         cell: (row) => (
-          <button
-            title="Log History"
-            className="text-white font-semibold py-2 w-10 bg-slate-500 hover:bg-slate-600 rounded-md flex justify-center items-center text-lg transition-colors border-none cursor-pointer"
-            onClick={() => {
-              setSelectedPayloadLog({
-                usulan_id: row.id,
-                periode_id: row.periode_id,
-              });
-              setSelectedRowLog(row);
-              setShowModalLog(true);
-            }}
-          >
-            <AiOutlineHistory />
-          </button>
+          <div className="text-wrap text-xs py-2">
+            <ReadMore text={row.keterangan || row.catatan_verifikasi} />
+          </div>
+        ),
+        width: "150px",
+      },
+      ...(isDesker(user.role) ? [{
+        name: <div className="text-wrap">Aksi</div>,
+        cell: (row) => (
+          <div className="flex items-center gap-1">
+            <button
+              title="Verifikasi"
+              className="text-white font-semibold py-1.5 px-2 bg-[#16B3AC] hover:bg-teal-600 rounded-md text-xs transition-colors border-none cursor-pointer"
+              onClick={() => {
+                setSelectedDataVerif(row);
+                setShowModalVerif(true);
+              }}
+            >
+              Verifikasi
+            </button>
+            <button
+              title="Log History"
+              className="text-white font-semibold py-2 w-10 bg-slate-500 hover:bg-slate-600 rounded-md flex justify-center items-center text-lg transition-colors border-none cursor-pointer"
+              onClick={() => {
+                setSelectedPayloadLog({
+                  usulan_id: row.id,
+                  periode_id: row.periode_id,
+                });
+                setSelectedRowLog(row);
+                setShowModalLog(true);
+              }}
+            >
+              <AiOutlineHistory />
+            </button>
+          </div>
         ),
         ignoreRowClick: true,
         allowOverflow: true,
         button: true,
-        width: "70px",
+        minWidth: "150px",
       }] : []),
       //   name: "Aksi",
       //   cell: (row) => (
@@ -1449,6 +1474,20 @@ const PdfUsulanAlkes = () => {
         payload={selectedPayloadLog}
         row={selectedRowLog}
         source="dokumen"
+      />
+      <ModalVerifikasiCatatan
+        show={showModalVerif}
+        onClose={() => setShowModalVerif(false)}
+        data={selectedDataVerif}
+        onSave={fetchDokumenData}
+        title="Verifikasi Catatan"
+        apiUrl={`${import.meta.env.VITE_APP_API_URL}/api/usulan/${selectedDataVerif?.id}`}
+        method="put"
+        extraPayload={{ status_verifikasi: selectedDataVerif?.status_verifikasi }}
+        info={[
+          { label: "Provinsi", value: selectedDataVerif?.provinsi },
+          { label: "Kabupaten/Kota", value: selectedDataVerif?.kabupaten },
+        ]}
       />
       <div className="rounded-md flex flex-col gap-2 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex justify-between mb-2 items-center">

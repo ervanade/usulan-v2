@@ -952,7 +952,7 @@ const KonfirmasiKabupaten = () => {
             <ReadMore text={row.keterangan || row.catatan_verifikasi} />
           </div>
         ),
-        width: "200px",
+        width: "150px",
       },
       {
         name: <div className="text-wrap">Status Konfirmasi</div>,
