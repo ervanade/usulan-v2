@@ -2,7 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb.jsx";
 import Select from "react-select";
 import DataTable from "react-data-table-component";
-import { encryptId, isAdmin, isDesker, selectThemeColors } from "../../data/utils";
+import {
+  encryptId,
+  isAdmin,
+  isDesker,
+  selectThemeColors,
+} from "../../data/utils";
 import {
   FaDownload,
   FaEdit,
@@ -1220,41 +1225,47 @@ const PdfUsulanAlkes = () => {
         ),
         width: "150px",
       },
-      ...(isDesker(user.role) ? [{
-        name: <div className="text-wrap">Aksi</div>,
-        cell: (row) => (
-          <div className="flex items-center gap-1">
-            <button
-              title="Verifikasi"
-              className="text-white font-semibold py-1.5 px-2 bg-[#16B3AC] hover:bg-teal-600 rounded-md text-xs transition-colors border-none cursor-pointer"
-              onClick={() => {
-                setSelectedDataVerif(row);
-                setShowModalVerif(true);
-              }}
-            >
-              Verifikasi
-            </button>
-            <button
-              title="Log History"
-              className="text-white font-semibold py-2 w-10 bg-slate-500 hover:bg-slate-600 rounded-md flex justify-center items-center text-lg transition-colors border-none cursor-pointer"
-              onClick={() => {
-                setSelectedPayloadLog({
-                  usulan_id: row.id,
-                  periode_id: row.periode_id,
-                });
-                setSelectedRowLog(row);
-                setShowModalLog(true);
-              }}
-            >
-              <AiOutlineHistory />
-            </button>
-          </div>
-        ),
-        ignoreRowClick: true,
-        allowOverflow: true,
-        button: true,
-        minWidth: "150px",
-      }] : []),
+      ...(isDesker(user.role)
+        ? [
+            {
+              name: <div className="text-wrap">Aksi</div>,
+              cell: (row) => (
+                <div className="flex items-center gap-1">
+                  <button
+                    title="Verifikasi"
+                    className="text-white font-semibold py-1.5 px-2 bg-[#16B3AC] hover:bg-teal-600 rounded-md text-xs transition-colors border-none cursor-pointer"
+                    onClick={() => {
+                      setSelectedDataVerif(row);
+                      setShowModalVerif(true);
+                    }}
+                  >
+                    Verifikasi
+                  </button>
+                  <button
+                    title="Log History"
+                    className="text-white font-semibold py-2 w-10 bg-slate-500 hover:bg-slate-600 rounded-md flex justify-center items-center text-lg transition-colors border-none cursor-pointer"
+                    onClick={() => {
+                      setSelectedPayloadLog({
+                        usulan_id: row.id,
+                        periode_id: row.periode_id,
+                        id_provinsi: row.id_provinsi,
+                        id_kabupaten: row.id_kabupaten,
+                      });
+                      setSelectedRowLog(row);
+                      setShowModalLog(true);
+                    }}
+                  >
+                    <AiOutlineHistory />
+                  </button>
+                </div>
+              ),
+              ignoreRowClick: true,
+              allowOverflow: true,
+              button: true,
+              minWidth: "150px",
+            },
+          ]
+        : []),
       //   name: "Aksi",
       //   cell: (row) => (
       //     <div className="flex items-center space-x-2">
@@ -1483,7 +1494,9 @@ const PdfUsulanAlkes = () => {
         title="Verifikasi Catatan"
         apiUrl={`${import.meta.env.VITE_APP_API_URL}/api/usulan/${selectedDataVerif?.id}`}
         method="put"
-        extraPayload={{ status_verifikasi: selectedDataVerif?.status_verifikasi }}
+        extraPayload={{
+          status_verifikasi: selectedDataVerif?.status_verifikasi,
+        }}
         info={[
           { label: "Provinsi", value: selectedDataVerif?.provinsi },
           { label: "Kabupaten/Kota", value: selectedDataVerif?.kabupaten },

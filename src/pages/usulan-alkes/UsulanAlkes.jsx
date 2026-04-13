@@ -21,7 +21,11 @@ import { AiOutlineHistory } from "react-icons/ai";
 
 const UsulanAlkes = () => {
   const user = useSelector((state) => state.auth.user);
-  const { usulan: initialData, isLoading: usulanLoading, mutate: mutateUsulan } = useUsulan();
+  const {
+    usulan: initialData,
+    isLoading: usulanLoading,
+    mutate: mutateUsulan,
+  } = useUsulan();
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [search, setSearch] = useState("");
@@ -46,8 +50,11 @@ const UsulanAlkes = () => {
   const [exportLoading, setExportLoading] = useState(false);
 
   const [selectedProvinsiLaporan, setSelectedProvinsiLaporan] = useState(null);
-  const { data: dataKotaLaporanRaw } = useKabupaten(selectedProvinsiLaporan?.value);
-  const [selectedKabupatenLaporan, setSelectedKabupatenLaporan] = useState(null);
+  const { data: dataKotaLaporanRaw } = useKabupaten(
+    selectedProvinsiLaporan?.value,
+  );
+  const [selectedKabupatenLaporan, setSelectedKabupatenLaporan] =
+    useState(null);
   const [selectedAlkesLaporan, setSelectedAlkesLaporan] = useState(null);
   const [selectedPeriodeLaporan, setSelectedPeriodeLaporan] = useState(null);
 
@@ -80,7 +87,11 @@ const UsulanAlkes = () => {
 
   const dataPeriodeLaporan = useMemo(() => {
     if (!dataPeriodeRaw) return [];
-    return dataPeriodeRaw.map((item) => ({ label: item.periode_name, value: item.id, stat: item.stat }));
+    return dataPeriodeRaw.map((item) => ({
+      label: item.periode_name,
+      value: item.id,
+      stat: item.stat,
+    }));
   }, [dataPeriodeRaw]);
 
   const dataProvinsiLaporan = useMemo(() => {
@@ -95,7 +106,10 @@ const UsulanAlkes = () => {
     if (!dataKotaLaporanRaw) return [];
     return [
       { label: "Semua Kabupaten/Kota", value: "" },
-      ...dataKotaLaporanRaw.map((item) => ({ label: item.name, value: item.id })),
+      ...dataKotaLaporanRaw.map((item) => ({
+        label: item.name,
+        value: item.id,
+      })),
     ];
   }, [dataKotaLaporanRaw]);
 
@@ -103,7 +117,10 @@ const UsulanAlkes = () => {
     if (!dataAlkesRaw) return [];
     return [
       { label: "Semua Alkes", value: "" },
-      ...dataAlkesRaw.map((item) => ({ label: item.nama_alkes, value: item.id })),
+      ...dataAlkesRaw.map((item) => ({
+        label: item.nama_alkes,
+        value: item.id,
+      })),
     ];
   }, [dataAlkesRaw]);
 
@@ -170,7 +187,7 @@ const UsulanAlkes = () => {
       };
 
       const res = await axiosInstance.post("/api/usulan/laporan", payload);
-      
+
       const json = res.data;
       if (!json) throw new Error("Gagal export");
 
@@ -178,10 +195,10 @@ const UsulanAlkes = () => {
 
       const mapResponseToExcel = (data) => {
         return data?.map((item, index) => ({
-          "No": index + 1,
-          "Provinsi": item.provinsi || "",
+          No: index + 1,
+          Provinsi: item.provinsi || "",
           "Kab/Kota": item.kabupaten || "",
-          "Kecamatan": item.kecamatan || "",
+          Kecamatan: item.kecamatan || "",
           "Kode Puskesmas": item.kode_puskesmas || "",
           "Nama Puskesmas": item.nama_puskesmas || "",
           "Jenis Pelayanan": item.pelayanan || "",
@@ -197,13 +214,13 @@ const UsulanAlkes = () => {
           "SDMK Tersedia": item.sdmk_tersedia || "",
           "Tahun Usulan": item.tahun_usulan || "",
           "Nama Alkes": item.nama_alkes || "",
-          "SDMK": item.sdmk_alkes || "",
+          SDMK: item.sdmk_alkes || "",
           "Standar Ranap": item.standar_ranap || "",
           "Standar Non Ranap": item.standar_non_ranap || "",
           "Jumlah Tersedia": item.jumlah_tersedia || 0,
           "Jumlah Usulan": item.jumlah_usulan || 0,
           "Strategi Pemenuhan SDMK": item.strategi_pemenuhan || "",
-          "Alasan tidak mengusulkan": item.alasan_tidak_mengusulkan || ""
+          "Alasan tidak mengusulkan": item.alasan_tidak_mengusulkan || "",
         }));
       };
 
@@ -211,12 +228,32 @@ const UsulanAlkes = () => {
 
       const XLSX = await import("xlsx");
       const EXCEL_HEADER = [
-        "No", "Provinsi", "Kab/Kota", "Kecamatan", "Kode Puskesmas", "Nama Puskesmas",
-        "Jenis Pelayanan", "Karakteristik Wilayah", "Puskemas Persalinan", "Puskemas PONED",
-        "Sumber Listrik", "Total Daya Listrik", "Daya Listrik dari PLN", "Ketersediaan Listrik",
-        "Ketersediaan Internet", "Pengelolaan Limbah", "SDMK Tersedia", "Tahun Usulan",
-        "Nama Alkes", "SDMK", "Standar Ranap", "Standar Non Ranap", "Jumlah Tersedia",
-        "Jumlah Usulan", "Strategi Pemenuhan SDMK", "Alasan tidak mengusulkan"
+        "No",
+        "Provinsi",
+        "Kab/Kota",
+        "Kecamatan",
+        "Kode Puskesmas",
+        "Nama Puskesmas",
+        "Jenis Pelayanan",
+        "Karakteristik Wilayah",
+        "Puskemas Persalinan",
+        "Puskemas PONED",
+        "Sumber Listrik",
+        "Total Daya Listrik",
+        "Daya Listrik dari PLN",
+        "Ketersediaan Listrik",
+        "Ketersediaan Internet",
+        "Pengelolaan Limbah",
+        "SDMK Tersedia",
+        "Tahun Usulan",
+        "Nama Alkes",
+        "SDMK",
+        "Standar Ranap",
+        "Standar Non Ranap",
+        "Jumlah Tersedia",
+        "Jumlah Usulan",
+        "Strategi Pemenuhan SDMK",
+        "Alasan tidak mengusulkan",
       ];
 
       const worksheet = XLSX.utils.json_to_sheet(excelData, {
@@ -256,7 +293,6 @@ const UsulanAlkes = () => {
         timer: 2000,
         showConfirmButton: false,
       });
-
     } catch (err) {
       console.log(err);
       Swal.fire("Error", "Gagal melakukan export", "error");
@@ -364,7 +400,7 @@ const UsulanAlkes = () => {
         width: "150px",
         omit: user.role == "3",
       },
-       {
+      {
         name: <div className="text-wrap">Periode</div>,
         selector: (row) => row.periode_name,
         sortable: true,
@@ -392,7 +428,7 @@ const UsulanAlkes = () => {
       //   sortable: true,
       //   width: "100px",
       // },
-           {
+      {
         name: <div className="text-wrap">Status Verifikasi</div>,
         selector: (row) => row.provinsi,
         sortable: true,
@@ -444,19 +480,19 @@ const UsulanAlkes = () => {
                   `/usulan-alkes/edit/${encodeURIComponent(encryptId(row?.id_puskesmas))}`,
                   {
                     replace: true,
-                  }
+                  },
                 );
               }}
             >
               <Link
                 to={`/usulan-alkes/edit/${encodeURIComponent(
-                  encryptId(row?.id_puskesmas)
+                  encryptId(row?.id_puskesmas),
                 )}`}
               >
                 Detail
               </Link>
             </button>
-            {(row.status_verifikasi == "1" && isDesker(user.role)) && (
+            {row.status_verifikasi == "1" && isDesker(user.role) && (
               <button
                 title="Verifikasi"
                 className="text-white font-semibold py-2 w-18 bg-[#16B3AC] rounded-md px-2 text-xs"
@@ -476,6 +512,9 @@ const UsulanAlkes = () => {
                   setSelectedPayloadLog({
                     puskesmas_id: row.id_puskesmas,
                     periode_id: row.periode_id,
+                    id_provinsi: row.id_provinsi,
+                    id_kabupaten: row.id_kabupaten,
+                    id_kecamatan: row.id_kecamatan,
                   });
                   setSelectedRowLog(row);
                   setShowModalLog(true);
@@ -495,7 +534,7 @@ const UsulanAlkes = () => {
           user.role == "3" ? row.konfirmasi_daerah : row.konfirmasi_ppk,
       },
     ],
-    []
+    [],
   );
 
   // Fetch provinces and cities based on selected options
@@ -521,7 +560,7 @@ const UsulanAlkes = () => {
       dataProvinsi.length > 0
     ) {
       const initialOption = dataProvinsi.find(
-        (prov) => prov.value == user.provinsi
+        (prov) => prov.value == user.provinsi,
       );
       if (initialOption) {
         setSelectedProvinsi({
@@ -532,7 +571,7 @@ const UsulanAlkes = () => {
     }
     if (user.role == "3" && user.kabupaten && dataKota.length > 0) {
       const initialOption = dataKota.find(
-        (prov) => prov.value == user.kabupaten
+        (prov) => prov.value == user.kabupaten,
       );
       if (initialOption) {
         setSelectedKota({
@@ -588,7 +627,9 @@ const UsulanAlkes = () => {
               </label>
 
               <div>
-                <label className="block mb-1 text-sm text-[#728294] font-normal">Periode</label>
+                <label className="block mb-1 text-sm text-[#728294] font-normal">
+                  Periode
+                </label>
                 <Select
                   options={dataPeriodeLaporan}
                   value={selectedPeriodeLaporan}
@@ -600,7 +641,9 @@ const UsulanAlkes = () => {
               {!exportAll && (
                 <>
                   <div>
-                    <label className="block mb-1 text-sm text-[#728294] font-normal">Provinsi</label>
+                    <label className="block mb-1 text-sm text-[#728294] font-normal">
+                      Provinsi
+                    </label>
                     <Select
                       options={dataProvinsiLaporan}
                       value={selectedProvinsiLaporan}
@@ -612,17 +655,25 @@ const UsulanAlkes = () => {
                     />
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm text-[#728294] font-normal">Kabupaten/Kota</label>
+                    <label className="block mb-1 text-sm text-[#728294] font-normal">
+                      Kabupaten/Kota
+                    </label>
                     <Select
                       options={dataKotaLaporan}
                       value={selectedKabupatenLaporan}
                       onChange={setSelectedKabupatenLaporan}
-                      placeholder={selectedProvinsiLaporan ? "Pilih Kabupaten/Kota" : "Pilih Provinsi Dahulu"}
+                      placeholder={
+                        selectedProvinsiLaporan
+                          ? "Pilih Kabupaten/Kota"
+                          : "Pilih Provinsi Dahulu"
+                      }
                       isDisabled={!selectedProvinsiLaporan}
                     />
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm text-[#728294] font-normal">Alkes</label>
+                    <label className="block mb-1 text-sm text-[#728294] font-normal">
+                      Alkes
+                    </label>
                     <Select
                       options={dataAlkesLaporan}
                       value={selectedAlkesLaporan}
@@ -646,7 +697,9 @@ const UsulanAlkes = () => {
                 disabled={exportLoading}
                 onClick={processExport}
                 className={`px-4 py-2 rounded text-white text-sm font-medium transition ${
-                  exportLoading ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-opacity-90"
+                  exportLoading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-primary hover:bg-opacity-90"
                 }`}
               >
                 {exportLoading ? (
@@ -807,14 +860,15 @@ const UsulanAlkes = () => {
           </div>
           <div className="div flex gap-2 flex-row">
             {isDesker(user?.role) && (
-            <button
-              title="Export Data Usulan Alkes"
-              className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white px-4 py-2 bg-primary rounded-md tracking-tight"
-              onClick={handleExport}
-            >
-              <BiExport />
-              <span className="hidden sm:block">Export</span>
-            </button>)}
+              <button
+                title="Export Data Usulan Alkes"
+                className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white px-4 py-2 bg-primary rounded-md tracking-tight"
+                onClick={handleExport}
+              >
+                <BiExport />
+                <span className="hidden sm:block">Export</span>
+              </button>
+            )}
             {isDesker(user.role) ? (
               <button
                 title="Tambah Usulan Alkes"
@@ -901,7 +955,7 @@ const UsulanAlkes = () => {
                   `/usulan-alkes/edit/${encodeURIComponent(encryptId(row?.id_puskesmas))}`,
                   {
                     replace: true,
-                  }
+                  },
                 );
               }}
             />
