@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Select from "react-select";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import Card from "../../components/Card/Card";
@@ -90,6 +90,8 @@ export default function EditKonfirmasi() {
   const [provRelokasi, setProvRelokasi] = useState(null);
   const [provOptions, setProvOptions] = useState([]);
   const [loadingProv, setLoadingProv] = useState(false);
+  const prevSkemaRef = useRef(null);
+  const prevProvRef = useRef(null);
 
   const backUrl = useMemo(() => {
     if (!formData?.id_kabupaten || !formData?.id_alkes) return "#";
@@ -219,13 +221,17 @@ export default function EditKonfirmasi() {
   useEffect(() => {
     if (!skemaRelokasi) return;
 
-    // setProvRelokasi(null);
-    setKabRelokasi(null);
-    setPusRelokasi(null);
-    // setProvOptions([]);
-    setKabOptions([]);
-    setPusOptions([]);
-    setAlamatRelokasi("");
+    if (
+      prevSkemaRef.current !== null &&
+      prevSkemaRef.current !== skemaRelokasi.value
+    ) {
+      setKabRelokasi(null);
+      setPusRelokasi(null);
+      setKabOptions([]);
+      setPusOptions([]);
+      setAlamatRelokasi("");
+    }
+    prevSkemaRef.current = skemaRelokasi.value;
 
     if (
       skemaRelokasi.value === "DALAM_KAB" ||
@@ -274,11 +280,17 @@ export default function EditKonfirmasi() {
   useEffect(() => {
     if (!provRelokasi) return;
 
-    setKabRelokasi(null);
-    setPusRelokasi(null);
-    setKabOptions([]);
-    setPusOptions([]);
-    setAlamatRelokasi("");
+    if (
+      prevProvRef.current !== null &&
+      prevProvRef.current !== provRelokasi.value
+    ) {
+      setKabRelokasi(null);
+      setPusRelokasi(null);
+      setKabOptions([]);
+      setPusOptions([]);
+      setAlamatRelokasi("");
+    }
+    prevProvRef.current = provRelokasi.value;
 
     const loadKab = async () => {
       setLoadingKab(true);
