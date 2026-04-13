@@ -31,7 +31,7 @@ const FIELD_LABELS = {
   id_puskesmas_relokasi: "ID Puskesmas Relokasi",
   nama_kab_kota_relokasi: "Kab/Kota Relokasi",
   nama_puskesmas_penerima_relokasi: "Puskesmas Penerima Relokasi",
-  alamat_relokasi: "Alamat Relokasi",
+  alamat_puskesmas_relokasi: "Alamat Relokasi",
   jumlah_relokasi: "Jumlah Relokasi",
   pic_penerima_relokasi_nama: "PIC Penerima Relokasi",
   pic_penerima_relokasi_hp: "HP PIC Penerima Relokasi",

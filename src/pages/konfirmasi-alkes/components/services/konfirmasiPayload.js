@@ -81,7 +81,7 @@ export const buildKonfirmasiPayload = ({
     nama_puskesmas_penerima_relokasi:
       isRelokasi && pusRelokasi?.label ? pusRelokasi.label : null,
 
-    alamat_relokasi: isRelokasi ? alamatRelokasi || null : null,
+    alamat_puskesmas_relokasi: isRelokasi ? alamatRelokasi || null : null,
     jumlah_relokasi: isRelokasi ? Number(jumlahRelokasi) : null,
 
     /* ===== PIC ===== */

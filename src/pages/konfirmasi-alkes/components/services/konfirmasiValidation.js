@@ -85,7 +85,7 @@ export const validateKonfirmasiPayload = (payload) => {
     if (!payload.id_puskesmas_relokasi)
       errors.push("Puskesmas tujuan relokasi wajib dipilih");
 
-    if (!payload.alamat_relokasi)
+    if (!payload.alamat_puskesmas_relokasi)
       errors.push("Alamat puskesmas relokasi wajib diisi");
 
     if (!payload.jumlah_relokasi || payload.jumlah_relokasi <= 0)

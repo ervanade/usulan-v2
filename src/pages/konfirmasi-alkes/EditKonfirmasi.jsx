@@ -325,7 +325,10 @@ export default function EditKonfirmasi() {
   }, [kabRelokasi]);
 
   useEffect(() => {
-    if (pusRelokasi?.alamat) {
+    if (
+      pusRelokasi?.alamat &&
+      pusRelokasi.value !== formData?.id_puskesmas_relokasi
+    ) {
       setAlamatRelokasi(pusRelokasi.alamat);
     }
   }, [pusRelokasi]);
@@ -349,6 +352,9 @@ export default function EditKonfirmasi() {
     }
   }, [pusRelokasi, formData.jumlah]);
   useEffect(() => {
+    // skip if it's the initial value matching the loaded data
+    if (kabRelokasi?.value === formData?.id_kabupaten_relokasi) return;
+
     // setiap ganti kabupaten → reset puskesmas
     setPusRelokasi(null);
     setPusOptions([]);
@@ -448,7 +454,7 @@ export default function EditKonfirmasi() {
           null,
       );
 
-      setAlamatRelokasi(d.alamat_relokasi || "");
+      setAlamatRelokasi(d.alamat_puskesmas_relokasi || "");
       setCpRelokasi(d.pic_penerima_relokasi_nama || "");
       setCpHpRelokasi(d.pic_penerima_relokasi_hp || "");
       setCpDinkes(d.pic_dinkes_nama || "");
@@ -536,12 +542,14 @@ export default function EditKonfirmasi() {
 
     if (selectedPus) {
       setPusRelokasi(selectedPus);
-      setAlamatRelokasi(selectedPus.alamat || "");
+      if (selectedPus.alamat) {
+        setAlamatRelokasi(selectedPus.alamat);
+      }
     }
   }, [pusOptions]);
 
   useEffect(() => {
-    if (relokasi === "YA") return;
+    if (relokasi === "YA" || getLoading) return;
 
     // 🔴 RESET SEMUA FIELD TERGANTUNG RELOKASI
     setSkemaRelokasi(null);

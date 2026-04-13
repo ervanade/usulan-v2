@@ -34,6 +34,7 @@ const EditBarang = () => {
     id_kriteria: [],
     input_usulan: false,
     periode_id: null,
+    jenis_sdmk_per_alat: "",
   });
 
   const navigate = useNavigate();
@@ -270,6 +271,7 @@ const EditBarang = () => {
           keterangan: data?.keterangan || "",
           input_usulan: data?.input_usulan || false,
           id_kriteria: kriteriaIds || [],
+          jenis_sdmk_per_alat: data?.jenis_sdmk_per_alat || "",
         });
 
         setGetLoading(false);
@@ -688,27 +690,50 @@ const EditBarang = () => {
                 </div>
               </div>
               {formData.input_usulan && (
-                <div className="flex-col gap-2 flex">
-                  <div className="">
-                    <label
-                      className="block text-[#728294] text-sm font-semibold mb-1"
-                      htmlFor="nama_alkes"
-                    >
-                      Periode :
-                    </label>
+                <>
+                  <div className="flex-col gap-2 flex">
+                    <div className="">
+                      <label
+                        className="block text-[#728294] text-sm font-semibold mb-1"
+                        htmlFor="jenis_sdmk_per_alat"
+                      >
+                        Jenis SDMK :
+                      </label>
+                    </div>
+                    <div className="">
+                      <input
+                        className={` disabled:bg-slate-50 bg-white appearance-none border border-[#cacaca] focus:border-[#00B1A9]
+                rounded-md w-full py-2 px-3 text-[#728294] leading-tight focus:outline-none focus:shadow-outline dark:bg-transparent`}
+                        id="jenis_sdmk_per_alat"
+                        value={formData.jenis_sdmk_per_alat}
+                        onChange={handleChange}
+                        type="text"
+                        placeholder="Contoh: Dokter/Perawat/Bidan"
+                      />
+                    </div>
                   </div>
-                  <div className="">
-                    <Select
-                      options={dataPeriode}
-                      value={selectedPeriode}
-                      onChange={handlePeriodeChange}
-                      placeholder="Periode"
-                      className="w-full text-sm"
-                      isDisabled={user?.role == "5" || isDisabled}
-                      theme={selectThemeColors}
-                    />
+                  <div className="flex-col gap-2 flex">
+                    <div className="">
+                      <label
+                        className="block text-[#728294] text-sm font-semibold mb-1"
+                        htmlFor="nama_alkes"
+                      >
+                        Periode :
+                      </label>
+                    </div>
+                    <div className="">
+                      <Select
+                        options={dataPeriode}
+                        value={selectedPeriode}
+                        onChange={handlePeriodeChange}
+                        placeholder="Periode"
+                        className="w-full text-sm"
+                        isDisabled={user?.role == "5" || isDisabled}
+                        theme={selectThemeColors}
+                      />
+                    </div>
                   </div>
-                </div>
+                </>
               )}
             </div>
 
