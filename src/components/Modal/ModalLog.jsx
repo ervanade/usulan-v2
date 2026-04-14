@@ -187,26 +187,49 @@ const LogItem = ({ log, index }) => {
 const ModalLog = ({ show, onClose, payload, row, source, apiUrl }) => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [perPage, setPerPage] = useState(100);
 
   useEffect(() => {
     if (show && payload) {
-      fetchLogs();
+      setCurrentPage(1);
+      fetchLogs(1);
     }
   }, [show, payload]);
 
-  const fetchLogs = async () => {
+  const fetchLogs = async (page = 1) => {
     setLoading(true);
     try {
       const endpoint = apiUrl || "/api/log/filter-usulan";
-      const response = await axiosInstance.post(endpoint, payload);
+      const response = await axiosInstance.post(`${endpoint}?page=${page}`, payload);
       if (response.data.success) {
-        setLogs(response.data.data || []);
+        const paginatedData = response.data.data;
+        // Support both paginated response (data.data) and flat array
+        if (paginatedData && typeof paginatedData === "object" && !Array.isArray(paginatedData)) {
+          setLogs(paginatedData.data || []);
+          setCurrentPage(paginatedData.current_page || 1);
+          setLastPage(paginatedData.last_page || 1);
+          setTotal(paginatedData.total || 0);
+          setPerPage(paginatedData.per_page || 100);
+        } else {
+          setLogs(paginatedData || []);
+          setLastPage(1);
+          setTotal((paginatedData || []).length);
+        }
       }
     } catch (error) {
       console.error("Error fetching logs:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (page) => {
+    if (page < 1 || page > lastPage || page === currentPage) return;
+    setCurrentPage(page);
+    fetchLogs(page);
   };
 
   const entityName = row?.nama_puskesmas || row?.nama_kabupaten || row?.kabupaten || null;
@@ -269,7 +292,56 @@ const ModalLog = ({ show, onClose, payload, row, source, apiUrl }) => {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end p-5 border-t border-slate-100 bg-slate-50/50">
+          <div className="flex items-center justify-between p-5 border-t border-slate-100 bg-slate-50/50 gap-3 flex-wrap">
+            {/* Pagination */}
+            {lastPage > 1 ? (
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1 || loading}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  ‹
+                </button>
+                {Array.from({ length: lastPage }, (_, i) => i + 1)
+                  .filter((p) => p === 1 || p === lastPage || Math.abs(p - currentPage) <= 1)
+                  .reduce((acc, p, idx, arr) => {
+                    if (idx > 0 && p - arr[idx - 1] > 1) acc.push("...");
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((p, i) =>
+                    p === "..." ? (
+                      <span key={`ellipsis-${i}`} className="px-2 text-slate-400 text-sm">…</span>
+                    ) : (
+                      <button
+                        key={p}
+                        onClick={() => handlePageChange(p)}
+                        disabled={loading}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                          p === currentPage
+                            ? "bg-primary text-white border-primary"
+                            : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100"
+                        } disabled:cursor-not-allowed`}
+                      >
+                        {p}
+                      </button>
+                    )
+                  )}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === lastPage || loading}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  ›
+                </button>
+                <span className="text-xs text-slate-400 ml-1">
+                  {total} data
+                </span>
+              </div>
+            ) : (
+              <span className="text-xs text-slate-400">{total > 0 ? `${total} data` : ""}</span>
+            )}
             <button
               className="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-8 rounded-xl text-sm transition-all duration-200 focus:outline-none"
               type="button"
