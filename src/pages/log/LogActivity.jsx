@@ -1,216 +1,128 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import Select from "react-select";
 import DataTable from "react-data-table-component";
-import {
-  dataDistribusiBekasi,
-  dataKecamatan,
-  dataKota,
-  dataProvinsi,
-} from "../../data/data";
-import { encryptId, selectThemeColors } from "../../data/utils";
-import { FaEdit, FaEye, FaPlus, FaTrash } from "react-icons/fa";
-import { BiExport, BiSolidFileExport } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { BiExport } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import Swal from "sweetalert2";
 import { CgSpinner } from "react-icons/cg";
 import moment from "moment";
 
 const LogActivity = () => {
   const user = useSelector((a) => a.auth.user);
 
-  const [search, setSearch] = useState(""); // Initialize search state with an empty string
+  const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const handleSearch = (event) => {
-    const value = event.target.value.toLowerCase();
-    setSearch(value);
+  // Pagination state from API
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalRows, setTotalRows] = useState(0);
+  const [perPage, setPerPage] = useState(100);
 
-    const filtered = data.filter((item) => {
-      return item?.name && item.name.toLowerCase().includes(value);
-    });
-
-    setFilteredData(filtered);
-  };
-
-  const handleExport = async () => {
-    const XLSX = await import("xlsx"); // Implementasi untuk mengekspor data (misalnya ke CSV)
-
-    const exportData = filteredData?.map((item) => ({
-      User: item?.name,
-      Aksi: item?.action,
-      // "Model": item?.model,
-      Desc: item?.desc,
-      Url: item?.uri,
-      Tanggal: item?.created_at,
-    }));
-    const wb = XLSX.utils.book_new();
-
-    // Kolom yang konsisten untuk semua tabel
-    const cols = [
-      { wch: 20 }, // Kolom 1
-      { wch: 20 }, // Kolom 2
-      { wch: 20 }, // Kolom 3
-      { wch: 25 }, // Kolom 4
-      { wch: 20 }, // Kolom 5
-      { wch: 20 }, // Kolom 6
-      { wch: 20 }, // Kolom 7
-      { wch: 20 }, // Kolom 8
-    ];
-
-    // Membuat sheet untuk data filteredData
-    const wsFilteredData = XLSX.utils.json_to_sheet(exportData);
-    wsFilteredData["!cols"] = cols;
-
-    // Menambahkan sheet ke workbook
-    XLSX.utils.book_append_sheet(wb, wsFilteredData, "Aktivitas Log");
-
-    // Export file excel
-    const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
-    XLSX.writeFile(wb, `Aktivitas Log ${tanggal}.xlsx`);
-  };
-
-  const fetchLogData = async () => {
+  const fetchLogData = async (page = 1, limit = perPage, searchVal = search) => {
     setLoading(true);
     setError(false);
     try {
       const response = await axios({
         method: "get",
         url: `${import.meta.env.VITE_APP_API_URL}/api/log`,
+        params: { page, per_page: limit, search: searchVal || undefined },
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      setData(response.data.data);
-      setFilteredData(response.data.data);
-    } catch (error) {
+      const paged = response.data.data;
+      setData(paged.data);
+      setTotalRows(paged.total);
+      setCurrentPage(paged.current_page);
+    } catch {
       setError(true);
-      setFilteredData([]);
+      setData([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchLogData();
+    fetchLogData(1, perPage, search);
   }, []);
 
-  const deleteProvinsi = async (id) => {
-    await axios({
-      method: "delete",
-      url: `${import.meta.env.VITE_APP_API_URL}/api/logactivity/${id}`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user?.token}`,
-      },
-    })
-      .then(() => {
-        fetchLogData();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const handlePageChange = (page) => {
+    fetchLogData(page, perPage, search);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleConfirmDeleteProvinsi = async (id) => {
-    return Swal.fire({
-      title: "Are you sure?",
-      text: "You will Delete This Provinsi!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      confirmButtonColor: "#16B3AC",
-    }).then(async (result) => {
-      if (result.value) {
-        await deleteProvinsi(id);
-        Swal.fire({
-          icon: "success",
-          title: "Deleted!",
-          text: "Your Provinsi has been deleted.",
-        });
-      }
-    });
+  const handlePerRowsChange = (newPerPage, page) => {
+    setPerPage(newPerPage);
+    fetchLogData(page, newPerPage, search);
+  };
+
+  // Debounce search to avoid too many requests
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchLogData(1, perPage, search);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const handleExport = async () => {
+    const XLSX = await import("xlsx");
+    const exportData = data?.map((item) => ({
+      User: item?.name,
+      Aksi: item?.action,
+      Desc: item?.desc,
+      Url: item?.uri,
+      Tanggal: item?.created_at,
+    }));
+    const wb = XLSX.utils.book_new();
+    const cols = [
+      { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 25 }, { wch: 20 },
+    ];
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    ws["!cols"] = cols;
+    XLSX.utils.book_append_sheet(wb, ws, "Aktivitas Log");
+    const tanggal = moment().locale("id").format("DD MMMM YYYY HH:mm");
+    XLSX.writeFile(wb, `Aktivitas Log ${tanggal}.xlsx`);
   };
 
   const columns = useMemo(
     () => [
-      // { name: "No", selector: (row) => row.id, sortable: true },
       {
         name: "Nama User",
-        selector: (row, index) => row.name,
+        selector: (row) => row.name,
         sortable: true,
         width: "180px",
       },
       {
         name: "Aksi",
-        selector: (row, index) => row.action,
+        selector: (row) => row.action,
         sortable: true,
         width: "100px",
       },
-      // {
-      //   name: "Model",
-      //   selector: (row, index) => row.model,
-      //   sortable: true,
-      //   width: "180px",
-      // },
-      //   {
-      //     name: "Changes",
-      //     selector: (row) => row.changes,
-      //     sortable: true,
-      //     // width: "100px",
-      //   },
       {
         name: "Desc",
         selector: (row) => row.desc,
         sortable: true,
-        // width: "100px",
       },
       {
         name: "URL",
         selector: (row) => row.uri,
         sortable: true,
-        // width: "100px",
       },
       {
         name: "Tanggal",
         selector: (row) => row.created_at,
         sortable: true,
-        // width: "100px",
       },
-      // {
-      //   name: "Aksi",
-      //   cell: (row) => (
-      //     <div className="flex items-center space-x-2">
-      //       <button title="Edit" className="text-[#16B3AC] hover:text-cyan-500">
-      //         <Link
-      //           to={`/logactivity/detail/${encodeURIComponent(
-      //             encryptId(row.id)
-      //           )}`}
-      //         >
-      //           <FaEye size={16} />
-      //         </Link>
-      //       </button>
-      //     </div>
-      //   ),
-      //   ignoreRowClick: true,
-      //   allowOverflow: true,
-      //   button: true,
-      // },
     ],
-    [handleConfirmDeleteProvinsi, user.role]
+    []
   );
 
   return (
     <div>
       <Breadcrumb pageName="Aktivitas Log" title="Aktivitas Log" />
-      <div className="rounded-md flex flex-col gap-4 overflow-hidden overflow-x-auto  border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="rounded-md flex flex-col gap-4 overflow-hidden overflow-x-auto border border-stroke bg-white py-4 md:py-8 px-4 md:px-6 shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex justify-between mb-4 items-center">
           <div className="relative">
             <button className="absolute left-2 top-1/2 -translate-y-1/2">
@@ -236,18 +148,17 @@ const LogActivity = () => {
                 />
               </svg>
             </button>
-
             <input
               type="text"
               value={search}
-              onChange={handleSearch}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari Data..."
               className="w-full bg-white pl-9 pr-4 text-black outline outline-1 outline-zinc-200 focus:outline-primary dark:text-white xl:w-125 py-2 rounded-md"
             />
           </div>
-          <div className="div flex gap-2 flex-row">
+          <div className="flex gap-2 flex-row">
             <button
-              title="Export Data Provinsi"
+              title="Export Data Log"
               className="flex items-center gap-2 cursor-pointer text-base text-white px-4 py-2 bg-primary rounded-md tracking-tight"
               onClick={handleExport}
             >
@@ -257,18 +168,27 @@ const LogActivity = () => {
           </div>
         </div>
         <div className="overflow-x-auto">
-          {loading ? (
-            <div className="flex justify-center items-center">
-              <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
-              <span className="ml-2">Loading...</span>
-            </div>
-          ) : error || filteredData.length === 0 ? (
+          {error ? (
             <div className="text-center">Data Tidak Tersedia.</div>
           ) : (
             <DataTable
               columns={columns}
-              data={filteredData}
+              data={data}
               pagination
+              paginationServer
+              paginationTotalRows={totalRows}
+              paginationDefaultPage={currentPage}
+              onChangePage={handlePageChange}
+              onChangeRowsPerPage={handlePerRowsChange}
+              paginationRowsPerPageOptions={[10, 25, 50, 100]}
+              paginationPerPage={perPage}
+              progressPending={loading}
+              progressComponent={
+                <div className="flex justify-center items-center py-6">
+                  <CgSpinner className="animate-spin inline-block w-8 h-8 text-teal-400" />
+                  <span className="ml-2">Loading...</span>
+                </div>
+              }
               persistTableHead
               highlightOnHover
               pointerOnHover
@@ -276,8 +196,8 @@ const LogActivity = () => {
                 headCells: {
                   style: {
                     padding: 12,
-                    backgroundColor: "#0FAD91", // Warna header biru
-                    color: "#fff", // Teks header putih
+                    backgroundColor: "#0FAD91",
+                    color: "#fff",
                     fontWeight: 700,
                     fontSize: 14,
                   },
@@ -287,13 +207,13 @@ const LogActivity = () => {
                     fontSize: 14,
                     paddingTop: 6,
                     paddingBottom: 6,
-                    backgroundColor: "#FFFFFF", // Default warna baris ganjil (putih)
+                    backgroundColor: "#FFFFFF",
                     "&:nth-of-type(odd)": {
-                      backgroundColor: "#F9FAFB", // Warna baris genap (abu terang)
+                      backgroundColor: "#F9FAFB",
                     },
                     highlightOnHoverStyle: {
-                      backgroundColor: "#D1E8FF", // Warna saat hover (biru terang)
-                      color: "#212121", // Warna teks tetap gelap
+                      backgroundColor: "#D1E8FF",
+                      color: "#212121",
                     },
                   },
                 },
