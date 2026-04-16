@@ -1364,4 +1364,5 @@ export const EXCEL_HEADER = [
   "PIC Dinas Kesehatan Provinsi",
   "Surat Balasan",
   "Status SDM",
+  "Kriteria Puskesmas",
 ];

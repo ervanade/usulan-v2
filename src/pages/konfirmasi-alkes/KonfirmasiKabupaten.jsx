@@ -1070,6 +1070,11 @@ const KonfirmasiKabupaten = () => {
       "PIC Dinas Kesehatan Provinsi": "",
       "Surat Balasan": item.document_link ? item.document_link : "Belum",
       "Status SDM": item.kesiapan_sdmk || "",
+      "Kriteria Puskesmas": Array.isArray(item.kriteria_puskesmas)
+        ? item.kriteria_puskesmas
+            .map((k) => `${k.kriteria}: ${k.nama_sdm}`)
+            .join("; ")
+        : "",
     }));
   };
   const exportToExcel = async (rows) => {
