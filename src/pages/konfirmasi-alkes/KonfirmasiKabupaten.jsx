@@ -1234,7 +1234,7 @@ const KonfirmasiKabupaten = () => {
                   <option value={500}>500</option>
                   <option value={1000}>1.000</option>
                   <option value={10000}>10.000</option>
-                  <option value={100000}>Semua Data</option>
+                  <option value={1000000}>Semua Data</option>
                 </select>
               </div>
             </div>

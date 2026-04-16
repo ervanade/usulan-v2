@@ -171,6 +171,29 @@ const UsulanAlkes = () => {
     setFilteredData(filtered);
   };
 
+  const showExportProgress = () => {
+    Swal.fire({
+      title: "Sedang Mengekspor Data",
+      html: `
+        <div style="width:100%; background:#e5e7eb; border-radius:6px; height:8px; overflow:hidden">
+          <div id="export-progress" style="height:8px; width:0%; background:#0FAD91; transition: width .3s ease;"></div>
+        </div>
+        <p style="font-size:12px;color:#64748b;margin-top:8px">
+          Progress: <span id="progress-text">0%</span>
+        </p>
+      `,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+    });
+  };
+
+  const updateProgress = (percent) => {
+    const bar = document.getElementById("export-progress");
+    const text = document.getElementById("progress-text");
+    if (bar) bar.style.width = `${percent}%`;
+    if (text) text.innerText = `${percent}%`;
+  };
+
   const handleExport = async () => {
     setIsExportModalOpen(true);
   };
@@ -178,6 +201,8 @@ const UsulanAlkes = () => {
   const processExport = async () => {
     try {
       setExportLoading(true);
+      setIsExportModalOpen(false);
+      showExportProgress();
 
       const payload = {
         periode_id: selectedPeriodeLaporan?.value || "",
@@ -186,12 +211,18 @@ const UsulanAlkes = () => {
         id_alkes: exportAll ? "" : selectedAlkesLaporan?.value || "",
       };
 
+      updateProgress(10);
+
       const res = await axiosInstance.post("/api/usulan/laporan", payload);
+
+      updateProgress(40);
 
       const json = res.data;
       if (!json) throw new Error("Gagal export");
 
       const dataResponse = json.data || json;
+
+      updateProgress(60);
 
       const mapResponseToExcel = (data) => {
         return data?.map((item, index) => ({
@@ -225,6 +256,8 @@ const UsulanAlkes = () => {
       };
 
       const excelData = mapResponseToExcel(dataResponse);
+
+      updateProgress(80);
 
       const XLSX = await import("xlsx");
       const EXCEL_HEADER = [
@@ -285,6 +318,8 @@ const UsulanAlkes = () => {
       XLSX.utils.book_append_sheet(workbook, worksheet, "Usulan Alkes");
 
       XLSX.writeFile(workbook, `Laporan_Usulan_Alkes_${Date.now()}.xlsx`);
+
+      updateProgress(100);
 
       Swal.fire({
         icon: "success",
@@ -609,7 +644,7 @@ const UsulanAlkes = () => {
 
             {/* Body */}
             <div className="p-4 space-y-4">
-              <label className="flex items-center gap-2">
+              {/* <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={exportAll}
@@ -624,7 +659,7 @@ const UsulanAlkes = () => {
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <span className="text-sm font-medium">Export Semua Data</span>
-              </label>
+              </label> */}
 
               <div>
                 <label className="block mb-1 text-sm text-[#728294] font-normal">
