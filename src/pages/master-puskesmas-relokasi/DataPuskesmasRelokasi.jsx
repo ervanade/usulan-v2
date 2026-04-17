@@ -9,7 +9,8 @@ import { CgSpinner } from "react-icons/cg";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { usePuskesmasRelokasi } from "../../hooks/usePuskesmasRelokasi";
-import { useProvinsi, useKabupaten, usePuskesmasByKabupaten } from "../../hooks/useRegion";
+import { usePuskesmasListRelokasi } from "../../hooks/usePuskesmasRelokasi";
+import { useProvinsi, useKabupaten } from "../../hooks/useRegion";
 import { useAlkes } from "../../hooks/useUsulan";
 import {
   storePuskesmasRelokasi,
@@ -45,7 +46,7 @@ const FormModal = ({ show, onClose, editData, onSaved }) => {
 
   const { data: rawProvinsi } = useProvinsi();
   const { data: rawKabupaten } = useKabupaten(selProvinsi?.value);
-  const { data: rawPuskesmas } = usePuskesmasByKabupaten(selKabupaten?.value);
+  const { data: rawPuskesmasList } = usePuskesmasListRelokasi();
   const { alkes: rawAlkes } = useAlkes();
 
   const optProvinsi = useMemo(
@@ -56,16 +57,18 @@ const FormModal = ({ show, onClose, editData, onSaved }) => {
     () => (rawKabupaten || []).map((k) => ({ value: k.id, label: k.name })),
     [rawKabupaten]
   );
-  const optPuskesmas = useMemo(
-    () =>
-      (rawPuskesmas || []).map((p) => ({
-        value: p.id_puskesmas ?? p.id,
-        label: p.nama_puskesmas,
-        kode: p.kode_puskesmas,
-        alamat: p.alamat,
-      })),
-    [rawPuskesmas]
-  );
+  const optPuskesmas = useMemo(() => {
+    const list = rawPuskesmasList || [];
+    const filtered = selKabupaten
+      ? list.filter((p) => String(p.id_kabupaten) === String(selKabupaten.value))
+      : list;
+    return filtered.map((p) => ({
+      value: p.id_puskesmas ?? p.id,
+      label: p.nama_puskesmas,
+      kode: p.kode_pusdatin_baru || p.kode_puskesmas || "",
+      alamat: p.alamat,
+    }));
+  }, [rawPuskesmasList, selKabupaten]);
   const optAlkes = useMemo(
     () => (rawAlkes || []).map((a) => ({ value: a.id, label: a.nama_alkes ?? a.nama_barang ?? a.name })),
     [rawAlkes]
@@ -114,7 +117,7 @@ const FormModal = ({ show, onClose, editData, onSaved }) => {
 
   // restore puskesmas select after options load (edit mode)
   useEffect(() => {
-    if (!editData || !rawPuskesmas?.length) return;
+    if (!editData || !rawPuskesmasList?.length) return;
     const found = optPuskesmas.find((p) => p.value == editData.id_puskesmas);
     if (found) setSelPuskesmas(found);
   }, [optPuskesmas, editData]);

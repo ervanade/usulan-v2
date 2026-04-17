@@ -4,6 +4,10 @@ export const getPuskesmasRelokasiList = async () => {
   const response = await axiosInstance.get("/api/puskesmas-relokasi");
   return response.data.data;
 };
+export const getPuskesmasList = async () => {
+  const response = await axiosInstance.get("/api/puskesmas");
+  return response.data.data;
+};
 
 export const storePuskesmasRelokasi = async (data) => {
   const response = await axiosInstance.post("/api/puskesmas-relokasi/store", data);

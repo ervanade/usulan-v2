@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getPuskesmasRelokasiList } from "../api/services/puskesmasRelokasiService";
+import { getPuskesmasRelokasiList, getPuskesmasList } from "../api/services/puskesmasRelokasiService";
 
 export const usePuskesmasRelokasi = () => {
   const { data, error, isLoading, mutate } = useSWR(
@@ -7,4 +7,12 @@ export const usePuskesmasRelokasi = () => {
     getPuskesmasRelokasiList
   );
   return { data, isLoading, isError: error, mutate };
+};
+
+export const usePuskesmasListRelokasi = () => {
+  const { data, error, isLoading } = useSWR(
+    "puskesmas-list-relokasi",
+    getPuskesmasList
+  );
+  return { data, isLoading, isError: error };
 };
