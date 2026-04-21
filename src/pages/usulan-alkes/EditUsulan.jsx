@@ -743,7 +743,7 @@ const EditUsulan = () => {
       ...formData,
       usulan: resultUsulan,
       ...(isDeskerUser && { keterangan: catatanVerifikasi }),
-      ...(isDeskerUser && statusVerifikasi && { status_verifikasi: statusVerifikasi }),
+      ...(isDeskerUser && statusVerifikasi && { status_verifikasi: Number(statusVerifikasi) || 1 }),
     };
 
     setLoading(true);

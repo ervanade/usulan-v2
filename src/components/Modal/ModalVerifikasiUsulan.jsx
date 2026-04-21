@@ -8,7 +8,7 @@ import { verifyUsulanDetail } from "../../api/services/usulanService";
 const ModalVerifikasiUsulan = ({ show, onClose, data, onSave }) => {
   const [formData, setFormData] = useState({
     status_verifikasi: "1",
-    catatan: "",
+    keterangan: "",
     periode_id: 0,
   });
 
@@ -22,7 +22,7 @@ const ModalVerifikasiUsulan = ({ show, onClose, data, onSave }) => {
     if (data) {
       setFormData({
         status_verifikasi: data.status_verifikasi || "1",
-        catatan: data.keterangan|| data.catatan_verifikasi || "",
+        keterangan: data.keterangan|| data.catatan_verifikasi || "",
         periode_id: data.periode_id || 0,
       });
     }
@@ -134,8 +134,8 @@ const ModalVerifikasiUsulan = ({ show, onClose, data, onSave }) => {
                 <textarea
                   className="w-full bg-white border border-[#cacaca] focus:border-[#0ACBC2] rounded-md py-2 px-3 text-sm text-[#728294] focus:outline-none h-24"
                   placeholder="Masukkan catatan verifikasi..."
-                  value={formData.catatan}
-                  onChange={(e) => setFormData({ ...formData, catatan: e.target.value })}
+                  value={formData.keterangan}
+                  onChange={(e) => setFormData({ ...formData, keterangan: e.target.value})}
                 />
               </div>
 
