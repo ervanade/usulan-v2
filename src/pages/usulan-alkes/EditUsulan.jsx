@@ -81,6 +81,10 @@ const EditUsulan = () => {
   const [error, setError] = useState(false);
   const isDisabled = false;
 
+  // Verifikasi state (desker only)
+  const [statusVerifikasi, setStatusVerifikasi] = useState("");
+  const [catatanVerifikasi, setCatatanVerifikasi] = useState("");
+
   const isDeskerUser = isDesker(user?.role);
   const isAdminUser = isAdmin(user?.role);
   // const isAllowedKab = useMemo(
@@ -207,6 +211,9 @@ const EditUsulan = () => {
       if (!idPeriode) {
         setIdPeriode(usulanDetail.usulan_alkes[0]?.periode_id);
       }
+      // Init verifikasi fields
+      setStatusVerifikasi(usulanDetail.status_verifikasi || "");
+      setCatatanVerifikasi(usulanDetail.keterangan || "");
     }
   }, [usulanDetail]);
 
@@ -735,6 +742,8 @@ const EditUsulan = () => {
     const updatedFormData = {
       ...formData,
       usulan: resultUsulan,
+      ...(isDeskerUser && { keterangan: catatanVerifikasi }),
+      ...(isDeskerUser && statusVerifikasi && { status_verifikasi: statusVerifikasi }),
     };
 
     setLoading(true);
@@ -1330,6 +1339,46 @@ const EditUsulan = () => {
           />
 
           <div className="w-full mt-8 gap-4">
+            {/* STATUS VERIFIKASI — hanya untuk desker/admin */}
+            {isDeskerUser && (
+              <section className="mb-4 bg-yellow-50 border border-yellow-300 p-4 rounded-md">
+                <div className="mb-3">
+                  <h2 className="font-semibold text-yellow-800">Status Verifikasi</h2>
+                  <p className="text-xs text-yellow-700 mt-0.5">
+                    Keputusan verifikasi kelayakan usulan puskesmas ini
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-yellow-800 mb-1">
+                      Status
+                    </label>
+                    <select
+                      value={statusVerifikasi}
+                      onChange={(e) => setStatusVerifikasi(e.target.value)}
+                      className="w-full border border-yellow-300 focus:border-yellow-500 rounded-md py-2 px-3 text-xs bg-white focus:outline-none"
+                    >
+                      <option value="">— Pilih Status —</option>
+                      <option value="1">Belum Verifikasi</option>
+                      <option value="2">Sudah Verifikasi</option>
+                      <option value="3">Perlu Revisi</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-yellow-800 mb-1">
+                      Catatan Verifikasi
+                    </label>
+                    <textarea
+                      value={catatanVerifikasi}
+                      onChange={(e) => setCatatanVerifikasi(e.target.value)}
+                      rows={2}
+                      placeholder="Catatan verifikasi (opsional)"
+                      className="w-full border border-yellow-300 focus:border-yellow-500 rounded-md py-2 px-3 text-xs bg-white focus:outline-none resize-none"
+                    />
+                  </div>
+                </div>
+              </section>
+            )}
             <button
               onClick={handleSimpan}
               disabled={loading || selectedPeriode?.stat == 0 }
