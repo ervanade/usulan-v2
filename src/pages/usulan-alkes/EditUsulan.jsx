@@ -1371,7 +1371,7 @@ const EditUsulan = () => {
                     <textarea
                       value={catatanVerifikasi}
                       onChange={(e) => setCatatanVerifikasi(e.target.value)}
-                      rows={2}
+                      rows={3}
                       placeholder="Catatan verifikasi (opsional)"
                       className="w-full border border-yellow-300 focus:border-yellow-500 rounded-md py-2 px-3 text-xs bg-white focus:outline-none resize-none"
                     />
