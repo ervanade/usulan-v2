@@ -527,7 +527,7 @@ const UsulanAlkes = () => {
                 Detail
               </Link>
             </button>
-            {row.status_verifikasi == "1" && isDesker(user.role) && (
+            {!row.status_verifikasi == "0" && isDesker(user.role) && (
               <button
                 title="Verifikasi"
                 className="text-white font-semibold py-2 w-18 bg-[#16B3AC] rounded-md px-2 text-xs"
