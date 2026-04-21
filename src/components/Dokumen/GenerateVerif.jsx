@@ -426,7 +426,7 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>4.</Text>
               <Text>
-                Tidak menggarkan melalui pembiayaan lainnya untuk alat kesehatan
+                Tidak Menganggarkan melalui pembiayaan lainnya untuk alat kesehatan
                 yang diusulkan sampai dengan alat kesehatan tersebut sudah
                 terdistribusi.
               </Text>
@@ -752,7 +752,7 @@ const GenerateVerif = async (jsonData, preview) => {
             >
               <Text style={{ marginRight: 8 }}>4.</Text>
               <Text>
-                Tidak menggarkan melalui pembiayaan lainnya untuk alat kesehatan
+                Tidak Menganggarkan melalui pembiayaan lainnya untuk alat kesehatan
                 yang diusulkan sampai dengan alat kesehatan tersebut sudah
                 terdistribusi.
               </Text>
