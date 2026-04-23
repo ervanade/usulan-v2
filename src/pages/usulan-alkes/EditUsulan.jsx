@@ -408,16 +408,8 @@ const EditUsulan = () => {
   useEffect(() => {
     if (formData?.usulan && AlasanOptions) {
       const initialEditedData = {};
-      // Keterangan level puskesmas — data kotor dari bug BE yang masuk ke semua row
-      const keteranganPuskesmas = usulanDetail?.keterangan || null;
-
       formData.usulan.forEach((item) => {
-        const alasanRaw = item.alasan_tidak_mengusulkan ?? null;
-
-        // Clear kalau alasan sama persis dengan keterangan puskesmas (data kotor dari bug BE)
-        const isKotorDariBE = alasanRaw && keteranganPuskesmas && alasanRaw === keteranganPuskesmas;
-        const alasanToUse = isKotorDariBE ? null : alasanRaw;
-
+        const alasanToUse = item.alasan_tidak_mengusulkan ?? null;
         const isStandardAlasan = AlasanOptions.some(
           (opt) => opt.value === alasanToUse,
         );
@@ -425,6 +417,8 @@ const EditUsulan = () => {
         const berfungsi = item.berfungsi ?? 0;
         const usulan = item.usulan ?? 0;
 
+        // Tentukan standard berdasarkan pelayanan yang sudah dipilih,
+        // atau fallback ke keduanya untuk auto-clear saat init
         const pelayanan = selectedPelayanan?.value || formData.pelayanan;
         const standard = pelayanan === "Non Rawat Inap"
           ? item.standard_non_inap
