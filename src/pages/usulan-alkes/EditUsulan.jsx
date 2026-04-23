@@ -767,7 +767,8 @@ const EditUsulan = () => {
       
       navigate("/usulan-alkes");
     } catch (error) {
-      Swal.fire("Error", "Gagal Menyimpan Data", "error");
+      const serverMsg = error?.response?.data?.message || error?.response?.data?.error || null;
+      Swal.fire("Gagal Menyimpan", serverMsg || "Terjadi kesalahan saat menyimpan data. Silakan coba lagi.", "error");
       console.log(error);
     } finally {
       setLoading(false);
@@ -842,6 +843,14 @@ const EditUsulan = () => {
         errorMsg = "Harap lengkapi alasan untuk usulan yang kurang dari standar.";
       } else if (hasErrorStrategi) {
         errorMsg = "Harap pilih strategi pemenuhan SDMK untuk usulan yang tidak memenuhi kriteria SDM.";
+      }
+      // Scroll ke tabel usulan agar user bisa lihat error di row
+      const firstErrorId = Object.keys(validationErrors)[0];
+      if (firstErrorId) {
+        setTimeout(() => {
+          const tableEl = document.querySelector(".overflow-x-auto");
+          if (tableEl) tableEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
       }
       Swal.fire({
         icon: "warning",
@@ -1381,11 +1390,21 @@ const EditUsulan = () => {
             )}
             <button
               onClick={handleSimpan}
-              disabled={loading || selectedPeriode?.stat == 0 }
-              className="w-full px-6 py-2 bg-primary text-white rounded-md font-semibold disabled:bg-slate-300"
+              disabled={loading || selectedPeriode?.stat == 0}
+              title={selectedPeriode?.stat == 0 ? "Periode sudah ditutup, tidak dapat menyimpan usulan" : ""}
+              className="w-full px-6 py-2 bg-primary text-white rounded-md font-semibold disabled:bg-slate-300 disabled:cursor-not-allowed"
             >
-              {loading ? "Menyimpan..." : "Simpan Usulan"}
+              {loading
+                ? "Menyimpan..."
+                : selectedPeriode?.stat == 0
+                  ? "Periode Ditutup — Tidak Dapat Menyimpan"
+                  : "Simpan Usulan"}
             </button>
+            {selectedPeriode?.stat == 0 && (
+              <p className="text-xs text-red-500 mt-1 text-center">
+                Periode ini sudah ditutup. Hubungi admin untuk membuka kembali.
+              </p>
+            )}
           </div>
         </div>
       </Card>
