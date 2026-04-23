@@ -409,7 +409,7 @@ const EditUsulan = () => {
     if (formData?.usulan && AlasanOptions) {
       const initialEditedData = {};
       formData.usulan.forEach((item) => {
-        const alasanToUse = item.alasan_tidak_mengusulkan || item.keterangan_usulan;
+        const alasanToUse = item.alasan_tidak_mengusulkan ?? null;
         const isStandardAlasan = AlasanOptions.some(
           (opt) => opt.value === alasanToUse,
         );
