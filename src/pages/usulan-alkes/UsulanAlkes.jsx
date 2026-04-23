@@ -142,11 +142,19 @@ const UsulanAlkes = () => {
     }
   }, [initialData]);
 
+  const STATUS_VERIFIKASI_LABEL = {
+    "1": "belum verifikasi",
+    "2": "sudah verifikasi",
+    "3": "perlu revisi",
+    "0": "belum mengisi",
+  };
+
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
     setSearch(value);
 
     const filtered = data.filter((item) => {
+      const statusLabel = STATUS_VERIFIKASI_LABEL[String(item?.status_verifikasi)] || "";
       return (
         (item?.nomor_bast && item.nomor_bast.toLowerCase().includes(value)) ||
         (item?.provinsi && item.provinsi.toLowerCase().includes(value)) ||
@@ -164,7 +172,8 @@ const UsulanAlkes = () => {
           item.jumlah_barang_diterima.toLowerCase().includes(value)) ||
         (item?.jumlah_barang_dikirim &&
           item.jumlah_barang_dikirim.toLowerCase().includes(value)) ||
-        (item?.nama_dokumen && item.nama_dokumen.toLowerCase().includes(value))
+        (item?.nama_dokumen && item.nama_dokumen.toLowerCase().includes(value)) ||
+        statusLabel.includes(value)
       );
     });
 

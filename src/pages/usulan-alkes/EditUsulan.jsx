@@ -414,23 +414,38 @@ const EditUsulan = () => {
           (opt) => opt.value === alasanToUse,
         );
 
+        const berfungsi = item.berfungsi ?? 0;
+        const usulan = item.usulan ?? 0;
+
+        // Tentukan standard berdasarkan pelayanan yang sudah dipilih,
+        // atau fallback ke keduanya untuk auto-clear saat init
+        const pelayanan = selectedPelayanan?.value || formData.pelayanan;
+        const standard = pelayanan === "Non Rawat Inap"
+          ? item.standard_non_inap
+          : item.standard_rawat_inap;
+
+        const required = standard != null ? Math.max(0, standard - berfungsi) : null;
+
+        // Auto-clear alasan kalau kondisi sudah terpenuhi saat init
+        const shouldClearAlasan = required !== null && usulan >= required;
+
         initialEditedData[item.id] = {
-          berfungsi: item.berfungsi ?? 0,
-          usulan: item.usulan ?? 0,
-          keterangan_usulan: isStandardAlasan
-            ? alasanToUse
-            : alasanToUse === null ||
-                alasanToUse === false ||
-                alasanToUse === ""
-              ? ""
-              : "Lainnya",
-          catatanAlasan: isStandardAlasan
+          berfungsi,
+          usulan,
+          keterangan_usulan: shouldClearAlasan
+            ? null
+            : isStandardAlasan
+              ? alasanToUse
+              : alasanToUse === null || alasanToUse === false || alasanToUse === ""
+                ? ""
+                : "Lainnya",
+          catatanAlasan: shouldClearAlasan
             ? undefined
-            : alasanToUse === null ||
-                alasanToUse === false ||
-                alasanToUse === ""
+            : isStandardAlasan
               ? undefined
-              : alasanToUse,
+              : alasanToUse === null || alasanToUse === false || alasanToUse === ""
+                ? undefined
+                : alasanToUse,
           strategi_pemenuhan: item.strategi_pemenuhan || null,
         };
       });
@@ -1141,7 +1156,7 @@ const EditUsulan = () => {
                 } // Nonaktifkan input jika masih_berfungsi >= standard
               />
               {isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row.jenis_sdmk_per_alat && row.jenis_sdmk_per_alat.trim() !== "" && usulan > 0 && (
-                <div className="text-red-500 text-[10px] mt-1 leading-tight text-[10px]">
+                <div className="text-yellow-600 text-[10px] mt-1 leading-tight text-[10px]">
                   Standar SDMK Belum Terpenuhi. Harap Isi Strategi Pemenuhan!
                 </div>
               )}
@@ -1215,7 +1230,17 @@ const EditUsulan = () => {
           const showStrategi = isSdmkStrategyEnabled && !memenuhiSalahSatuKriteria && row.jenis_sdmk_per_alat && row.jenis_sdmk_per_alat.trim() !== "" && usulan > 0;
 
           if (!showAlasan && !showStrategi) {
-              return <div className="text-xs text-gray-400">-</div>;
+            const existingAlasan = editedData[row.id]?.keterangan_usulan === "Lainnya"
+              ? editedData[row.id]?.catatanAlasan
+              : editedData[row.id]?.keterangan_usulan;
+            if (existingAlasan) {
+              return (
+                <div className="text-xs text-slate-500 italic py-1 px-1 bg-slate-50 rounded border border-slate-100 max-w-[220px]">
+                  {existingAlasan}
+                </div>
+              );
+            }
+            return <div className="text-xs text-gray-400">-</div>;
           }
 
           return (
