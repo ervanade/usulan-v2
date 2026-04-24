@@ -5,7 +5,7 @@ import DataTable from "react-data-table-component";
 import { encryptId, isAdmin, isDesker } from "../../data/utils";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import { BiExport } from "react-icons/bi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { CgSpinner } from "react-icons/cg";
 import Swal from "sweetalert2";
@@ -21,6 +21,7 @@ import { AiOutlineHistory } from "react-icons/ai";
 
 const UsulanAlkes = () => {
   const user = useSelector((state) => state.auth.user);
+  const [searchParams] = useSearchParams();
   const {
     usulan: initialData,
     isLoading: usulanLoading,
@@ -44,6 +45,11 @@ const UsulanAlkes = () => {
   const [selectedKota, setSelectedKota] = useState(null);
   const { data: dataKecamatanRaw } = useKecamatan(selectedKota?.value);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+
+  // Track whether query-param filters have been applied (to avoid overwriting user selection)
+  const [queryParamsApplied, setQueryParamsApplied] = useState(false);
+  const [queryParamProvId, setQueryParamProvId] = useState(null);
+  const [queryParamKabId, setQueryParamKabId] = useState(null);
 
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [exportAll, setExportAll] = useState(false);
@@ -84,6 +90,8 @@ const UsulanAlkes = () => {
       ...dataKecamatanRaw.map((item) => ({ label: item.name, value: item.id })),
     ];
   }, [dataKecamatanRaw]);
+
+
 
   const dataPeriodeLaporan = useMemo(() => {
     if (!dataPeriodeRaw) return [];
@@ -353,9 +361,9 @@ const UsulanAlkes = () => {
     setError(false);
     try {
       const result = await filterUsulan({
-        id_provinsi: selectedProvinsi?.value.toString() || "",
-        id_kabupaten: selectedKota?.value.toString() || "",
-        id_kecamatan: selectedKecamatan?.value.toString() || "",
+        id_provinsi: selectedProvinsi?.value?.toString() || "",
+        id_kabupaten: selectedKota?.value?.toString() || "",
+        id_kecamatan: selectedKecamatan?.value?.toString() || "",
       });
       setFilteredData(result);
       setData(result);
@@ -625,6 +633,65 @@ const UsulanAlkes = () => {
       }
     }
   }, [user.role, user.provinsi, user.kabupaten, dataProvinsi, dataKota]);
+
+  // Auto-fill filters from query params (prov, kab) — for desker returning from EditUsulan
+  // Step 1: set provinsi when dataProvinsi is ready
+  useEffect(() => {
+    if (queryParamsApplied) return;
+    const provId = searchParams.get("prov");
+    if (!provId || dataProvinsi.length === 0) return;
+
+    const provOption = dataProvinsi.find((p) => String(p.value) === String(provId));
+    if (provOption) {
+      setSelectedProvinsi({ label: provOption.label, value: provOption.value });
+      setQueryParamProvId(provId);
+      setQueryParamKabId(searchParams.get("kab") || null);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataProvinsi]);
+
+  // Step 2: set kabupaten once dataKota is ready (triggered by selectedProvinsi being set above)
+  useEffect(() => {
+    if (queryParamsApplied) return;
+    if (!queryParamProvId) return;
+    if (!queryParamKabId) {
+      setQueryParamsApplied(true);
+      return;
+    }
+    if (dataKota.length === 0) return;
+
+    const kabOption = dataKota.find((k) => String(k.value) === String(queryParamKabId));
+    if (kabOption) {
+      setSelectedKota({ label: kabOption.label, value: kabOption.value });
+    }
+    setQueryParamsApplied(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryParamProvId, queryParamKabId, dataKota]);
+
+  // Step 3: auto-search once all filters are applied
+  useEffect(() => {
+    if (!queryParamsApplied) return;
+    const provId = searchParams.get("prov");
+    if (!provId) return;
+    const kabId = searchParams.get("kab");
+    setLoading(true);
+    setError(false);
+    filterUsulan({
+      id_provinsi: provId || "",
+      id_kabupaten: kabId || "",
+      id_kecamatan: "",
+    })
+      .then((result) => {
+        setFilteredData(result);
+        setData(result);
+      })
+      .catch(() => {
+        setError(true);
+        setFilteredData([]);
+      })
+      .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryParamsApplied]);
 
   if (usulanLoading) {
     return (
@@ -1010,7 +1077,7 @@ const UsulanAlkes = () => {
         show={showModalVerif}
         onClose={() => setShowModalVerif(false)}
         data={selectedDataVerif}
-        onSave={mutateUsulan}
+        onSave={handleSearchClick}
       />
       <ModalLog
         show={showModalLog}

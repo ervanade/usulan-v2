@@ -752,6 +752,15 @@ const EditUsulan = () => {
     });
   };
 
+  const buildBackUrl = () => {
+    if (!isDeskerUser) return "/usulan-alkes";
+    const params = new URLSearchParams();
+    if (formData.id_provinsi) params.set("prov", formData.id_provinsi);
+    if (formData.id_kabupaten) params.set("kab", formData.id_kabupaten);
+    const qs = params.toString();
+    return qs ? `/usulan-alkes?${qs}` : "/usulan-alkes";
+  };
+
   const editUsulan = async () => {
     const resultUsulan = getResultData();
     const updatedFormData = {
@@ -780,7 +789,7 @@ const EditUsulan = () => {
       mutate("usulan-list");
       mutate((key) => Array.isArray(key) && key[0] === "usulan-detail" && key[1] == decryptedId, undefined, { revalidate: true });
       
-      navigate("/usulan-alkes");
+      navigate(buildBackUrl());
     } catch (error) {
       const serverMsg = error?.response?.data?.message || error?.response?.data?.error || null;
       Swal.fire("Gagal Menyimpan", serverMsg || "Terjadi kesalahan saat menyimpan data. Silakan coba lagi.", "error");
@@ -1325,7 +1334,7 @@ const EditUsulan = () => {
         <div className="card-header flex justify-between">
           <div className="ml-auto">
             <Link
-              to="/usulan-alkes"
+              to={buildBackUrl()}
               className="flex items-center px-4 py-2 bg-primary text-white rounded-md font-semibold"
             >
               Back
